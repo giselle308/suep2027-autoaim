@@ -1,0 +1,9 @@
+{
+	"InstallScripts" : 
+	[
+		"/home/ubuntu/CGraph/build/cmake_install.cmake",
+		"/home/ubuntu/CGraph/build/tutorial/cmake_install.cmake",
+		"/home/ubuntu/CGraph/build/example/cmake_install.cmake"
+	],
+	"Parallel" : false
+}

@@ -1,0 +1,8 @@
+
+digraph CGraph {
+compound=true;
+p0x5e1b556ec4f0[label="camera_node"];
+p0x5e1b556ec4f0 -> p0x5e1b556ec810;
+p0x5e1b556ec810[label="detector_node"];
+}
+

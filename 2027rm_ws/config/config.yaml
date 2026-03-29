@@ -1,0 +1,75 @@
+camera:
+  # connection: 连接参数（MV-CS016-10UC USB3.0 相机）
+  connection:
+    # interface: 连接接口，USB 相机推荐 USB3Vision/USB
+    interface: USB3Vision
+    # timeout: 超时（毫秒，范围：100-10000）
+    timeout: 3000
+    # retry: 重试次数（范围：0-10）
+    retry: 3
+    # serial_number: 相机序列号（USB 设备唯一标识）
+    serial_number: DA2360141
+
+  # image: 图像输出参数（MV-CS016-10UC: 1.6MP, 249fps@1440x1080）
+  image:
+    # width/height: 分辨率（降低分辨率可减少读出时间）
+    # 当前1440×1080读出需4047μs，只能达到165fps（曝光2000μs）
+    # 降低到720×540可减少约75%的读出时间
+    # 要达到249fps，建议使用更小分辨率或ROI
+    width: 1440
+    height: 1080
+    # pixel_format: 相机 Bayer 排列（常见: BayerRG8/BayerBG8/BayerGB8/BayerGR8）
+    # 如果出现“红色看成蓝色”，一般改成 BayerBG8 可修复
+    pixel_format: BayerBG8
+    # frame_rate: 目标帧率（MV-CS016-10UC最大249fps）
+    frame_rate: 249
+    # frame_rate_enable: 是否启用帧率限制（false=最大速度）
+    frame_rate_enable: false
+
+  # trigger: 触发配置
+  trigger:
+    # mode: 触发模式（off=连续采集，on=触发采集）
+    mode: off
+    # source: 触发源（software/hardware）
+    source: software
+
+  # capture: 成像相关参数（优化高帧率）
+  capture:
+    # exposure_time: 曝光时间（微秒）
+    # 真正限制帧率的是读出时间，改曝光对帧率影响有限
+    # 降低分辨率才能真正提升帧率
+    # 当前设置1000μs，如图像过暗可增加gain
+    exposure_time: 500
+    # exposure_auto: 自动曝光开关（高帧率建议关闭）
+    exposure_auto: false
+    # gain: 模拟增益（曝光极短时需大幅提高，范围：0-16）
+    # 曝光50μs时建议增益16（最大值）以补偿亮度
+    gain: 16
+    # gain_auto: 自动增益开关（高帧率建议关闭）
+    gain_auto: false
+    # white_balance_mode: 白平衡模式（manual/auto）
+    white_balance_mode: auto
+    # white_balance_red/blue: 手动白平衡通道系数（根据光源调整）
+    white_balance_red: 1.8
+    white_balance_blue: 1.6
+
+  # output: 本程序当前未启用保存，但保留配置项
+  output:
+    # save_path: 保存路径
+    save_path: ./captures
+    # format: 保存格式（jpg/png/bmp）
+    format: jpg
+    # quality: JPEG 质量（范围：1-100）
+    quality: 95
+
+logging:
+  # level: 日志级别（DEBUG/INFO/WARN/ERROR）
+  level: INFO
+  # enable_file: 是否写文件
+  enable_file: true
+  # log_file: 日志文件路径
+  log_file: ./logs/camera.log
+  # max_file_size: 单文件大小（如 10MB/50MB）
+  max_file_size: 10MB
+  # backup_count: 轮转保留数量（范围：1-20）
+  backup_count: 5

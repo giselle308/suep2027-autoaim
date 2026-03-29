@@ -1,0 +1,236 @@
+[
+{
+  "directory": "/home/ubuntu/桌面/test/build",
+  "command": "/usr/bin/c++ -I/home/ubuntu/桌面/test/2027rm_ws/include/CGraph/src -I/home/ubuntu/桌面/test/2027rm_ws/include -I/usr/include/opencv4 -g -std=gnu++11 -o CMakeFiles/cgraph_runtime.dir/2027rm_ws/include/CGraph/src/DomainCtrl/Ann/DAnnNode.cpp.o -c /home/ubuntu/桌面/test/2027rm_ws/include/CGraph/src/DomainCtrl/Ann/DAnnNode.cpp",
+  "file": "/home/ubuntu/桌面/test/2027rm_ws/include/CGraph/src/DomainCtrl/Ann/DAnnNode.cpp",
+  "output": "/home/ubuntu/桌面/test/build/CMakeFiles/cgraph_runtime.dir/2027rm_ws/include/CGraph/src/DomainCtrl/Ann/DAnnNode.cpp.o"
+},
+{
+  "directory": "/home/ubuntu/桌面/test/build",
+  "command": "/usr/bin/c++ -I/home/ubuntu/桌面/test/2027rm_ws/include/CGraph/src -I/home/ubuntu/桌面/test/2027rm_ws/include -I/usr/include/opencv4 -g -std=gnu++11 -o CMakeFiles/cgraph_runtime.dir/2027rm_ws/include/CGraph/src/GraphCtrl/GraphAspect/GAspect.cpp.o -c /home/ubuntu/桌面/test/2027rm_ws/include/CGraph/src/GraphCtrl/GraphAspect/GAspect.cpp",
+  "file": "/home/ubuntu/桌面/test/2027rm_ws/include/CGraph/src/GraphCtrl/GraphAspect/GAspect.cpp",
+  "output": "/home/ubuntu/桌面/test/build/CMakeFiles/cgraph_runtime.dir/2027rm_ws/include/CGraph/src/GraphCtrl/GraphAspect/GAspect.cpp.o"
+},
+{
+  "directory": "/home/ubuntu/桌面/test/build",
+  "command": "/usr/bin/c++ -I/home/ubuntu/桌面/test/2027rm_ws/include/CGraph/src -I/home/ubuntu/桌面/test/2027rm_ws/include -I/usr/include/opencv4 -g -std=gnu++11 -o CMakeFiles/cgraph_runtime.dir/2027rm_ws/include/CGraph/src/GraphCtrl/GraphAspect/GAspectManager.cpp.o -c /home/ubuntu/桌面/test/2027rm_ws/include/CGraph/src/GraphCtrl/GraphAspect/GAspectManager.cpp",
+  "file": "/home/ubuntu/桌面/test/2027rm_ws/include/CGraph/src/GraphCtrl/GraphAspect/GAspectManager.cpp",
+  "output": "/home/ubuntu/桌面/test/build/CMakeFiles/cgraph_runtime.dir/2027rm_ws/include/CGraph/src/GraphCtrl/GraphAspect/GAspectManager.cpp.o"
+},
+{
+  "directory": "/home/ubuntu/桌面/test/build",
+  "command": "/usr/bin/c++ -I/home/ubuntu/桌面/test/2027rm_ws/include/CGraph/src -I/home/ubuntu/桌面/test/2027rm_ws/include -I/usr/include/opencv4 -g -std=gnu++11 -o CMakeFiles/cgraph_runtime.dir/2027rm_ws/include/CGraph/src/GraphCtrl/GraphAspect/GAspectObject.cpp.o -c /home/ubuntu/桌面/test/2027rm_ws/include/CGraph/src/GraphCtrl/GraphAspect/GAspectObject.cpp",
+  "file": "/home/ubuntu/桌面/test/2027rm_ws/include/CGraph/src/GraphCtrl/GraphAspect/GAspectObject.cpp",
+  "output": "/home/ubuntu/桌面/test/build/CMakeFiles/cgraph_runtime.dir/2027rm_ws/include/CGraph/src/GraphCtrl/GraphAspect/GAspectObject.cpp.o"
+},
+{
+  "directory": "/home/ubuntu/桌面/test/build",
+  "command": "/usr/bin/c++ -I/home/ubuntu/桌面/test/2027rm_ws/include/CGraph/src -I/home/ubuntu/桌面/test/2027rm_ws/include -I/usr/include/opencv4 -g -std=gnu++11 -o CMakeFiles/cgraph_runtime.dir/2027rm_ws/include/CGraph/src/GraphCtrl/GraphDaemon/GDaemon.cpp.o -c /home/ubuntu/桌面/test/2027rm_ws/include/CGraph/src/GraphCtrl/GraphDaemon/GDaemon.cpp",
+  "file": "/home/ubuntu/桌面/test/2027rm_ws/include/CGraph/src/GraphCtrl/GraphDaemon/GDaemon.cpp",
+  "output": "/home/ubuntu/桌面/test/build/CMakeFiles/cgraph_runtime.dir/2027rm_ws/include/CGraph/src/GraphCtrl/GraphDaemon/GDaemon.cpp.o"
+},
+{
+  "directory": "/home/ubuntu/桌面/test/build",
+  "command": "/usr/bin/c++ -I/home/ubuntu/桌面/test/2027rm_ws/include/CGraph/src -I/home/ubuntu/桌面/test/2027rm_ws/include -I/usr/include/opencv4 -g -std=gnu++11 -o CMakeFiles/cgraph_runtime.dir/2027rm_ws/include/CGraph/src/GraphCtrl/GraphDaemon/GDaemonManager.cpp.o -c /home/ubuntu/桌面/test/2027rm_ws/include/CGraph/src/GraphCtrl/GraphDaemon/GDaemonManager.cpp",
+  "file": "/home/ubuntu/桌面/test/2027rm_ws/include/CGraph/src/GraphCtrl/GraphDaemon/GDaemonManager.cpp",
+  "output": "/home/ubuntu/桌面/test/build/CMakeFiles/cgraph_runtime.dir/2027rm_ws/include/CGraph/src/GraphCtrl/GraphDaemon/GDaemonManager.cpp.o"
+},
+{
+  "directory": "/home/ubuntu/桌面/test/build",
+  "command": "/usr/bin/c++ -I/home/ubuntu/桌面/test/2027rm_ws/include/CGraph/src -I/home/ubuntu/桌面/test/2027rm_ws/include -I/usr/include/opencv4 -g -std=gnu++11 -o CMakeFiles/cgraph_runtime.dir/2027rm_ws/include/CGraph/src/GraphCtrl/GraphElement/GAdapter/GFence/GFence.cpp.o -c /home/ubuntu/桌面/test/2027rm_ws/include/CGraph/src/GraphCtrl/GraphElement/GAdapter/GFence/GFence.cpp",
+  "file": "/home/ubuntu/桌面/test/2027rm_ws/include/CGraph/src/GraphCtrl/GraphElement/GAdapter/GFence/GFence.cpp",
+  "output": "/home/ubuntu/桌面/test/build/CMakeFiles/cgraph_runtime.dir/2027rm_ws/include/CGraph/src/GraphCtrl/GraphElement/GAdapter/GFence/GFence.cpp.o"
+},
+{
+  "directory": "/home/ubuntu/桌面/test/build",
+  "command": "/usr/bin/c++ -I/home/ubuntu/桌面/test/2027rm_ws/include/CGraph/src -I/home/ubuntu/桌面/test/2027rm_ws/include -I/usr/include/opencv4 -g -std=gnu++11 -o CMakeFiles/cgraph_runtime.dir/2027rm_ws/include/CGraph/src/GraphCtrl/GraphElement/GAdapter/GFunction/GFunction.cpp.o -c /home/ubuntu/桌面/test/2027rm_ws/include/CGraph/src/GraphCtrl/GraphElement/GAdapter/GFunction/GFunction.cpp",
+  "file": "/home/ubuntu/桌面/test/2027rm_ws/include/CGraph/src/GraphCtrl/GraphElement/GAdapter/GFunction/GFunction.cpp",
+  "output": "/home/ubuntu/桌面/test/build/CMakeFiles/cgraph_runtime.dir/2027rm_ws/include/CGraph/src/GraphCtrl/GraphElement/GAdapter/GFunction/GFunction.cpp.o"
+},
+{
+  "directory": "/home/ubuntu/桌面/test/build",
+  "command": "/usr/bin/c++ -I/home/ubuntu/桌面/test/2027rm_ws/include/CGraph/src -I/home/ubuntu/桌面/test/2027rm_ws/include -I/usr/include/opencv4 -g -std=gnu++11 -o CMakeFiles/cgraph_runtime.dir/2027rm_ws/include/CGraph/src/GraphCtrl/GraphElement/GElement.cpp.o -c /home/ubuntu/桌面/test/2027rm_ws/include/CGraph/src/GraphCtrl/GraphElement/GElement.cpp",
+  "file": "/home/ubuntu/桌面/test/2027rm_ws/include/CGraph/src/GraphCtrl/GraphElement/GElement.cpp",
+  "output": "/home/ubuntu/桌面/test/build/CMakeFiles/cgraph_runtime.dir/2027rm_ws/include/CGraph/src/GraphCtrl/GraphElement/GElement.cpp.o"
+},
+{
+  "directory": "/home/ubuntu/桌面/test/build",
+  "command": "/usr/bin/c++ -I/home/ubuntu/桌面/test/2027rm_ws/include/CGraph/src -I/home/ubuntu/桌面/test/2027rm_ws/include -I/usr/include/opencv4 -g -std=gnu++11 -o CMakeFiles/cgraph_runtime.dir/2027rm_ws/include/CGraph/src/GraphCtrl/GraphElement/GElementManager.cpp.o -c /home/ubuntu/桌面/test/2027rm_ws/include/CGraph/src/GraphCtrl/GraphElement/GElementManager.cpp",
+  "file": "/home/ubuntu/桌面/test/2027rm_ws/include/CGraph/src/GraphCtrl/GraphElement/GElementManager.cpp",
+  "output": "/home/ubuntu/桌面/test/build/CMakeFiles/cgraph_runtime.dir/2027rm_ws/include/CGraph/src/GraphCtrl/GraphElement/GElementManager.cpp.o"
+},
+{
+  "directory": "/home/ubuntu/桌面/test/build",
+  "command": "/usr/bin/c++ -I/home/ubuntu/桌面/test/2027rm_ws/include/CGraph/src -I/home/ubuntu/桌面/test/2027rm_ws/include -I/usr/include/opencv4 -g -std=gnu++11 -o CMakeFiles/cgraph_runtime.dir/2027rm_ws/include/CGraph/src/GraphCtrl/GraphElement/GElementRepository.cpp.o -c /home/ubuntu/桌面/test/2027rm_ws/include/CGraph/src/GraphCtrl/GraphElement/GElementRepository.cpp",
+  "file": "/home/ubuntu/桌面/test/2027rm_ws/include/CGraph/src/GraphCtrl/GraphElement/GElementRepository.cpp",
+  "output": "/home/ubuntu/桌面/test/build/CMakeFiles/cgraph_runtime.dir/2027rm_ws/include/CGraph/src/GraphCtrl/GraphElement/GElementRepository.cpp.o"
+},
+{
+  "directory": "/home/ubuntu/桌面/test/build",
+  "command": "/usr/bin/c++ -I/home/ubuntu/桌面/test/2027rm_ws/include/CGraph/src -I/home/ubuntu/桌面/test/2027rm_ws/include -I/usr/include/opencv4 -g -std=gnu++11 -o CMakeFiles/cgraph_runtime.dir/2027rm_ws/include/CGraph/src/GraphCtrl/GraphElement/GGroup/GCluster/GCluster.cpp.o -c /home/ubuntu/桌面/test/2027rm_ws/include/CGraph/src/GraphCtrl/GraphElement/GGroup/GCluster/GCluster.cpp",
+  "file": "/home/ubuntu/桌面/test/2027rm_ws/include/CGraph/src/GraphCtrl/GraphElement/GGroup/GCluster/GCluster.cpp",
+  "output": "/home/ubuntu/桌面/test/build/CMakeFiles/cgraph_runtime.dir/2027rm_ws/include/CGraph/src/GraphCtrl/GraphElement/GGroup/GCluster/GCluster.cpp.o"
+},
+{
+  "directory": "/home/ubuntu/桌面/test/build",
+  "command": "/usr/bin/c++ -I/home/ubuntu/桌面/test/2027rm_ws/include/CGraph/src -I/home/ubuntu/桌面/test/2027rm_ws/include -I/usr/include/opencv4 -g -std=gnu++11 -o CMakeFiles/cgraph_runtime.dir/2027rm_ws/include/CGraph/src/GraphCtrl/GraphElement/GGroup/GCondition/GCondition.cpp.o -c /home/ubuntu/桌面/test/2027rm_ws/include/CGraph/src/GraphCtrl/GraphElement/GGroup/GCondition/GCondition.cpp",
+  "file": "/home/ubuntu/桌面/test/2027rm_ws/include/CGraph/src/GraphCtrl/GraphElement/GGroup/GCondition/GCondition.cpp",
+  "output": "/home/ubuntu/桌面/test/build/CMakeFiles/cgraph_runtime.dir/2027rm_ws/include/CGraph/src/GraphCtrl/GraphElement/GGroup/GCondition/GCondition.cpp.o"
+},
+{
+  "directory": "/home/ubuntu/桌面/test/build",
+  "command": "/usr/bin/c++ -I/home/ubuntu/桌面/test/2027rm_ws/include/CGraph/src -I/home/ubuntu/桌面/test/2027rm_ws/include -I/usr/include/opencv4 -g -std=gnu++11 -o CMakeFiles/cgraph_runtime.dir/2027rm_ws/include/CGraph/src/GraphCtrl/GraphElement/GGroup/GGroup.cpp.o -c /home/ubuntu/桌面/test/2027rm_ws/include/CGraph/src/GraphCtrl/GraphElement/GGroup/GGroup.cpp",
+  "file": "/home/ubuntu/桌面/test/2027rm_ws/include/CGraph/src/GraphCtrl/GraphElement/GGroup/GGroup.cpp",
+  "output": "/home/ubuntu/桌面/test/build/CMakeFiles/cgraph_runtime.dir/2027rm_ws/include/CGraph/src/GraphCtrl/GraphElement/GGroup/GGroup.cpp.o"
+},
+{
+  "directory": "/home/ubuntu/桌面/test/build",
+  "command": "/usr/bin/c++ -I/home/ubuntu/桌面/test/2027rm_ws/include/CGraph/src -I/home/ubuntu/桌面/test/2027rm_ws/include -I/usr/include/opencv4 -g -std=gnu++11 -o CMakeFiles/cgraph_runtime.dir/2027rm_ws/include/CGraph/src/GraphCtrl/GraphElement/GGroup/GMutable/GMutable.cpp.o -c /home/ubuntu/桌面/test/2027rm_ws/include/CGraph/src/GraphCtrl/GraphElement/GGroup/GMutable/GMutable.cpp",
+  "file": "/home/ubuntu/桌面/test/2027rm_ws/include/CGraph/src/GraphCtrl/GraphElement/GGroup/GMutable/GMutable.cpp",
+  "output": "/home/ubuntu/桌面/test/build/CMakeFiles/cgraph_runtime.dir/2027rm_ws/include/CGraph/src/GraphCtrl/GraphElement/GGroup/GMutable/GMutable.cpp.o"
+},
+{
+  "directory": "/home/ubuntu/桌面/test/build",
+  "command": "/usr/bin/c++ -I/home/ubuntu/桌面/test/2027rm_ws/include/CGraph/src -I/home/ubuntu/桌面/test/2027rm_ws/include -I/usr/include/opencv4 -g -std=gnu++11 -o CMakeFiles/cgraph_runtime.dir/2027rm_ws/include/CGraph/src/GraphCtrl/GraphElement/GGroup/GRegion/GRegion.cpp.o -c /home/ubuntu/桌面/test/2027rm_ws/include/CGraph/src/GraphCtrl/GraphElement/GGroup/GRegion/GRegion.cpp",
+  "file": "/home/ubuntu/桌面/test/2027rm_ws/include/CGraph/src/GraphCtrl/GraphElement/GGroup/GRegion/GRegion.cpp",
+  "output": "/home/ubuntu/桌面/test/build/CMakeFiles/cgraph_runtime.dir/2027rm_ws/include/CGraph/src/GraphCtrl/GraphElement/GGroup/GRegion/GRegion.cpp.o"
+},
+{
+  "directory": "/home/ubuntu/桌面/test/build",
+  "command": "/usr/bin/c++ -I/home/ubuntu/桌面/test/2027rm_ws/include/CGraph/src -I/home/ubuntu/桌面/test/2027rm_ws/include -I/usr/include/opencv4 -g -std=gnu++11 -o CMakeFiles/cgraph_runtime.dir/2027rm_ws/include/CGraph/src/GraphCtrl/GraphElement/GNode/GNode.cpp.o -c /home/ubuntu/桌面/test/2027rm_ws/include/CGraph/src/GraphCtrl/GraphElement/GNode/GNode.cpp",
+  "file": "/home/ubuntu/桌面/test/2027rm_ws/include/CGraph/src/GraphCtrl/GraphElement/GNode/GNode.cpp",
+  "output": "/home/ubuntu/桌面/test/build/CMakeFiles/cgraph_runtime.dir/2027rm_ws/include/CGraph/src/GraphCtrl/GraphElement/GNode/GNode.cpp.o"
+},
+{
+  "directory": "/home/ubuntu/桌面/test/build",
+  "command": "/usr/bin/c++ -I/home/ubuntu/桌面/test/2027rm_ws/include/CGraph/src -I/home/ubuntu/桌面/test/2027rm_ws/include -I/usr/include/opencv4 -g -std=gnu++11 -o CMakeFiles/cgraph_runtime.dir/2027rm_ws/include/CGraph/src/GraphCtrl/GraphElement/_GEngine/GDynamicEngine/GDynamicEngine.cpp.o -c /home/ubuntu/桌面/test/2027rm_ws/include/CGraph/src/GraphCtrl/GraphElement/_GEngine/GDynamicEngine/GDynamicEngine.cpp",
+  "file": "/home/ubuntu/桌面/test/2027rm_ws/include/CGraph/src/GraphCtrl/GraphElement/_GEngine/GDynamicEngine/GDynamicEngine.cpp",
+  "output": "/home/ubuntu/桌面/test/build/CMakeFiles/cgraph_runtime.dir/2027rm_ws/include/CGraph/src/GraphCtrl/GraphElement/_GEngine/GDynamicEngine/GDynamicEngine.cpp.o"
+},
+{
+  "directory": "/home/ubuntu/桌面/test/build",
+  "command": "/usr/bin/c++ -I/home/ubuntu/桌面/test/2027rm_ws/include/CGraph/src -I/home/ubuntu/桌面/test/2027rm_ws/include -I/usr/include/opencv4 -g -std=gnu++11 -o CMakeFiles/cgraph_runtime.dir/2027rm_ws/include/CGraph/src/GraphCtrl/GraphElement/_GEngine/GStaticEngine/GStaticEngine.cpp.o -c /home/ubuntu/桌面/test/2027rm_ws/include/CGraph/src/GraphCtrl/GraphElement/_GEngine/GStaticEngine/GStaticEngine.cpp",
+  "file": "/home/ubuntu/桌面/test/2027rm_ws/include/CGraph/src/GraphCtrl/GraphElement/_GEngine/GStaticEngine/GStaticEngine.cpp",
+  "output": "/home/ubuntu/桌面/test/build/CMakeFiles/cgraph_runtime.dir/2027rm_ws/include/CGraph/src/GraphCtrl/GraphElement/_GEngine/GStaticEngine/GStaticEngine.cpp.o"
+},
+{
+  "directory": "/home/ubuntu/桌面/test/build",
+  "command": "/usr/bin/c++ -I/home/ubuntu/桌面/test/2027rm_ws/include/CGraph/src -I/home/ubuntu/桌面/test/2027rm_ws/include -I/usr/include/opencv4 -g -std=gnu++11 -o CMakeFiles/cgraph_runtime.dir/2027rm_ws/include/CGraph/src/GraphCtrl/GraphElement/_GEngine/GTopoEngine/GTopoEngine.cpp.o -c /home/ubuntu/桌面/test/2027rm_ws/include/CGraph/src/GraphCtrl/GraphElement/_GEngine/GTopoEngine/GTopoEngine.cpp",
+  "file": "/home/ubuntu/桌面/test/2027rm_ws/include/CGraph/src/GraphCtrl/GraphElement/_GEngine/GTopoEngine/GTopoEngine.cpp",
+  "output": "/home/ubuntu/桌面/test/build/CMakeFiles/cgraph_runtime.dir/2027rm_ws/include/CGraph/src/GraphCtrl/GraphElement/_GEngine/GTopoEngine/GTopoEngine.cpp.o"
+},
+{
+  "directory": "/home/ubuntu/桌面/test/build",
+  "command": "/usr/bin/c++ -I/home/ubuntu/桌面/test/2027rm_ws/include/CGraph/src -I/home/ubuntu/桌面/test/2027rm_ws/include -I/usr/include/opencv4 -g -std=gnu++11 -o CMakeFiles/cgraph_runtime.dir/2027rm_ws/include/CGraph/src/GraphCtrl/GraphEvent/GEvent.cpp.o -c /home/ubuntu/桌面/test/2027rm_ws/include/CGraph/src/GraphCtrl/GraphEvent/GEvent.cpp",
+  "file": "/home/ubuntu/桌面/test/2027rm_ws/include/CGraph/src/GraphCtrl/GraphEvent/GEvent.cpp",
+  "output": "/home/ubuntu/桌面/test/build/CMakeFiles/cgraph_runtime.dir/2027rm_ws/include/CGraph/src/GraphCtrl/GraphEvent/GEvent.cpp.o"
+},
+{
+  "directory": "/home/ubuntu/桌面/test/build",
+  "command": "/usr/bin/c++ -I/home/ubuntu/桌面/test/2027rm_ws/include/CGraph/src -I/home/ubuntu/桌面/test/2027rm_ws/include -I/usr/include/opencv4 -g -std=gnu++11 -o CMakeFiles/cgraph_runtime.dir/2027rm_ws/include/CGraph/src/GraphCtrl/GraphEvent/GEventManager.cpp.o -c /home/ubuntu/桌面/test/2027rm_ws/include/CGraph/src/GraphCtrl/GraphEvent/GEventManager.cpp",
+  "file": "/home/ubuntu/桌面/test/2027rm_ws/include/CGraph/src/GraphCtrl/GraphEvent/GEventManager.cpp",
+  "output": "/home/ubuntu/桌面/test/build/CMakeFiles/cgraph_runtime.dir/2027rm_ws/include/CGraph/src/GraphCtrl/GraphEvent/GEventManager.cpp.o"
+},
+{
+  "directory": "/home/ubuntu/桌面/test/build",
+  "command": "/usr/bin/c++ -I/home/ubuntu/桌面/test/2027rm_ws/include/CGraph/src -I/home/ubuntu/桌面/test/2027rm_ws/include -I/usr/include/opencv4 -g -std=gnu++11 -o CMakeFiles/cgraph_runtime.dir/2027rm_ws/include/CGraph/src/GraphCtrl/GraphMessage/GMessageManagerSingleton.cpp.o -c /home/ubuntu/桌面/test/2027rm_ws/include/CGraph/src/GraphCtrl/GraphMessage/GMessageManagerSingleton.cpp",
+  "file": "/home/ubuntu/桌面/test/2027rm_ws/include/CGraph/src/GraphCtrl/GraphMessage/GMessageManagerSingleton.cpp",
+  "output": "/home/ubuntu/桌面/test/build/CMakeFiles/cgraph_runtime.dir/2027rm_ws/include/CGraph/src/GraphCtrl/GraphMessage/GMessageManagerSingleton.cpp.o"
+},
+{
+  "directory": "/home/ubuntu/桌面/test/build",
+  "command": "/usr/bin/c++ -I/home/ubuntu/桌面/test/2027rm_ws/include/CGraph/src -I/home/ubuntu/桌面/test/2027rm_ws/include -I/usr/include/opencv4 -g -std=gnu++11 -o CMakeFiles/cgraph_runtime.dir/2027rm_ws/include/CGraph/src/GraphCtrl/GraphParam/GParam.cpp.o -c /home/ubuntu/桌面/test/2027rm_ws/include/CGraph/src/GraphCtrl/GraphParam/GParam.cpp",
+  "file": "/home/ubuntu/桌面/test/2027rm_ws/include/CGraph/src/GraphCtrl/GraphParam/GParam.cpp",
+  "output": "/home/ubuntu/桌面/test/build/CMakeFiles/cgraph_runtime.dir/2027rm_ws/include/CGraph/src/GraphCtrl/GraphParam/GParam.cpp.o"
+},
+{
+  "directory": "/home/ubuntu/桌面/test/build",
+  "command": "/usr/bin/c++ -I/home/ubuntu/桌面/test/2027rm_ws/include/CGraph/src -I/home/ubuntu/桌面/test/2027rm_ws/include -I/usr/include/opencv4 -g -std=gnu++11 -o CMakeFiles/cgraph_runtime.dir/2027rm_ws/include/CGraph/src/GraphCtrl/GraphParam/GParamManager.cpp.o -c /home/ubuntu/桌面/test/2027rm_ws/include/CGraph/src/GraphCtrl/GraphParam/GParamManager.cpp",
+  "file": "/home/ubuntu/桌面/test/2027rm_ws/include/CGraph/src/GraphCtrl/GraphParam/GParamManager.cpp",
+  "output": "/home/ubuntu/桌面/test/build/CMakeFiles/cgraph_runtime.dir/2027rm_ws/include/CGraph/src/GraphCtrl/GraphParam/GParamManager.cpp.o"
+},
+{
+  "directory": "/home/ubuntu/桌面/test/build",
+  "command": "/usr/bin/c++ -I/home/ubuntu/桌面/test/2027rm_ws/include/CGraph/src -I/home/ubuntu/桌面/test/2027rm_ws/include -I/usr/include/opencv4 -g -std=gnu++11 -o CMakeFiles/cgraph_runtime.dir/2027rm_ws/include/CGraph/src/GraphCtrl/GraphPipeline/GPipeline.cpp.o -c /home/ubuntu/桌面/test/2027rm_ws/include/CGraph/src/GraphCtrl/GraphPipeline/GPipeline.cpp",
+  "file": "/home/ubuntu/桌面/test/2027rm_ws/include/CGraph/src/GraphCtrl/GraphPipeline/GPipeline.cpp",
+  "output": "/home/ubuntu/桌面/test/build/CMakeFiles/cgraph_runtime.dir/2027rm_ws/include/CGraph/src/GraphCtrl/GraphPipeline/GPipeline.cpp.o"
+},
+{
+  "directory": "/home/ubuntu/桌面/test/build",
+  "command": "/usr/bin/c++ -I/home/ubuntu/桌面/test/2027rm_ws/include/CGraph/src -I/home/ubuntu/桌面/test/2027rm_ws/include -I/usr/include/opencv4 -g -std=gnu++11 -o CMakeFiles/cgraph_runtime.dir/2027rm_ws/include/CGraph/src/GraphCtrl/GraphPipeline/GPipelineFactory.cpp.o -c /home/ubuntu/桌面/test/2027rm_ws/include/CGraph/src/GraphCtrl/GraphPipeline/GPipelineFactory.cpp",
+  "file": "/home/ubuntu/桌面/test/2027rm_ws/include/CGraph/src/GraphCtrl/GraphPipeline/GPipelineFactory.cpp",
+  "output": "/home/ubuntu/桌面/test/build/CMakeFiles/cgraph_runtime.dir/2027rm_ws/include/CGraph/src/GraphCtrl/GraphPipeline/GPipelineFactory.cpp.o"
+},
+{
+  "directory": "/home/ubuntu/桌面/test/build",
+  "command": "/usr/bin/c++ -I/home/ubuntu/桌面/test/2027rm_ws/include/CGraph/src -I/home/ubuntu/桌面/test/2027rm_ws/include -I/usr/include/opencv4 -g -std=gnu++11 -o CMakeFiles/cgraph_runtime.dir/2027rm_ws/include/CGraph/src/GraphCtrl/GraphPipeline/GPipelineManager.cpp.o -c /home/ubuntu/桌面/test/2027rm_ws/include/CGraph/src/GraphCtrl/GraphPipeline/GPipelineManager.cpp",
+  "file": "/home/ubuntu/桌面/test/2027rm_ws/include/CGraph/src/GraphCtrl/GraphPipeline/GPipelineManager.cpp",
+  "output": "/home/ubuntu/桌面/test/build/CMakeFiles/cgraph_runtime.dir/2027rm_ws/include/CGraph/src/GraphCtrl/GraphPipeline/GPipelineManager.cpp.o"
+},
+{
+  "directory": "/home/ubuntu/桌面/test/build",
+  "command": "/usr/bin/c++ -I/home/ubuntu/桌面/test/2027rm_ws/include/CGraph/src -I/home/ubuntu/桌面/test/2027rm_ws/include -I/usr/include/opencv4 -g -std=gnu++11 -o CMakeFiles/cgraph_runtime.dir/2027rm_ws/include/CGraph/src/GraphCtrl/GraphPipeline/_GPerf/GPerf.cpp.o -c /home/ubuntu/桌面/test/2027rm_ws/include/CGraph/src/GraphCtrl/GraphPipeline/_GPerf/GPerf.cpp",
+  "file": "/home/ubuntu/桌面/test/2027rm_ws/include/CGraph/src/GraphCtrl/GraphPipeline/_GPerf/GPerf.cpp",
+  "output": "/home/ubuntu/桌面/test/build/CMakeFiles/cgraph_runtime.dir/2027rm_ws/include/CGraph/src/GraphCtrl/GraphPipeline/_GPerf/GPerf.cpp.o"
+},
+{
+  "directory": "/home/ubuntu/桌面/test/build",
+  "command": "/usr/bin/c++ -I/home/ubuntu/桌面/test/2027rm_ws/include/CGraph/src -I/home/ubuntu/桌面/test/2027rm_ws/include -I/usr/include/opencv4 -g -std=gnu++11 -o CMakeFiles/cgraph_runtime.dir/2027rm_ws/include/CGraph/src/GraphCtrl/GraphPipeline/_GSchedule/GSchedule.cpp.o -c /home/ubuntu/桌面/test/2027rm_ws/include/CGraph/src/GraphCtrl/GraphPipeline/_GSchedule/GSchedule.cpp",
+  "file": "/home/ubuntu/桌面/test/2027rm_ws/include/CGraph/src/GraphCtrl/GraphPipeline/_GSchedule/GSchedule.cpp",
+  "output": "/home/ubuntu/桌面/test/build/CMakeFiles/cgraph_runtime.dir/2027rm_ws/include/CGraph/src/GraphCtrl/GraphPipeline/_GSchedule/GSchedule.cpp.o"
+},
+{
+  "directory": "/home/ubuntu/桌面/test/build",
+  "command": "/usr/bin/c++ -I/home/ubuntu/桌面/test/2027rm_ws/include/CGraph/src -I/home/ubuntu/桌面/test/2027rm_ws/include -I/usr/include/opencv4 -g -std=gnu++11 -o CMakeFiles/cgraph_runtime.dir/2027rm_ws/include/CGraph/src/GraphCtrl/GraphPipeline/_GStroage/GStorage.cpp.o -c /home/ubuntu/桌面/test/2027rm_ws/include/CGraph/src/GraphCtrl/GraphPipeline/_GStroage/GStorage.cpp",
+  "file": "/home/ubuntu/桌面/test/2027rm_ws/include/CGraph/src/GraphCtrl/GraphPipeline/_GStroage/GStorage.cpp",
+  "output": "/home/ubuntu/桌面/test/build/CMakeFiles/cgraph_runtime.dir/2027rm_ws/include/CGraph/src/GraphCtrl/GraphPipeline/_GStroage/GStorage.cpp.o"
+},
+{
+  "directory": "/home/ubuntu/桌面/test/build",
+  "command": "/usr/bin/c++ -I/home/ubuntu/桌面/test/2027rm_ws/include/CGraph/src -I/home/ubuntu/桌面/test/2027rm_ws/include -I/usr/include/opencv4 -g -std=gnu++11 -o CMakeFiles/cgraph_runtime.dir/2027rm_ws/include/CGraph/src/GraphCtrl/GraphPipeline/_GStroage/GStorageFactory.cpp.o -c /home/ubuntu/桌面/test/2027rm_ws/include/CGraph/src/GraphCtrl/GraphPipeline/_GStroage/GStorageFactory.cpp",
+  "file": "/home/ubuntu/桌面/test/2027rm_ws/include/CGraph/src/GraphCtrl/GraphPipeline/_GStroage/GStorageFactory.cpp",
+  "output": "/home/ubuntu/桌面/test/build/CMakeFiles/cgraph_runtime.dir/2027rm_ws/include/CGraph/src/GraphCtrl/GraphPipeline/_GStroage/GStorageFactory.cpp.o"
+},
+{
+  "directory": "/home/ubuntu/桌面/test/build",
+  "command": "/usr/bin/c++ -I/home/ubuntu/桌面/test/2027rm_ws/include/CGraph/src -I/home/ubuntu/桌面/test/2027rm_ws/include -I/usr/include/opencv4 -g -std=gnu++11 -o CMakeFiles/cgraph_runtime.dir/2027rm_ws/include/CGraph/src/GraphCtrl/GraphStage/GStage.cpp.o -c /home/ubuntu/桌面/test/2027rm_ws/include/CGraph/src/GraphCtrl/GraphStage/GStage.cpp",
+  "file": "/home/ubuntu/桌面/test/2027rm_ws/include/CGraph/src/GraphCtrl/GraphStage/GStage.cpp",
+  "output": "/home/ubuntu/桌面/test/build/CMakeFiles/cgraph_runtime.dir/2027rm_ws/include/CGraph/src/GraphCtrl/GraphStage/GStage.cpp.o"
+},
+{
+  "directory": "/home/ubuntu/桌面/test/build",
+  "command": "/usr/bin/c++ -I/home/ubuntu/桌面/test/2027rm_ws/include/CGraph/src -I/home/ubuntu/桌面/test/2027rm_ws/include -I/usr/include/opencv4 -g -std=gnu++11 -o CMakeFiles/cgraph_runtime.dir/2027rm_ws/include/CGraph/src/UtilsCtrl/ThreadPool/UThreadPool.cpp.o -c /home/ubuntu/桌面/test/2027rm_ws/include/CGraph/src/UtilsCtrl/ThreadPool/UThreadPool.cpp",
+  "file": "/home/ubuntu/桌面/test/2027rm_ws/include/CGraph/src/UtilsCtrl/ThreadPool/UThreadPool.cpp",
+  "output": "/home/ubuntu/桌面/test/build/CMakeFiles/cgraph_runtime.dir/2027rm_ws/include/CGraph/src/UtilsCtrl/ThreadPool/UThreadPool.cpp.o"
+},
+{
+  "directory": "/home/ubuntu/桌面/test/build",
+  "command": "/usr/bin/c++ -DCAMERA_CONFIG_PATH=\\\"/home/ubuntu/桌面/test/2027rm_ws/config/config.yaml\\\" -I/home/ubuntu/桌面/test/2027rm_ws/include -isystem /usr/include/opencv4 -g -std=gnu++11 -o CMakeFiles/camera_app.dir/2027rm_ws/src/camera.cpp.o -c /home/ubuntu/桌面/test/2027rm_ws/src/camera.cpp",
+  "file": "/home/ubuntu/桌面/test/2027rm_ws/src/camera.cpp",
+  "output": "/home/ubuntu/桌面/test/build/CMakeFiles/camera_app.dir/2027rm_ws/src/camera.cpp.o"
+},
+{
+  "directory": "/home/ubuntu/桌面/test/build",
+  "command": "/usr/bin/c++ -I/home/ubuntu/桌面/test/2027rm_ws/include -isystem /usr/include/opencv4 -g -std=gnu++11 -o CMakeFiles/detector_app.dir/2027rm_ws/src/detector.cpp.o -c /home/ubuntu/桌面/test/2027rm_ws/src/detector.cpp",
+  "file": "/home/ubuntu/桌面/test/2027rm_ws/src/detector.cpp",
+  "output": "/home/ubuntu/桌面/test/build/CMakeFiles/detector_app.dir/2027rm_ws/src/detector.cpp.o"
+},
+{
+  "directory": "/home/ubuntu/桌面/test/build",
+  "command": "/usr/bin/c++ -DCAMERA_CONFIG_PATH=\\\"/home/ubuntu/桌面/test/2027rm_ws/config/config.yaml\\\" -DCAMERA_INFO_PATH=\\\"/home/ubuntu/桌面/test/2027rm_ws/config/camera_info.yaml\\\" -DCAMERA_NODE_LIBRARY -DDETECTOR_NODE_LIBRARY -I/home/ubuntu/桌面/test/2027rm_ws/include -I/home/ubuntu/桌面/test/2027rm_ws/include/CGraph/src -I/home/ubuntu/桌面/test/2027rm_ws/src -isystem /usr/include/opencv4 -g -std=gnu++11 -o CMakeFiles/cgraph_camera_detector.dir/2027rm_ws/src/camera.cpp.o -c /home/ubuntu/桌面/test/2027rm_ws/src/camera.cpp",
+  "file": "/home/ubuntu/桌面/test/2027rm_ws/src/camera.cpp",
+  "output": "/home/ubuntu/桌面/test/build/CMakeFiles/cgraph_camera_detector.dir/2027rm_ws/src/camera.cpp.o"
+},
+{
+  "directory": "/home/ubuntu/桌面/test/build",
+  "command": "/usr/bin/c++ -DCAMERA_CONFIG_PATH=\\\"/home/ubuntu/桌面/test/2027rm_ws/config/config.yaml\\\" -DCAMERA_INFO_PATH=\\\"/home/ubuntu/桌面/test/2027rm_ws/config/camera_info.yaml\\\" -DCAMERA_NODE_LIBRARY -DDETECTOR_NODE_LIBRARY -I/home/ubuntu/桌面/test/2027rm_ws/include -I/home/ubuntu/桌面/test/2027rm_ws/include/CGraph/src -I/home/ubuntu/桌面/test/2027rm_ws/src -isystem /usr/include/opencv4 -g -std=gnu++11 -o CMakeFiles/cgraph_camera_detector.dir/2027rm_ws/src/detector.cpp.o -c /home/ubuntu/桌面/test/2027rm_ws/src/detector.cpp",
+  "file": "/home/ubuntu/桌面/test/2027rm_ws/src/detector.cpp",
+  "output": "/home/ubuntu/桌面/test/build/CMakeFiles/cgraph_camera_detector.dir/2027rm_ws/src/detector.cpp.o"
+},
+{
+  "directory": "/home/ubuntu/桌面/test/build",
+  "command": "/usr/bin/c++ -DCAMERA_CONFIG_PATH=\\\"/home/ubuntu/桌面/test/2027rm_ws/config/config.yaml\\\" -DCAMERA_INFO_PATH=\\\"/home/ubuntu/桌面/test/2027rm_ws/config/camera_info.yaml\\\" -DCAMERA_NODE_LIBRARY -DDETECTOR_NODE_LIBRARY -I/home/ubuntu/桌面/test/2027rm_ws/include -I/home/ubuntu/桌面/test/2027rm_ws/include/CGraph/src -I/home/ubuntu/桌面/test/2027rm_ws/src -isystem /usr/include/opencv4 -g -std=gnu++11 -o CMakeFiles/cgraph_camera_detector.dir/2027rm_ws/src/cgraph_camera_detector.cpp.o -c /home/ubuntu/桌面/test/2027rm_ws/src/cgraph_camera_detector.cpp",
+  "file": "/home/ubuntu/桌面/test/2027rm_ws/src/cgraph_camera_detector.cpp",
+  "output": "/home/ubuntu/桌面/test/build/CMakeFiles/cgraph_camera_detector.dir/2027rm_ws/src/cgraph_camera_detector.cpp.o"
+}
+]

@@ -1,0 +1,486 @@
+{
+	"artifacts" : 
+	[
+		{
+			"path" : "CMakeFiles/cgraph_runtime.dir/./2027rm_ws/include/CGraph/src/DomainCtrl/Ann/DAnnNode.cpp.o"
+		},
+		{
+			"path" : "CMakeFiles/cgraph_runtime.dir/./2027rm_ws/include/CGraph/src/GraphCtrl/GraphAspect/GAspect.cpp.o"
+		},
+		{
+			"path" : "CMakeFiles/cgraph_runtime.dir/./2027rm_ws/include/CGraph/src/GraphCtrl/GraphAspect/GAspectManager.cpp.o"
+		},
+		{
+			"path" : "CMakeFiles/cgraph_runtime.dir/./2027rm_ws/include/CGraph/src/GraphCtrl/GraphAspect/GAspectObject.cpp.o"
+		},
+		{
+			"path" : "CMakeFiles/cgraph_runtime.dir/./2027rm_ws/include/CGraph/src/GraphCtrl/GraphDaemon/GDaemon.cpp.o"
+		},
+		{
+			"path" : "CMakeFiles/cgraph_runtime.dir/./2027rm_ws/include/CGraph/src/GraphCtrl/GraphDaemon/GDaemonManager.cpp.o"
+		},
+		{
+			"path" : "CMakeFiles/cgraph_runtime.dir/./2027rm_ws/include/CGraph/src/GraphCtrl/GraphElement/GAdapter/GFence/GFence.cpp.o"
+		},
+		{
+			"path" : "CMakeFiles/cgraph_runtime.dir/./2027rm_ws/include/CGraph/src/GraphCtrl/GraphElement/GAdapter/GFunction/GFunction.cpp.o"
+		},
+		{
+			"path" : "CMakeFiles/cgraph_runtime.dir/./2027rm_ws/include/CGraph/src/GraphCtrl/GraphElement/GElement.cpp.o"
+		},
+		{
+			"path" : "CMakeFiles/cgraph_runtime.dir/./2027rm_ws/include/CGraph/src/GraphCtrl/GraphElement/GElementManager.cpp.o"
+		},
+		{
+			"path" : "CMakeFiles/cgraph_runtime.dir/./2027rm_ws/include/CGraph/src/GraphCtrl/GraphElement/GElementRepository.cpp.o"
+		},
+		{
+			"path" : "CMakeFiles/cgraph_runtime.dir/./2027rm_ws/include/CGraph/src/GraphCtrl/GraphElement/GGroup/GCluster/GCluster.cpp.o"
+		},
+		{
+			"path" : "CMakeFiles/cgraph_runtime.dir/./2027rm_ws/include/CGraph/src/GraphCtrl/GraphElement/GGroup/GCondition/GCondition.cpp.o"
+		},
+		{
+			"path" : "CMakeFiles/cgraph_runtime.dir/./2027rm_ws/include/CGraph/src/GraphCtrl/GraphElement/GGroup/GGroup.cpp.o"
+		},
+		{
+			"path" : "CMakeFiles/cgraph_runtime.dir/./2027rm_ws/include/CGraph/src/GraphCtrl/GraphElement/GGroup/GMutable/GMutable.cpp.o"
+		},
+		{
+			"path" : "CMakeFiles/cgraph_runtime.dir/./2027rm_ws/include/CGraph/src/GraphCtrl/GraphElement/GGroup/GRegion/GRegion.cpp.o"
+		},
+		{
+			"path" : "CMakeFiles/cgraph_runtime.dir/./2027rm_ws/include/CGraph/src/GraphCtrl/GraphElement/GNode/GNode.cpp.o"
+		},
+		{
+			"path" : "CMakeFiles/cgraph_runtime.dir/./2027rm_ws/include/CGraph/src/GraphCtrl/GraphElement/_GEngine/GDynamicEngine/GDynamicEngine.cpp.o"
+		},
+		{
+			"path" : "CMakeFiles/cgraph_runtime.dir/./2027rm_ws/include/CGraph/src/GraphCtrl/GraphElement/_GEngine/GStaticEngine/GStaticEngine.cpp.o"
+		},
+		{
+			"path" : "CMakeFiles/cgraph_runtime.dir/./2027rm_ws/include/CGraph/src/GraphCtrl/GraphElement/_GEngine/GTopoEngine/GTopoEngine.cpp.o"
+		},
+		{
+			"path" : "CMakeFiles/cgraph_runtime.dir/./2027rm_ws/include/CGraph/src/GraphCtrl/GraphEvent/GEvent.cpp.o"
+		},
+		{
+			"path" : "CMakeFiles/cgraph_runtime.dir/./2027rm_ws/include/CGraph/src/GraphCtrl/GraphEvent/GEventManager.cpp.o"
+		},
+		{
+			"path" : "CMakeFiles/cgraph_runtime.dir/./2027rm_ws/include/CGraph/src/GraphCtrl/GraphMessage/GMessageManagerSingleton.cpp.o"
+		},
+		{
+			"path" : "CMakeFiles/cgraph_runtime.dir/./2027rm_ws/include/CGraph/src/GraphCtrl/GraphParam/GParam.cpp.o"
+		},
+		{
+			"path" : "CMakeFiles/cgraph_runtime.dir/./2027rm_ws/include/CGraph/src/GraphCtrl/GraphParam/GParamManager.cpp.o"
+		},
+		{
+			"path" : "CMakeFiles/cgraph_runtime.dir/./2027rm_ws/include/CGraph/src/GraphCtrl/GraphPipeline/GPipeline.cpp.o"
+		},
+		{
+			"path" : "CMakeFiles/cgraph_runtime.dir/./2027rm_ws/include/CGraph/src/GraphCtrl/GraphPipeline/GPipelineFactory.cpp.o"
+		},
+		{
+			"path" : "CMakeFiles/cgraph_runtime.dir/./2027rm_ws/include/CGraph/src/GraphCtrl/GraphPipeline/GPipelineManager.cpp.o"
+		},
+		{
+			"path" : "CMakeFiles/cgraph_runtime.dir/./2027rm_ws/include/CGraph/src/GraphCtrl/GraphPipeline/_GPerf/GPerf.cpp.o"
+		},
+		{
+			"path" : "CMakeFiles/cgraph_runtime.dir/./2027rm_ws/include/CGraph/src/GraphCtrl/GraphPipeline/_GSchedule/GSchedule.cpp.o"
+		},
+		{
+			"path" : "CMakeFiles/cgraph_runtime.dir/./2027rm_ws/include/CGraph/src/GraphCtrl/GraphPipeline/_GStroage/GStorage.cpp.o"
+		},
+		{
+			"path" : "CMakeFiles/cgraph_runtime.dir/./2027rm_ws/include/CGraph/src/GraphCtrl/GraphPipeline/_GStroage/GStorageFactory.cpp.o"
+		},
+		{
+			"path" : "CMakeFiles/cgraph_runtime.dir/./2027rm_ws/include/CGraph/src/GraphCtrl/GraphStage/GStage.cpp.o"
+		},
+		{
+			"path" : "CMakeFiles/cgraph_runtime.dir/./2027rm_ws/include/CGraph/src/UtilsCtrl/ThreadPool/UThreadPool.cpp.o"
+		}
+	],
+	"backtrace" : 1,
+	"backtraceGraph" : 
+	{
+		"commands" : 
+		[
+			"add_library",
+			"target_include_directories",
+			"include_directories"
+		],
+		"files" : 
+		[
+			"CMakeLists.txt"
+		],
+		"nodes" : 
+		[
+			{
+				"file" : 0
+			},
+			{
+				"command" : 0,
+				"file" : 0,
+				"line" : 13,
+				"parent" : 0
+			},
+			{
+				"command" : 1,
+				"file" : 0,
+				"line" : 14,
+				"parent" : 0
+			},
+			{
+				"command" : 2,
+				"file" : 0,
+				"line" : 26,
+				"parent" : 0
+			},
+			{
+				"command" : 2,
+				"file" : 0,
+				"line" : 33,
+				"parent" : 0
+			}
+		]
+	},
+	"codemodelVersion" : 
+	{
+		"major" : 2,
+		"minor" : 9
+	},
+	"compileGroups" : 
+	[
+		{
+			"compileCommandFragments" : 
+			[
+				{
+					"fragment" : "-g -std=gnu++11"
+				}
+			],
+			"includes" : 
+			[
+				{
+					"backtrace" : 2,
+					"path" : "/home/ubuntu/\u684c\u9762/test/2027rm_ws/include/CGraph/src"
+				},
+				{
+					"backtrace" : 3,
+					"path" : "/home/ubuntu/\u684c\u9762/test/2027rm_ws/include"
+				},
+				{
+					"backtrace" : 4,
+					"path" : "/usr/include/opencv4"
+				}
+			],
+			"language" : "CXX",
+			"languageStandard" : 
+			{
+				"backtraces" : 
+				[
+					1
+				],
+				"standard" : "11"
+			},
+			"sourceIndexes" : 
+			[
+				0,
+				1,
+				2,
+				3,
+				4,
+				5,
+				6,
+				7,
+				8,
+				9,
+				10,
+				11,
+				12,
+				13,
+				14,
+				15,
+				16,
+				17,
+				18,
+				19,
+				20,
+				21,
+				22,
+				23,
+				24,
+				25,
+				26,
+				27,
+				28,
+				29,
+				30,
+				31,
+				32,
+				33
+			]
+		}
+	],
+	"id" : "cgraph_runtime::@6890427a1f51a3e7e1df",
+	"name" : "cgraph_runtime",
+	"paths" : 
+	{
+		"build" : ".",
+		"source" : "."
+	},
+	"sourceGroups" : 
+	[
+		{
+			"name" : "Source Files",
+			"sourceIndexes" : 
+			[
+				0,
+				1,
+				2,
+				3,
+				4,
+				5,
+				6,
+				7,
+				8,
+				9,
+				10,
+				11,
+				12,
+				13,
+				14,
+				15,
+				16,
+				17,
+				18,
+				19,
+				20,
+				21,
+				22,
+				23,
+				24,
+				25,
+				26,
+				27,
+				28,
+				29,
+				30,
+				31,
+				32,
+				33
+			]
+		}
+	],
+	"sources" : 
+	[
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 0,
+			"path" : "2027rm_ws/include/CGraph/src/DomainCtrl/Ann/DAnnNode.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 0,
+			"path" : "2027rm_ws/include/CGraph/src/GraphCtrl/GraphAspect/GAspect.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 0,
+			"path" : "2027rm_ws/include/CGraph/src/GraphCtrl/GraphAspect/GAspectManager.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 0,
+			"path" : "2027rm_ws/include/CGraph/src/GraphCtrl/GraphAspect/GAspectObject.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 0,
+			"path" : "2027rm_ws/include/CGraph/src/GraphCtrl/GraphDaemon/GDaemon.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 0,
+			"path" : "2027rm_ws/include/CGraph/src/GraphCtrl/GraphDaemon/GDaemonManager.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 0,
+			"path" : "2027rm_ws/include/CGraph/src/GraphCtrl/GraphElement/GAdapter/GFence/GFence.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 0,
+			"path" : "2027rm_ws/include/CGraph/src/GraphCtrl/GraphElement/GAdapter/GFunction/GFunction.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 0,
+			"path" : "2027rm_ws/include/CGraph/src/GraphCtrl/GraphElement/GElement.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 0,
+			"path" : "2027rm_ws/include/CGraph/src/GraphCtrl/GraphElement/GElementManager.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 0,
+			"path" : "2027rm_ws/include/CGraph/src/GraphCtrl/GraphElement/GElementRepository.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 0,
+			"path" : "2027rm_ws/include/CGraph/src/GraphCtrl/GraphElement/GGroup/GCluster/GCluster.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 0,
+			"path" : "2027rm_ws/include/CGraph/src/GraphCtrl/GraphElement/GGroup/GCondition/GCondition.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 0,
+			"path" : "2027rm_ws/include/CGraph/src/GraphCtrl/GraphElement/GGroup/GGroup.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 0,
+			"path" : "2027rm_ws/include/CGraph/src/GraphCtrl/GraphElement/GGroup/GMutable/GMutable.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 0,
+			"path" : "2027rm_ws/include/CGraph/src/GraphCtrl/GraphElement/GGroup/GRegion/GRegion.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 0,
+			"path" : "2027rm_ws/include/CGraph/src/GraphCtrl/GraphElement/GNode/GNode.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 0,
+			"path" : "2027rm_ws/include/CGraph/src/GraphCtrl/GraphElement/_GEngine/GDynamicEngine/GDynamicEngine.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 0,
+			"path" : "2027rm_ws/include/CGraph/src/GraphCtrl/GraphElement/_GEngine/GStaticEngine/GStaticEngine.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 0,
+			"path" : "2027rm_ws/include/CGraph/src/GraphCtrl/GraphElement/_GEngine/GTopoEngine/GTopoEngine.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 0,
+			"path" : "2027rm_ws/include/CGraph/src/GraphCtrl/GraphEvent/GEvent.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 0,
+			"path" : "2027rm_ws/include/CGraph/src/GraphCtrl/GraphEvent/GEventManager.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 0,
+			"path" : "2027rm_ws/include/CGraph/src/GraphCtrl/GraphMessage/GMessageManagerSingleton.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 0,
+			"path" : "2027rm_ws/include/CGraph/src/GraphCtrl/GraphParam/GParam.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 0,
+			"path" : "2027rm_ws/include/CGraph/src/GraphCtrl/GraphParam/GParamManager.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 0,
+			"path" : "2027rm_ws/include/CGraph/src/GraphCtrl/GraphPipeline/GPipeline.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 0,
+			"path" : "2027rm_ws/include/CGraph/src/GraphCtrl/GraphPipeline/GPipelineFactory.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 0,
+			"path" : "2027rm_ws/include/CGraph/src/GraphCtrl/GraphPipeline/GPipelineManager.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 0,
+			"path" : "2027rm_ws/include/CGraph/src/GraphCtrl/GraphPipeline/_GPerf/GPerf.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 0,
+			"path" : "2027rm_ws/include/CGraph/src/GraphCtrl/GraphPipeline/_GSchedule/GSchedule.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 0,
+			"path" : "2027rm_ws/include/CGraph/src/GraphCtrl/GraphPipeline/_GStroage/GStorage.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 0,
+			"path" : "2027rm_ws/include/CGraph/src/GraphCtrl/GraphPipeline/_GStroage/GStorageFactory.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 0,
+			"path" : "2027rm_ws/include/CGraph/src/GraphCtrl/GraphStage/GStage.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 0,
+			"path" : "2027rm_ws/include/CGraph/src/UtilsCtrl/ThreadPool/UThreadPool.cpp",
+			"sourceGroupIndex" : 0
+		}
+	],
+	"type" : "OBJECT_LIBRARY"
+}
