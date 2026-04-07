@@ -1,0 +1,37 @@
+# Build directories
+/build/
+/2027rm_ws/build/
+
+# Generated output directory
+/output/
+
+# CMake generated files (root only)
+/CMakeCache.txt
+/cmake_install.cmake
+/compile_commands.json
+/Makefile
+/CMakeFiles/
+
+# Generated executables in this project
+/camera_app
+/detector_app
+/cgraph_camera_detector
+/2027rm_ws/camera_app
+/2027rm_ws/cgraph_camera_detector
+
+# Binary and object artifacts
+*.o
+*.obj
+*.a
+*.so
+*.so.*
+*.dylib
+*.dll
+*.exe
+*.out
+*.app
+
+# Logs
+*.log
+*.log.*
+
