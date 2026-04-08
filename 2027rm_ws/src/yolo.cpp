@@ -280,3 +280,55 @@ class YoloOpenvino
     mutable LetterBoxInfo lb_;
     std::vector<float>input_data_;
 };
+class CameraPubNode:public GNode
+{
+    private:
+    HikCameraNode camera_;
+    uint64_t frame_id_=0;
+
+    public:
+    CStatus init() override
+    {
+        std::string err;
+        if(!camera_.init(&err))return CStatus(err);
+        frame_id_=0;
+        return CStatus();
+    }
+    CStatus run() override
+    {
+        while(!g_stop.load())
+        {
+            cv::Mat frame;
+            std::string err;
+            if(!camera_.grab(frame,&err))
+            {
+                return CStatus(err);
+            }
+            std::shared_ptr<FrameMParam>msg(new FrameMParam());
+            msg->frame=frame.clone();
+            msg->frame_id=++frame_id_;
+            msg->ts_ms=NowMs();
+            CStatus st=CGRAPH_SEND_MPARAM(FrameMParam,FRAME_TOPIC,msg,GMessagePushStrategy::WAIT);
+            if(st.isErr())return st;
+        }
+        return CStatus();
+    }
+    CStatus destroy() override
+    {
+        camera_.shutdown();
+        return CStatus();
+    }
+};
+class YoloInferNode:public GNode
+{
+    private:
+    YoloOpenvino yolo_;
+    private:
+    static int parseInferId(const std::string&name)
+    {
+        if(name.find("infer_2")!=std::string::npos)return 2;
+        return -1;
+    }
+    public:
+
+};
