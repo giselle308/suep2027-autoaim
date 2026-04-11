@@ -39,7 +39,7 @@ camera:
     # 真正限制帧率的是读出时间，改曝光对帧率影响有限
     # 降低分辨率才能真正提升帧率
     # 当前设置1000μs，如图像过暗可增加gain
-    exposure_time: 500
+    exposure_time: 1500
     # exposure_auto: 自动曝光开关（高帧率建议关闭）
     exposure_auto: false
     # gain: 模拟增益（曝光极短时需大幅提高，范围：0-16）
