@@ -6,6 +6,8 @@
 #include <fstream>
 #include <iostream>
 #include <memory>
+#include <cstdlib>
+#include <cstdio>
 #include <string>
 #include <vector>
 
@@ -30,6 +32,46 @@ static AppConfig g_cfg = {
     2};
 
 static std::atomic<bool> g_stop(false);
+
+static bool IsFoxgloveDebugEnabled()
+{
+    static const bool enabled = []() {
+        const char* v_debug = std::getenv("RM_DEBUG_FOXGLOVE");
+        if (v_debug && std::string(v_debug) == "1")
+        {
+            return true;
+        }
+        // Backward compatibility with previous env name.
+        const char* v_legacy = std::getenv("RM_RERUN_DUMP");
+        return v_legacy && std::string(v_legacy) == "1";
+    }();
+    return enabled;
+}
+
+static void DumpFrameForFoxglove(const cv::Mat& img)
+{
+    if (!IsFoxgloveDebugEnabled() || img.empty())
+    {
+        return;
+    }
+
+    static const std::string kDir = "/tmp/rm_rerun";
+    static const std::string kTmp = kDir + "/latest.tmp.jpg";
+    static const std::string kOut = kDir + "/latest.jpg";
+    static bool init = false;
+    if (!init)
+    {
+        std::string cmd = "mkdir -p " + kDir;
+        std::system(cmd.c_str());
+        init = true;
+    }
+
+    const std::vector<int> params = {cv::IMWRITE_JPEG_QUALITY, 85};
+    if (cv::imwrite(kTmp, img, params))
+    {
+        std::rename(kTmp.c_str(), kOut.c_str());
+    }
+}
 
 struct FrameMParam : public GMessageParam
 {
@@ -465,7 +507,9 @@ class DisplayNode : public GNode {
 public:
     CStatus init() override {
         fps_start_ = std::chrono::steady_clock::now();
+        log_start_ = fps_start_;
         count_ = 0;
+        log_count_ = 0;
         fps_ = 0.0;
         return CStatus();
     }
@@ -480,12 +524,24 @@ public:
             }
             if (!r || r->vis.empty()) continue;
             ++count_;
+            ++log_count_;
             auto now = std::chrono::steady_clock::now();
             auto dt_ms = std::chrono::duration_cast<std::chrono::milliseconds>(now - fps_start_).count();
             if (dt_ms >= 1000) {
                 fps_ = count_ * 1000.0 / static_cast<double>(dt_ms);
                 count_ = 0;
                 fps_start_ = now;
+            }
+
+            auto log_dt_ms = std::chrono::duration_cast<std::chrono::milliseconds>(now - log_start_).count();
+            if (log_dt_ms >= 1000) {
+                double real_fps = log_count_ * 1000.0 / static_cast<double>(log_dt_ms);
+                std::cout << "[REAL_FPS] fps=" << static_cast<int>(real_fps + 0.5)
+                          << " latency_ms=" << static_cast<int>(r->latency_ms + 0.5)
+                          << " det=" << r->det_count
+                          << " infer=" << r->infer_id << std::endl;
+                log_count_ = 0;
+                log_start_ = now;
             }
             cv::Mat &show = r->vis;
             std::string t1 = "frame=" + std::to_string(r->frame_id) + " infer=" + std::to_string(r->infer_id) + " det=" + std::to_string(r->det_count);
@@ -494,24 +550,20 @@ public:
             cv::putText(show, t1, cv::Point(20, 30), cv::FONT_HERSHEY_SIMPLEX, 0.7, cv::Scalar(255, 255, 0), 2, cv::LINE_AA);
             cv::putText(show, t2, cv::Point(20, 60), cv::FONT_HERSHEY_SIMPLEX, 0.7, cv::Scalar(0, 255, 0), 2, cv::LINE_AA);
             cv::putText(show, t3, cv::Point(20, 90), cv::FONT_HERSHEY_SIMPLEX, 0.7, cv::Scalar(0, 200, 255), 2, cv::LINE_AA);
-            cv::imshow("CGraph YOLO OpenVINO", show);
-            int key = cv::waitKey(1);
-            if (key == 27) {
-                g_stop.store(true);
-                return CStatus("user stopped by ESC");
-            }
+            DumpFrameForFoxglove(show);
         }
         return CStatus();
     }
 
     CStatus destroy() override {
-        cv::destroyAllWindows();
         return CStatus();
     }
 
 private:
     std::chrono::steady_clock::time_point fps_start_;
+    std::chrono::steady_clock::time_point log_start_;
     int count_ = 0;
+    int log_count_ = 0;
     double fps_ = 0.0;
 };
 
