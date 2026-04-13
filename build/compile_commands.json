@@ -211,19 +211,25 @@
 },
 {
   "directory": "/home/ubuntu/桌面/test/build",
-  "command": "/usr/bin/c++ -DCAMERA_CONFIG_PATH=\\\"/home/ubuntu/桌面/test/2027rm_ws/config/config.yaml\\\" -DCAMERA_INFO_PATH=\\\"/home/ubuntu/桌面/test/2027rm_ws/config/camera_info.yaml\\\" -DCAMERA_NODE_LIBRARY -DOV_THREAD=OV_THREAD_TBB -D_GLIBCXX_USE_CXX11_ABI=1 -I/home/ubuntu/桌面/test/2027rm_ws/include -I/home/ubuntu/桌面/test/2027rm_ws/include/CGraph/src -I/home/ubuntu/桌面/test/2027rm_ws/src -isystem /usr/include/opencv4 -g -std=c++17 -Wno-error=deprecated-declarations -o CMakeFiles/cgraph_camera_detector.dir/2027rm_ws/src/camera.cpp.o -c /home/ubuntu/桌面/test/2027rm_ws/src/camera.cpp",
+  "command": "/usr/bin/c++ -D_GLIBCXX_USE_CXX11_ABI=1 -I/home/ubuntu/桌面/test/2027rm_ws/include -I/home/ubuntu/桌面/test/2027rm_ws/include/CGraph/src -I/home/ubuntu/桌面/test/2027rm_ws/src -isystem /usr/include/opencv4 -g -std=c++17 -o CMakeFiles/detector_app.dir/2027rm_ws/src/detector.cpp.o -c /home/ubuntu/桌面/test/2027rm_ws/src/detector.cpp",
+  "file": "/home/ubuntu/桌面/test/2027rm_ws/src/detector.cpp",
+  "output": "/home/ubuntu/桌面/test/build/CMakeFiles/detector_app.dir/2027rm_ws/src/detector.cpp.o"
+},
+{
+  "directory": "/home/ubuntu/桌面/test/build",
+  "command": "/usr/bin/c++ -DCAMERA_CONFIG_PATH=\\\"/home/ubuntu/桌面/test/2027rm_ws/config/config.yaml\\\" -DCAMERA_INFO_PATH=\\\"/home/ubuntu/桌面/test/2027rm_ws/config/camera_info.yaml\\\" -DCAMERA_NODE_LIBRARY -DOV_THREAD=OV_THREAD_TBB -DYOLO_CONFIG_PATH=\\\"/home/ubuntu/桌面/test/2027rm_ws/config/yolo_config.yaml\\\" -D_GLIBCXX_USE_CXX11_ABI=1 -I/home/ubuntu/桌面/test/2027rm_ws/include -I/home/ubuntu/桌面/test/2027rm_ws/include/CGraph/src -I/home/ubuntu/桌面/test/2027rm_ws/src -isystem /usr/include/opencv4 -g -std=c++17 -Wno-error=deprecated-declarations -o CMakeFiles/cgraph_camera_detector.dir/2027rm_ws/src/camera.cpp.o -c /home/ubuntu/桌面/test/2027rm_ws/src/camera.cpp",
   "file": "/home/ubuntu/桌面/test/2027rm_ws/src/camera.cpp",
   "output": "/home/ubuntu/桌面/test/build/CMakeFiles/cgraph_camera_detector.dir/2027rm_ws/src/camera.cpp.o"
 },
 {
   "directory": "/home/ubuntu/桌面/test/build",
-  "command": "/usr/bin/c++ -DCAMERA_CONFIG_PATH=\\\"/home/ubuntu/桌面/test/2027rm_ws/config/config.yaml\\\" -DCAMERA_INFO_PATH=\\\"/home/ubuntu/桌面/test/2027rm_ws/config/camera_info.yaml\\\" -DCAMERA_NODE_LIBRARY -DOV_THREAD=OV_THREAD_TBB -D_GLIBCXX_USE_CXX11_ABI=1 -I/home/ubuntu/桌面/test/2027rm_ws/include -I/home/ubuntu/桌面/test/2027rm_ws/include/CGraph/src -I/home/ubuntu/桌面/test/2027rm_ws/src -isystem /usr/include/opencv4 -g -std=c++17 -Wno-error=deprecated-declarations -o CMakeFiles/cgraph_camera_detector.dir/2027rm_ws/src/yolo.cpp.o -c /home/ubuntu/桌面/test/2027rm_ws/src/yolo.cpp",
+  "command": "/usr/bin/c++ -DCAMERA_CONFIG_PATH=\\\"/home/ubuntu/桌面/test/2027rm_ws/config/config.yaml\\\" -DCAMERA_INFO_PATH=\\\"/home/ubuntu/桌面/test/2027rm_ws/config/camera_info.yaml\\\" -DCAMERA_NODE_LIBRARY -DOV_THREAD=OV_THREAD_TBB -DYOLO_CONFIG_PATH=\\\"/home/ubuntu/桌面/test/2027rm_ws/config/yolo_config.yaml\\\" -D_GLIBCXX_USE_CXX11_ABI=1 -I/home/ubuntu/桌面/test/2027rm_ws/include -I/home/ubuntu/桌面/test/2027rm_ws/include/CGraph/src -I/home/ubuntu/桌面/test/2027rm_ws/src -isystem /usr/include/opencv4 -g -std=c++17 -Wno-error=deprecated-declarations -o CMakeFiles/cgraph_camera_detector.dir/2027rm_ws/src/yolo.cpp.o -c /home/ubuntu/桌面/test/2027rm_ws/src/yolo.cpp",
   "file": "/home/ubuntu/桌面/test/2027rm_ws/src/yolo.cpp",
   "output": "/home/ubuntu/桌面/test/build/CMakeFiles/cgraph_camera_detector.dir/2027rm_ws/src/yolo.cpp.o"
 },
 {
   "directory": "/home/ubuntu/桌面/test/build",
-  "command": "/usr/bin/c++ -DCAMERA_CONFIG_PATH=\\\"/home/ubuntu/桌面/test/2027rm_ws/config/config.yaml\\\" -DCAMERA_INFO_PATH=\\\"/home/ubuntu/桌面/test/2027rm_ws/config/camera_info.yaml\\\" -DCAMERA_NODE_LIBRARY -DOV_THREAD=OV_THREAD_TBB -D_GLIBCXX_USE_CXX11_ABI=1 -I/home/ubuntu/桌面/test/2027rm_ws/include -I/home/ubuntu/桌面/test/2027rm_ws/include/CGraph/src -I/home/ubuntu/桌面/test/2027rm_ws/src -isystem /usr/include/opencv4 -g -std=c++17 -Wno-error=deprecated-declarations -o CMakeFiles/cgraph_camera_detector.dir/2027rm_ws/src/startup_main.cpp.o -c /home/ubuntu/桌面/test/2027rm_ws/src/startup_main.cpp",
+  "command": "/usr/bin/c++ -DCAMERA_CONFIG_PATH=\\\"/home/ubuntu/桌面/test/2027rm_ws/config/config.yaml\\\" -DCAMERA_INFO_PATH=\\\"/home/ubuntu/桌面/test/2027rm_ws/config/camera_info.yaml\\\" -DCAMERA_NODE_LIBRARY -DOV_THREAD=OV_THREAD_TBB -DYOLO_CONFIG_PATH=\\\"/home/ubuntu/桌面/test/2027rm_ws/config/yolo_config.yaml\\\" -D_GLIBCXX_USE_CXX11_ABI=1 -I/home/ubuntu/桌面/test/2027rm_ws/include -I/home/ubuntu/桌面/test/2027rm_ws/include/CGraph/src -I/home/ubuntu/桌面/test/2027rm_ws/src -isystem /usr/include/opencv4 -g -std=c++17 -Wno-error=deprecated-declarations -o CMakeFiles/cgraph_camera_detector.dir/2027rm_ws/src/startup_main.cpp.o -c /home/ubuntu/桌面/test/2027rm_ws/src/startup_main.cpp",
   "file": "/home/ubuntu/桌面/test/2027rm_ws/src/startup_main.cpp",
   "output": "/home/ubuntu/桌面/test/build/CMakeFiles/cgraph_camera_detector.dir/2027rm_ws/src/startup_main.cpp.o"
 }

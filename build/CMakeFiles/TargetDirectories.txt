@@ -1,8 +1,10 @@
 /home/ubuntu/桌面/test/build/CMakeFiles/cgraph_runtime.dir
 /home/ubuntu/桌面/test/build/CMakeFiles/camera_app.dir
+/home/ubuntu/桌面/test/build/CMakeFiles/detector_app.dir
 /home/ubuntu/桌面/test/build/CMakeFiles/cgraph_camera_detector.dir
 /home/ubuntu/桌面/test/build/CMakeFiles/all_apps.dir
 /home/ubuntu/桌面/test/build/CMakeFiles/run_camera_app.dir
+/home/ubuntu/桌面/test/build/CMakeFiles/run_detector_app.dir
 /home/ubuntu/桌面/test/build/CMakeFiles/run_cgraph_camera_detector.dir
 /home/ubuntu/桌面/test/build/CMakeFiles/edit_cache.dir
 /home/ubuntu/桌面/test/build/CMakeFiles/rebuild_cache.dir

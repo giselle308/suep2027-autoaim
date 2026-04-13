@@ -4,6 +4,7 @@
 
 # Generated output directory
 /output/
+/2027rm_ws/output/
 
 # CMake generated files (root only)
 /CMakeCache.txt
@@ -34,4 +35,19 @@
 # Logs
 *.log
 *.log.*
+
+# Python cache and virtual environment
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.venv/
+
+# Editor/IDE files
+.vscode/
+.idea/
+
+# OS generated files
+.DS_Store
+Thumbs.db
 

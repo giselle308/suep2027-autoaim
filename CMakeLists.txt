@@ -83,6 +83,7 @@ target_link_libraries(cgraph_camera_detector PRIVATE
 target_compile_definitions(cgraph_camera_detector PRIVATE
     CAMERA_CONFIG_PATH="${PROJECT_ROOT}/config/config.yaml"
     CAMERA_INFO_PATH="${PROJECT_ROOT}/config/camera_info.yaml"
+    YOLO_CONFIG_PATH="${PROJECT_ROOT}/config/yolo_config.yaml"
     CAMERA_NODE_LIBRARY
 )
 
@@ -112,7 +113,7 @@ if(TARGET detector_app)
 endif()
 
 add_custom_target(run_cgraph_camera_detector
-    COMMAND cgraph_camera_detector model/last.xml
+    COMMAND cgraph_camera_detector
     DEPENDS cgraph_camera_detector
     WORKING_DIRECTORY ${PROJECT_ROOT}
     USES_TERMINAL

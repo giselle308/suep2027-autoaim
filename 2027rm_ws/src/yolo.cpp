@@ -8,12 +8,15 @@
 #include <memory>
 #include <cstdlib>
 #include <cstdio>
+#include <cctype>
+#include <array>
 #include <string>
 #include <vector>
 
 #include <CGraph.h>
 #include <opencv2/opencv.hpp>
 #include <openvino/openvino.hpp>
+#include <yaml-cpp/yaml.h>
 #include "camera_node.hpp"
 #include "yolo_app.hpp"
 
@@ -22,30 +25,401 @@ using namespace CGraph;
 static const char *FRAME_TOPIC = "rm/frame/topic";
 static const char *RESULT_TOPIC = "rm/result/topic";
 
-static AppConfig g_cfg = {
-    "model/last.xml",
-    "CPU",
-    0,
-    0.25f,
-    0.25f,
-    4,
-    2};
+#ifndef YOLO_CONFIG_PATH
+#define YOLO_CONFIG_PATH "../config/yolo_config.yaml"
+#endif
+
+enum class LightColor
+{
+    UNKNOWN = 0,
+    RED = 1,
+    BLUE = 2,
+};
+
+struct ColorBinaryConfig
+{
+    int roi_max_side = 96;
+    int bright_threshold = 120;
+    int dominance_threshold = 24;
+    float min_color_ratio = 0.015f;
+    float dominance_ratio = 1.1f;
+    int morph_kernel = 3;
+};
+
+static AppConfig MakeDefaultAppConfig()
+{
+    return AppConfig{
+        "model/last.xml",
+        "CPU",
+        0,
+        0.25f,
+        0.25f,
+        4,
+        2,
+        "blue"};
+}
+
+static std::string ToLowerCopy(std::string s)
+{
+    std::transform(s.begin(), s.end(), s.begin(), [](unsigned char ch) {
+        return static_cast<char>(std::tolower(ch));
+    });
+    return s;
+}
+
+static std::string ResolveTargetColorFromEnv()
+{
+    const char *v = std::getenv("RM_TARGET_COLOR");
+    if (!v)
+    {
+        return "blue";
+    }
+    std::string color = ToLowerCopy(std::string(v));
+    if (color == "red" || color == "blue")
+    {
+        return color;
+    }
+    return "blue";
+}
+
+static YAML::Node LoadYoloConfigWithFallback(std::string &used_path)
+{
+    const std::vector<std::string> candidates = {
+        YOLO_CONFIG_PATH,
+        "../config/yolo_config.yaml",
+        "2027rm_ws/config/yolo_config.yaml",
+        "config/yolo_config.yaml"};
+
+    for (const auto &path : candidates)
+    {
+        std::ifstream fin(path);
+        if (fin.good())
+        {
+            used_path = path;
+            return YAML::LoadFile(path);
+        }
+    }
+    throw std::runtime_error("bad file: yolo_config.yaml (tried absolute/relative fallback paths)");
+}
+
+static void LoadYoloConfig(AppConfig &cfg, ColorBinaryConfig &color_cfg, bool &foxglove_debug)
+{
+    std::string used_path;
+    try
+    {
+        YAML::Node root = LoadYoloConfigWithFallback(used_path);
+        const YAML::Node yolo = root["yolo"];
+        if (yolo)
+        {
+            if (yolo["model_path"]) cfg.model_path = yolo["model_path"].as<std::string>();
+            if (yolo["device"]) cfg.device = yolo["device"].as<std::string>();
+            if (yolo["num_classes"]) cfg.num_classes = yolo["num_classes"].as<int>();
+            if (yolo["conf_thres"]) cfg.conf_thres = yolo["conf_thres"].as<float>();
+            if (yolo["nms_thres"]) cfg.nms_thres = yolo["nms_thres"].as<float>();
+            if (yolo["thread_num"]) cfg.thread_num = std::max(2, yolo["thread_num"].as<int>());
+            if (yolo["infer_workers"]) cfg.infer_workers = std::max(1, std::min(2, yolo["infer_workers"].as<int>()));
+            if (yolo["target_color"]) cfg.target_color = ToLowerCopy(yolo["target_color"].as<std::string>());
+        }
+
+        const YAML::Node color = root["color_filter"];
+        if (color)
+        {
+            if (color["roi_max_side"]) color_cfg.roi_max_side = std::max(16, color["roi_max_side"].as<int>());
+            if (color["bright_threshold"]) color_cfg.bright_threshold = std::max(0, std::min(255, color["bright_threshold"].as<int>()));
+            if (color["dominance_threshold"]) color_cfg.dominance_threshold = std::max(0, std::min(255, color["dominance_threshold"].as<int>()));
+            if (color["min_color_ratio"]) color_cfg.min_color_ratio = std::max(0.0f, color["min_color_ratio"].as<float>());
+            if (color["dominance_ratio"]) color_cfg.dominance_ratio = std::max(1.0f, color["dominance_ratio"].as<float>());
+            if (color["morph_kernel"]) color_cfg.morph_kernel = std::max(1, color["morph_kernel"].as<int>());
+        }
+
+        const YAML::Node debug = root["debug"];
+        if (debug && debug["foxglove_enable"])
+        {
+            foxglove_debug = debug["foxglove_enable"].as<bool>();
+        }
+
+        if (cfg.target_color != "red" && cfg.target_color != "blue")
+        {
+            cfg.target_color = ResolveTargetColorFromEnv();
+        }
+        if ((color_cfg.morph_kernel % 2) == 0)
+        {
+            color_cfg.morph_kernel += 1;
+        }
+        std::cout << "Loaded yolo config: " << used_path << std::endl;
+    }
+    catch (const std::exception &e)
+    {
+        cfg.target_color = ResolveTargetColorFromEnv();
+        std::cout << "Load yolo config failed, using defaults: " << e.what() << std::endl;
+    }
+}
+
+static bool IsColorMatched(LightColor detected, const std::string &target_color)
+{
+    const std::string target = ToLowerCopy(target_color);
+    if (target == "red")
+    {
+        return detected == LightColor::RED;
+    }
+    if (target == "blue")
+    {
+        return detected == LightColor::BLUE;
+    }
+    return false;
+}
+
+static ColorBinaryConfig g_color_cfg{};
+
+static LightColor ClassifyLightColorInBoxBinary(const cv::Mat &bgr, const cv::Rect &box)
+{
+    if (bgr.empty())
+    {
+        return LightColor::UNKNOWN;
+    }
+
+    const cv::Rect image_rect(0, 0, bgr.cols, bgr.rows);
+    const cv::Rect roi = box & image_rect;
+    if (roi.width < 3 || roi.height < 3)
+    {
+        return LightColor::UNKNOWN;
+    }
+
+    cv::Mat roi_bgr = bgr(roi);
+
+    // Limit per-box workload to protect FPS when detections are many.
+    const int max_side = g_color_cfg.roi_max_side;
+    if (roi_bgr.cols > max_side || roi_bgr.rows > max_side)
+    {
+        const float scale = std::min(static_cast<float>(max_side) / static_cast<float>(roi_bgr.cols),
+                                     static_cast<float>(max_side) / static_cast<float>(roi_bgr.rows));
+        const int new_w = std::max(3, static_cast<int>(std::round(roi_bgr.cols * scale)));
+        const int new_h = std::max(3, static_cast<int>(std::round(roi_bgr.rows * scale)));
+        cv::resize(roi_bgr, roi_bgr, cv::Size(new_w, new_h), 0.0, 0.0, cv::INTER_AREA);
+    }
+
+    std::vector<cv::Mat> bgr_ch;
+    cv::split(roi_bgr, bgr_ch);
+    const cv::Mat &b = bgr_ch[0];
+    const cv::Mat &g = bgr_ch[1];
+    const cv::Mat &r = bgr_ch[2];
+
+    cv::Mat max_bg, max_rg;
+    cv::max(b, g, max_bg);
+    cv::max(r, g, max_rg);
+
+    cv::Mat red_dom, blue_dom;
+    cv::subtract(r, max_bg, red_dom);
+    cv::subtract(b, max_rg, blue_dom);
+
+    cv::Mat bright_r, bright_b, red_mask, blue_mask;
+    cv::threshold(r, bright_r, g_color_cfg.bright_threshold, 255, cv::THRESH_BINARY);
+    cv::threshold(b, bright_b, g_color_cfg.bright_threshold, 255, cv::THRESH_BINARY);
+    cv::threshold(red_dom, red_mask, g_color_cfg.dominance_threshold, 255, cv::THRESH_BINARY);
+    cv::threshold(blue_dom, blue_mask, g_color_cfg.dominance_threshold, 255, cv::THRESH_BINARY);
+    cv::bitwise_and(red_mask, bright_r, red_mask);
+    cv::bitwise_and(blue_mask, bright_b, blue_mask);
+
+    const cv::Mat kKernel = cv::getStructuringElement(cv::MORPH_RECT, cv::Size(g_color_cfg.morph_kernel, g_color_cfg.morph_kernel));
+    cv::morphologyEx(red_mask, red_mask, cv::MORPH_OPEN, kKernel);
+    cv::morphologyEx(blue_mask, blue_mask, cv::MORPH_OPEN, kKernel);
+
+    const int total_pixels = roi_bgr.cols * roi_bgr.rows;
+    if (total_pixels <= 0)
+    {
+        return LightColor::UNKNOWN;
+    }
+
+    const int red_pixels = cv::countNonZero(red_mask);
+    const int blue_pixels = cv::countNonZero(blue_mask);
+    const float red_ratio = static_cast<float>(red_pixels) / static_cast<float>(total_pixels);
+    const float blue_ratio = static_cast<float>(blue_pixels) / static_cast<float>(total_pixels);
+
+    if (red_ratio < g_color_cfg.min_color_ratio && blue_ratio < g_color_cfg.min_color_ratio)
+    {
+        return LightColor::UNKNOWN;
+    }
+    if (red_ratio > blue_ratio * g_color_cfg.dominance_ratio)
+    {
+        return LightColor::RED;
+    }
+    if (blue_ratio > red_ratio * g_color_cfg.dominance_ratio)
+    {
+        return LightColor::BLUE;
+    }
+    return LightColor::UNKNOWN;
+}
+
+struct LightBarGeom
+{
+    cv::Point2f center;
+    cv::Point2f top;
+    cv::Point2f bottom;
+    float area = 0.0f;
+};
+
+static bool ComputeLineIntersection(const cv::Point2f &a1,
+                                    const cv::Point2f &a2,
+                                    const cv::Point2f &b1,
+                                    const cv::Point2f &b2,
+                                    cv::Point2f &out)
+{
+    const float x1 = a1.x, y1 = a1.y;
+    const float x2 = a2.x, y2 = a2.y;
+    const float x3 = b1.x, y3 = b1.y;
+    const float x4 = b2.x, y4 = b2.y;
+    const float denom = (x1 - x2) * (y3 - y4) - (y1 - y2) * (x3 - x4);
+    if (std::fabs(denom) < 1e-6f)
+    {
+        return false;
+    }
+
+    const float det1 = x1 * y2 - y1 * x2;
+    const float det2 = x3 * y4 - y3 * x4;
+    out.x = (det1 * (x3 - x4) - (x1 - x2) * det2) / denom;
+    out.y = (det1 * (y3 - y4) - (y1 - y2) * det2) / denom;
+    return true;
+}
+
+static bool EstimateCenterByLightBars(const cv::Mat &bgr,
+                                      const cv::Rect &box,
+                                      LightColor target_color,
+                                      cv::Point2f &center,
+                                      std::array<cv::Point2f, 4> &cross_lines)
+{
+    const cv::Rect image_rect(0, 0, bgr.cols, bgr.rows);
+    const cv::Rect roi = box & image_rect;
+    if (roi.width < 6 || roi.height < 6)
+    {
+        return false;
+    }
+
+    cv::Mat roi_bgr = bgr(roi);
+    std::vector<cv::Mat> bgr_ch;
+    cv::split(roi_bgr, bgr_ch);
+    const cv::Mat &b = bgr_ch[0];
+    const cv::Mat &g = bgr_ch[1];
+    const cv::Mat &r = bgr_ch[2];
+
+    cv::Mat max_bg, max_rg;
+    cv::max(b, g, max_bg);
+    cv::max(r, g, max_rg);
+
+    cv::Mat red_dom, blue_dom;
+    cv::subtract(r, max_bg, red_dom);
+    cv::subtract(b, max_rg, blue_dom);
+
+    cv::Mat bright_r, bright_b, red_mask, blue_mask;
+    cv::threshold(r, bright_r, g_color_cfg.bright_threshold, 255, cv::THRESH_BINARY);
+    cv::threshold(b, bright_b, g_color_cfg.bright_threshold, 255, cv::THRESH_BINARY);
+    cv::threshold(red_dom, red_mask, g_color_cfg.dominance_threshold, 255, cv::THRESH_BINARY);
+    cv::threshold(blue_dom, blue_mask, g_color_cfg.dominance_threshold, 255, cv::THRESH_BINARY);
+    cv::bitwise_and(red_mask, bright_r, red_mask);
+    cv::bitwise_and(blue_mask, bright_b, blue_mask);
+
+    const cv::Mat kKernel = cv::getStructuringElement(cv::MORPH_RECT, cv::Size(g_color_cfg.morph_kernel, g_color_cfg.morph_kernel));
+    cv::morphologyEx(red_mask, red_mask, cv::MORPH_OPEN, kKernel);
+    cv::morphologyEx(blue_mask, blue_mask, cv::MORPH_OPEN, kKernel);
+
+    cv::Mat mask = (target_color == LightColor::RED) ? red_mask : blue_mask;
+    std::vector<std::vector<cv::Point>> contours;
+    cv::findContours(mask, contours, cv::RETR_EXTERNAL, cv::CHAIN_APPROX_SIMPLE);
+
+    std::vector<LightBarGeom> bars;
+    bars.reserve(contours.size());
+    for (const auto &cnt : contours)
+    {
+        const float area = static_cast<float>(cv::contourArea(cnt));
+        if (area < 8.0f)
+        {
+            continue;
+        }
+        const cv::RotatedRect rr = cv::minAreaRect(cnt);
+        const float w = std::min(rr.size.width, rr.size.height);
+        const float h = std::max(rr.size.width, rr.size.height);
+        if (w < 1.0f || h < 4.0f)
+        {
+            continue;
+        }
+        if ((h / w) < 1.2f)
+        {
+            continue;
+        }
+
+        cv::Point2f pts[4];
+        rr.points(pts);
+        std::array<cv::Point2f, 4> p = {pts[0], pts[1], pts[2], pts[3]};
+        std::sort(p.begin(), p.end(), [](const cv::Point2f &lhs, const cv::Point2f &rhs) {
+            return lhs.y < rhs.y;
+        });
+
+        LightBarGeom geom;
+        geom.top = (p[0] + p[1]) * 0.5f;
+        geom.bottom = (p[2] + p[3]) * 0.5f;
+        geom.center = rr.center;
+        geom.area = area;
+
+        const cv::Point2f offset(static_cast<float>(roi.x), static_cast<float>(roi.y));
+        geom.top += offset;
+        geom.bottom += offset;
+        geom.center += offset;
+        bars.push_back(geom);
+    }
+
+    if (bars.size() < 2)
+    {
+        return false;
+    }
+
+    std::sort(bars.begin(), bars.end(), [](const LightBarGeom &a, const LightBarGeom &b) {
+        return a.area > b.area;
+    });
+
+    LightBarGeom bar_a = bars[0];
+    LightBarGeom bar_b = bars[1];
+    if (bar_a.center.x > bar_b.center.x)
+    {
+        std::swap(bar_a, bar_b);
+    }
+
+    cross_lines[0] = bar_a.top;
+    cross_lines[1] = bar_b.bottom;
+    cross_lines[2] = bar_a.bottom;
+    cross_lines[3] = bar_b.top;
+
+    if (!ComputeLineIntersection(cross_lines[0], cross_lines[1], cross_lines[2], cross_lines[3], center))
+    {
+        center = (bar_a.center + bar_b.center) * 0.5f;
+    }
+    return true;
+}
+
+static const char *LightColorShortName(LightColor c)
+{
+    switch (c)
+    {
+    case LightColor::RED:
+        return "R";
+    case LightColor::BLUE:
+        return "B";
+    default:
+        return "U";
+    }
+}
+
+static bool g_foxglove_debug = false;
+
+static AppConfig g_cfg = []() {
+    AppConfig cfg = MakeDefaultAppConfig();
+    LoadYoloConfig(cfg, g_color_cfg, g_foxglove_debug);
+    return cfg;
+}();
 
 static std::atomic<bool> g_stop(false);
 
 static bool IsFoxgloveDebugEnabled()
 {
-    static const bool enabled = []() {
-        const char* v_debug = std::getenv("RM_DEBUG_FOXGLOVE");
-        if (v_debug && std::string(v_debug) == "1")
-        {
-            return true;
-        }
-        // Backward compatibility with previous env name.
-        const char* v_legacy = std::getenv("RM_RERUN_DUMP");
-        return v_legacy && std::string(v_legacy) == "1";
-    }();
-    return enabled;
+    return g_foxglove_debug;
 }
 
 static void DumpFrameForFoxglove(const cv::Mat& img)
@@ -190,15 +564,52 @@ public:
         request_.infer();
         ov::Tensor out = request_.get_output_tensor();
         std::vector<Detection> dets = postprocess(frame, out);
-        vis = frame;
+        const bool enable_vis = IsFoxgloveDebugEnabled();
+        if (enable_vis)
+        {
+            vis = frame.clone();
+        }
+        else
+        {
+            vis.release();
+        }
+
+        int kept_count = 0;
         for (const auto &d : dets)
         {
-            cv::rectangle(vis, d.box, cv::Scalar(0, 255, 0), 2);
-            std::string text = "id=" + std::to_string(d.class_id) + " conf=" + cv::format("%.2f", d.confidence);
+            const LightColor light_color = ClassifyLightColorInBoxBinary(frame, d.box);
+            if (!IsColorMatched(light_color, g_cfg.target_color))
+            {
+                continue;
+            }
+            ++kept_count;
+
+            if (!enable_vis)
+            {
+                continue;
+            }
+
+            const cv::Scalar box_color = (light_color == LightColor::RED)
+                                             ? cv::Scalar(0, 0, 255)
+                                             : (light_color == LightColor::BLUE ? cv::Scalar(255, 0, 0) : cv::Scalar(0, 255, 0));
+            cv::rectangle(vis, d.box, box_color, 2);
+            std::string text = "id=" + std::to_string(d.class_id) +
+                               " conf=" + cv::format("%.2f", d.confidence) +
+                               " clr=" + std::string(LightColorShortName(light_color));
             int ty = std::max(0, d.box.y - 5);
-            cv::putText(vis, text, cv::Point(d.box.x, ty), cv::FONT_HERSHEY_SIMPLEX, 0.5, cv::Scalar(0, 255, 0), 2, cv::LINE_AA);
+            cv::putText(vis, text, cv::Point(d.box.x, ty), cv::FONT_HERSHEY_SIMPLEX, 0.5, box_color, 2, cv::LINE_AA);
+
+            cv::Point2f center_pt;
+            std::array<cv::Point2f, 4> cross_lines;
+            if (EstimateCenterByLightBars(frame, d.box, light_color, center_pt, cross_lines))
+            {
+                const cv::Scalar cross_color(0, 255, 255);
+                cv::line(vis, cross_lines[0], cross_lines[1], cross_color, 2, cv::LINE_AA);
+                cv::line(vis, cross_lines[2], cross_lines[3], cross_color, 2, cv::LINE_AA);
+                cv::circle(vis, center_pt, 4, cv::Scalar(255, 255, 255), -1, cv::LINE_AA);
+            }
         }
-        det_count = static_cast<int>(dets.size());
+        det_count = kept_count;
         return true;
     }
 
@@ -515,6 +926,7 @@ public:
     }
 
     CStatus run() override {
+        const bool enable_vis = IsFoxgloveDebugEnabled();
         while (!g_stop.load()) {
             std::shared_ptr<ResultMParam> r = nullptr;
             CStatus st = CGRAPH_RECV_MPARAM_WITH_TIMEOUT(ResultMParam, RESULT_TOPIC, r, 1000);
@@ -522,7 +934,7 @@ public:
                 if (g_stop.load()) break;
                 continue;
             }
-            if (!r || r->vis.empty()) continue;
+            if (!r) continue;
             ++count_;
             ++log_count_;
             auto now = std::chrono::steady_clock::now();
@@ -543,6 +955,11 @@ public:
                 log_count_ = 0;
                 log_start_ = now;
             }
+
+            if (!enable_vis || r->vis.empty()) {
+                continue;
+            }
+
             cv::Mat &show = r->vis;
             std::string t1 = "frame=" + std::to_string(r->frame_id) + " infer=" + std::to_string(r->infer_id) + " det=" + std::to_string(r->det_count);
             std::string t2 = "fps=" + std::to_string(static_cast<int>(fps_ + 0.5));
@@ -566,16 +983,6 @@ private:
     int log_count_ = 0;
     double fps_ = 0.0;
 };
-
-void ParseAppArgs(int argc, char** argv) {
-    if (argc >= 2) g_cfg.model_path = argv[1];
-    if (argc >= 3) g_cfg.device = argv[2];
-    if (argc >= 4) g_cfg.num_classes = std::stoi(argv[3]);
-    if (argc >= 5) g_cfg.conf_thres = std::stof(argv[4]);
-    if (argc >= 6) g_cfg.nms_thres = std::stof(argv[5]);
-    if (argc >= 7) g_cfg.thread_num = std::max(2, std::stoi(argv[6]));
-    if (argc >= 8) g_cfg.infer_workers = std::max(1, std::min(2, std::stoi(argv[7])));
-}
 
 const AppConfig& GetAppConfig() {
     return g_cfg;

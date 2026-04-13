@@ -1,0 +1,35 @@
+# YOLO + color filter configuration
+# This file controls runtime parameters for cgraph_camera_detector.
+
+yolo:
+  model_path: model/last.xml
+  device: CPU
+  # <=0 means infer from model output channels
+  num_classes: 0
+  conf_thres: 0.25
+  nms_thres: 0.25
+  # thread_num is clamped to >= 2
+  thread_num: 4
+  # infer_workers is clamped to [1, 2]
+  infer_workers: 2
+  # supported: red | blue
+  target_color: blue
+
+color_filter:
+  # Per-box resize cap to bound CPU cost under many detections
+  roi_max_side: 96
+  # Binary threshold for bright color channel (0-255)
+  bright_threshold: 120
+  # Binary threshold for color dominance map (0-255)
+  dominance_threshold: 24
+  # Minimum colored pixel ratio inside ROI
+  min_color_ratio: 0.015
+  # Ratio needed to decide red vs blue dominance
+  dominance_ratio: 1.1
+  # Morph open kernel size (odd number recommended)
+  morph_kernel: 3
+
+debug:
+  # true: generate and send visualization frames for foxglove
+  # false: normal run without visualization rendering
+  foxglove_enable: true

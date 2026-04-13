@@ -11,6 +11,16 @@ log() {
   printf '[start_debug_foxglove] %s\n' "$*"
 }
 
+RESTART=false
+if [[ "${1:-}" == "--restart" || "${1:-}" == "-r" ]]; then
+  RESTART=true
+fi
+
+if ${RESTART}; then
+  bash "${PROJECT_ROOT}/tools/stop_debug_foxglove.sh" >/dev/null 2>&1 || true
+  log "restart requested, cleaned existing processes"
+fi
+
 start_bg() {
   local name="$1"
   local cmd="$2"
@@ -40,9 +50,10 @@ fi
 
 start_bg "rosbridge" "source /opt/ros/humble/setup.bash && ros2 launch rosbridge_server rosbridge_websocket_launch.xml"
 start_bg "publisher" "source /opt/ros/humble/setup.bash && python3 \"${PROJECT_ROOT}/tools/foxglove_ros2_publisher.py\""
-start_bg "detector" "cd \"${WORKSPACE_ROOT}\" && RM_DEBUG_FOXGLOVE=1 cmake --build build --target run_cgraph_camera_detector"
+start_bg "detector" "cd \"${WORKSPACE_ROOT}\" && cmake --build build --target run_cgraph_camera_detector"
 
 log "all processes started"
 log "foxglove websocket: ws://127.0.0.1:9090"
 log "image topic: /debug/image/compressed"
+log "visualization switch is in ${PROJECT_ROOT}/config/yolo_config.yaml -> debug.foxglove_enable"
 log "stop all: ${PROJECT_ROOT}/tools/stop_debug_foxglove.sh"

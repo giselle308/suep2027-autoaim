@@ -12,9 +12,9 @@ struct AppConfig {
     float nms_thres;
     int thread_num;
     int infer_workers;
+    std::string target_color;
 };
 
-void ParseAppArgs(int argc, char** argv);
 const AppConfig& GetAppConfig();
 CStatus RegisterYoloPipelineElements(CGraph::GPipeline* const &pipeline);
 void InitYoloMessageTopics();
