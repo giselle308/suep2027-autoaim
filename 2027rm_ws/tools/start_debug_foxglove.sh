@@ -50,7 +50,7 @@ fi
 
 start_bg "rosbridge" "source /opt/ros/humble/setup.bash && ros2 launch rosbridge_server rosbridge_websocket_launch.xml"
 start_bg "publisher" "source /opt/ros/humble/setup.bash && python3 \"${PROJECT_ROOT}/tools/foxglove_ros2_publisher.py\""
-start_bg "detector" "cd \"${WORKSPACE_ROOT}\" && cmake --build build --target run_cgraph_camera_detector"
+start_bg "detector" "cd \"${WORKSPACE_ROOT}\" && cmake -S . -B 2027rm_ws/build -DCMAKE_BUILD_TYPE=Release && cmake --build 2027rm_ws/build --target cgraph_camera_detector -j && ./2027rm_ws/build/cgraph_camera_detector"
 
 log "all processes started"
 log "foxglove websocket: ws://127.0.0.1:9090"

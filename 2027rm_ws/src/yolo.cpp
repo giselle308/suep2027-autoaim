@@ -4,20 +4,21 @@
 #include <cmath>
 #include <cstdint>
 #include <fstream>
-#include <iostream>
 #include <memory>
 #include <cstdlib>
 #include <cstdio>
 #include <cctype>
-#include <array>
+#include <filesystem>
 #include <string>
 #include <vector>
 
 #include <CGraph.h>
 #include <opencv2/opencv.hpp>
 #include <openvino/openvino.hpp>
+#include <spdlog/spdlog.h>
 #include <yaml-cpp/yaml.h>
 #include "camera_node.hpp"
+#include "logging.hpp"
 #include "yolo_app.hpp"
 
 using namespace CGraph;
@@ -29,13 +30,6 @@ static const char *RESULT_TOPIC = "rm/result/topic";
 #define YOLO_CONFIG_PATH "../config/yolo_config.yaml"
 #endif
 
-enum class LightColor
-{
-    UNKNOWN = 0,
-    RED = 1,
-    BLUE = 2,
-};
-
 struct ColorBinaryConfig
 {
     int roi_max_side = 96;
@@ -44,6 +38,17 @@ struct ColorBinaryConfig
     float min_color_ratio = 0.015f;
     float dominance_ratio = 1.1f;
     int morph_kernel = 3;
+    int fast_roi_max_side = 48;
+    int fast_bright_threshold = 90;
+    int fast_dominance_threshold = 8;
+    float fast_dominance_ratio = 1.08f;
+};
+
+enum class TargetColor
+{
+    Any,
+    Red,
+    Blue,
 };
 
 static AppConfig MakeDefaultAppConfig()
@@ -65,6 +70,20 @@ static std::string ToLowerCopy(std::string s)
         return static_cast<char>(std::tolower(ch));
     });
     return s;
+}
+
+static TargetColor ParseTargetColor(const std::string &color)
+{
+    const std::string target = ToLowerCopy(color);
+    if (target == "red")
+    {
+        return TargetColor::Red;
+    }
+    if (target == "blue")
+    {
+        return TargetColor::Blue;
+    }
+    return TargetColor::Any;
 }
 
 static std::string ResolveTargetColorFromEnv()
@@ -102,12 +121,62 @@ static YAML::Node LoadYoloConfigWithFallback(std::string &used_path)
     throw std::runtime_error("bad file: yolo_config.yaml (tried absolute/relative fallback paths)");
 }
 
-static void LoadYoloConfig(AppConfig &cfg, ColorBinaryConfig &color_cfg, bool &foxglove_debug)
+static void LoadLoggingConfigNode(const YAML::Node &logging, app::logging::LogConfig &log_cfg)
+{
+    if (!logging)
+    {
+        return;
+    }
+
+    if (logging["level"]) log_cfg.level = ToLowerCopy(logging["level"].as<std::string>());
+    if (logging["flush_level"]) log_cfg.flush_level = ToLowerCopy(logging["flush_level"].as<std::string>());
+    if (logging["queue_size"]) log_cfg.queue_size = std::max<std::size_t>(1024, logging["queue_size"].as<std::size_t>());
+    if (logging["thread_count"]) log_cfg.thread_count = std::max<std::size_t>(1, logging["thread_count"].as<std::size_t>());
+    if (logging["overflow_policy"]) log_cfg.overflow_policy = ToLowerCopy(logging["overflow_policy"].as<std::string>());
+    if (logging["pattern"]) log_cfg.pattern = logging["pattern"].as<std::string>();
+}
+
+static void LoadPerfLogSwitchNode(const YAML::Node &logging, bool &infer_fps_log_enable, bool &e2e_log_enable)
+{
+    if (!logging)
+    {
+        return;
+    }
+
+    if (logging["infer_fps_enable"]) infer_fps_log_enable = logging["infer_fps_enable"].as<bool>();
+    if (logging["e2e_enable"]) e2e_log_enable = logging["e2e_enable"].as<bool>();
+}
+
+static app::logging::LogConfig LoadEarlyLoggingConfig()
+{
+    app::logging::LogConfig log_cfg;
+    std::string used_path;
+    try
+    {
+        YAML::Node root = LoadYoloConfigWithFallback(used_path);
+        LoadLoggingConfigNode(root["logging"], log_cfg);
+    }
+    catch (...)
+    {
+    }
+    return log_cfg;
+}
+
+static void LoadYoloConfig(AppConfig &cfg,
+                           ColorBinaryConfig &color_cfg,
+                           bool &foxglove_debug,
+                           app::logging::LogConfig &log_cfg,
+                           bool &infer_fps_log_enable,
+                           bool &e2e_log_enable)
 {
     std::string used_path;
     try
     {
         YAML::Node root = LoadYoloConfigWithFallback(used_path);
+        LoadLoggingConfigNode(root["logging"], log_cfg);
+        LoadPerfLogSwitchNode(root["logging"], infer_fps_log_enable, e2e_log_enable);
+        app::logging::ApplyRuntimeLoggingConfig(log_cfg);
+
         const YAML::Node yolo = root["yolo"];
         if (yolo)
         {
@@ -130,6 +199,10 @@ static void LoadYoloConfig(AppConfig &cfg, ColorBinaryConfig &color_cfg, bool &f
             if (color["min_color_ratio"]) color_cfg.min_color_ratio = std::max(0.0f, color["min_color_ratio"].as<float>());
             if (color["dominance_ratio"]) color_cfg.dominance_ratio = std::max(1.0f, color["dominance_ratio"].as<float>());
             if (color["morph_kernel"]) color_cfg.morph_kernel = std::max(1, color["morph_kernel"].as<int>());
+            if (color["fast_roi_max_side"]) color_cfg.fast_roi_max_side = std::max(16, color["fast_roi_max_side"].as<int>());
+            if (color["fast_bright_threshold"]) color_cfg.fast_bright_threshold = std::max(0, std::min(255, color["fast_bright_threshold"].as<int>()));
+            if (color["fast_dominance_threshold"]) color_cfg.fast_dominance_threshold = std::max(0, std::min(255, color["fast_dominance_threshold"].as<int>()));
+            if (color["fast_dominance_ratio"]) color_cfg.fast_dominance_ratio = std::max(1.0f, color["fast_dominance_ratio"].as<float>());
         }
 
         const YAML::Node debug = root["debug"];
@@ -146,48 +219,92 @@ static void LoadYoloConfig(AppConfig &cfg, ColorBinaryConfig &color_cfg, bool &f
         {
             color_cfg.morph_kernel += 1;
         }
-        std::cout << "Loaded yolo config: " << used_path << std::endl;
+        spdlog::info("Loaded yolo config: {}", used_path);
     }
     catch (const std::exception &e)
     {
         cfg.target_color = ResolveTargetColorFromEnv();
-        std::cout << "Load yolo config failed, using defaults: " << e.what() << std::endl;
+        spdlog::warn("Load yolo config failed, using defaults: {}", e.what());
     }
-}
-
-static bool IsColorMatched(LightColor detected, const std::string &target_color)
-{
-    const std::string target = ToLowerCopy(target_color);
-    if (target == "red")
-    {
-        return detected == LightColor::RED;
-    }
-    if (target == "blue")
-    {
-        return detected == LightColor::BLUE;
-    }
-    return false;
 }
 
 static ColorBinaryConfig g_color_cfg{};
 
-static LightColor ClassifyLightColorInBoxBinary(const cv::Mat &bgr, const cv::Rect &box)
+static bool PassFastColorGate(const cv::Mat &roi_bgr, TargetColor target)
+{
+    if (target == TargetColor::Any)
+    {
+        return true;
+    }
+
+    cv::Mat fast_roi = roi_bgr;
+    const int max_side = g_color_cfg.fast_roi_max_side;
+    if (fast_roi.cols > max_side || fast_roi.rows > max_side)
+    {
+        const float scale = std::min(static_cast<float>(max_side) / static_cast<float>(fast_roi.cols),
+                                     static_cast<float>(max_side) / static_cast<float>(fast_roi.rows));
+        const int new_w = std::max(3, static_cast<int>(std::round(fast_roi.cols * scale)));
+        const int new_h = std::max(3, static_cast<int>(std::round(fast_roi.rows * scale)));
+        cv::resize(fast_roi, fast_roi, cv::Size(new_w, new_h), 0.0, 0.0, cv::INTER_AREA);
+    }
+
+    const cv::Scalar mean_bgr = cv::mean(fast_roi);
+    const float b = static_cast<float>(mean_bgr[0]);
+    const float g = static_cast<float>(mean_bgr[1]);
+    const float r = static_cast<float>(mean_bgr[2]);
+    const float max_bg = std::max(b, g);
+    const float max_rg = std::max(r, g);
+
+    // Conservative fast gate: reject only when opposite color is clearly dominant.
+    // If uncertain, keep candidate for the full per-pixel refinement to avoid false negatives.
+    const bool red_strong = (r >= static_cast<float>(g_color_cfg.fast_bright_threshold)) &&
+                            ((r - max_bg) >= static_cast<float>(g_color_cfg.fast_dominance_threshold)) &&
+                            (r >= max_bg * g_color_cfg.fast_dominance_ratio);
+    const bool blue_strong = (b >= static_cast<float>(g_color_cfg.fast_bright_threshold)) &&
+                             ((b - max_rg) >= static_cast<float>(g_color_cfg.fast_dominance_threshold)) &&
+                             (b >= max_rg * g_color_cfg.fast_dominance_ratio);
+
+    if (target == TargetColor::Red)
+    {
+        if (blue_strong && !red_strong)
+        {
+            return false;
+        }
+        return true;
+    }
+
+    if (target == TargetColor::Blue)
+    {
+        if (red_strong && !blue_strong)
+        {
+            return false;
+        }
+        return true;
+    }
+
+    return true;
+}
+
+static bool IsBoxMatchedTargetColor(const cv::Mat &bgr, const cv::Rect &box, TargetColor target)
 {
     if (bgr.empty())
     {
-        return LightColor::UNKNOWN;
+        return false;
     }
 
     const cv::Rect image_rect(0, 0, bgr.cols, bgr.rows);
     const cv::Rect roi = box & image_rect;
     if (roi.width < 3 || roi.height < 3)
     {
-        return LightColor::UNKNOWN;
+        return false;
     }
 
     cv::Mat roi_bgr = bgr(roi);
+    if (!PassFastColorGate(roi_bgr, target))
+    {
+        return false;
+    }
 
-    // Limit per-box workload to protect FPS when detections are many.
     const int max_side = g_color_cfg.roi_max_side;
     if (roi_bgr.cols > max_side || roi_bgr.rows > max_side)
     {
@@ -220,14 +337,20 @@ static LightColor ClassifyLightColorInBoxBinary(const cv::Mat &bgr, const cv::Re
     cv::bitwise_and(red_mask, bright_r, red_mask);
     cv::bitwise_and(blue_mask, bright_b, blue_mask);
 
-    const cv::Mat kKernel = cv::getStructuringElement(cv::MORPH_RECT, cv::Size(g_color_cfg.morph_kernel, g_color_cfg.morph_kernel));
-    cv::morphologyEx(red_mask, red_mask, cv::MORPH_OPEN, kKernel);
-    cv::morphologyEx(blue_mask, blue_mask, cv::MORPH_OPEN, kKernel);
+    thread_local int cached_kernel_size = -1;
+    thread_local cv::Mat kernel;
+    if (cached_kernel_size != g_color_cfg.morph_kernel)
+    {
+        cached_kernel_size = g_color_cfg.morph_kernel;
+        kernel = cv::getStructuringElement(cv::MORPH_RECT, cv::Size(cached_kernel_size, cached_kernel_size));
+    }
+    cv::morphologyEx(red_mask, red_mask, cv::MORPH_OPEN, kernel);
+    cv::morphologyEx(blue_mask, blue_mask, cv::MORPH_OPEN, kernel);
 
     const int total_pixels = roi_bgr.cols * roi_bgr.rows;
     if (total_pixels <= 0)
     {
-        return LightColor::UNKNOWN;
+        return false;
     }
 
     const int red_pixels = cv::countNonZero(red_mask);
@@ -237,181 +360,32 @@ static LightColor ClassifyLightColorInBoxBinary(const cv::Mat &bgr, const cv::Re
 
     if (red_ratio < g_color_cfg.min_color_ratio && blue_ratio < g_color_cfg.min_color_ratio)
     {
-        return LightColor::UNKNOWN;
-    }
-    if (red_ratio > blue_ratio * g_color_cfg.dominance_ratio)
-    {
-        return LightColor::RED;
-    }
-    if (blue_ratio > red_ratio * g_color_cfg.dominance_ratio)
-    {
-        return LightColor::BLUE;
-    }
-    return LightColor::UNKNOWN;
-}
-
-struct LightBarGeom
-{
-    cv::Point2f center;
-    cv::Point2f top;
-    cv::Point2f bottom;
-    float area = 0.0f;
-};
-
-static bool ComputeLineIntersection(const cv::Point2f &a1,
-                                    const cv::Point2f &a2,
-                                    const cv::Point2f &b1,
-                                    const cv::Point2f &b2,
-                                    cv::Point2f &out)
-{
-    const float x1 = a1.x, y1 = a1.y;
-    const float x2 = a2.x, y2 = a2.y;
-    const float x3 = b1.x, y3 = b1.y;
-    const float x4 = b2.x, y4 = b2.y;
-    const float denom = (x1 - x2) * (y3 - y4) - (y1 - y2) * (x3 - x4);
-    if (std::fabs(denom) < 1e-6f)
-    {
         return false;
     }
 
-    const float det1 = x1 * y2 - y1 * x2;
-    const float det2 = x3 * y4 - y3 * x4;
-    out.x = (det1 * (x3 - x4) - (x1 - x2) * det2) / denom;
-    out.y = (det1 * (y3 - y4) - (y1 - y2) * det2) / denom;
+    if (target == TargetColor::Red)
+    {
+        return red_ratio > blue_ratio * g_color_cfg.dominance_ratio;
+    }
+    if (target == TargetColor::Blue)
+    {
+        return blue_ratio > red_ratio * g_color_cfg.dominance_ratio;
+    }
+
     return true;
-}
-
-static bool EstimateCenterByLightBars(const cv::Mat &bgr,
-                                      const cv::Rect &box,
-                                      LightColor target_color,
-                                      cv::Point2f &center,
-                                      std::array<cv::Point2f, 4> &cross_lines)
-{
-    const cv::Rect image_rect(0, 0, bgr.cols, bgr.rows);
-    const cv::Rect roi = box & image_rect;
-    if (roi.width < 6 || roi.height < 6)
-    {
-        return false;
-    }
-
-    cv::Mat roi_bgr = bgr(roi);
-    std::vector<cv::Mat> bgr_ch;
-    cv::split(roi_bgr, bgr_ch);
-    const cv::Mat &b = bgr_ch[0];
-    const cv::Mat &g = bgr_ch[1];
-    const cv::Mat &r = bgr_ch[2];
-
-    cv::Mat max_bg, max_rg;
-    cv::max(b, g, max_bg);
-    cv::max(r, g, max_rg);
-
-    cv::Mat red_dom, blue_dom;
-    cv::subtract(r, max_bg, red_dom);
-    cv::subtract(b, max_rg, blue_dom);
-
-    cv::Mat bright_r, bright_b, red_mask, blue_mask;
-    cv::threshold(r, bright_r, g_color_cfg.bright_threshold, 255, cv::THRESH_BINARY);
-    cv::threshold(b, bright_b, g_color_cfg.bright_threshold, 255, cv::THRESH_BINARY);
-    cv::threshold(red_dom, red_mask, g_color_cfg.dominance_threshold, 255, cv::THRESH_BINARY);
-    cv::threshold(blue_dom, blue_mask, g_color_cfg.dominance_threshold, 255, cv::THRESH_BINARY);
-    cv::bitwise_and(red_mask, bright_r, red_mask);
-    cv::bitwise_and(blue_mask, bright_b, blue_mask);
-
-    const cv::Mat kKernel = cv::getStructuringElement(cv::MORPH_RECT, cv::Size(g_color_cfg.morph_kernel, g_color_cfg.morph_kernel));
-    cv::morphologyEx(red_mask, red_mask, cv::MORPH_OPEN, kKernel);
-    cv::morphologyEx(blue_mask, blue_mask, cv::MORPH_OPEN, kKernel);
-
-    cv::Mat mask = (target_color == LightColor::RED) ? red_mask : blue_mask;
-    std::vector<std::vector<cv::Point>> contours;
-    cv::findContours(mask, contours, cv::RETR_EXTERNAL, cv::CHAIN_APPROX_SIMPLE);
-
-    std::vector<LightBarGeom> bars;
-    bars.reserve(contours.size());
-    for (const auto &cnt : contours)
-    {
-        const float area = static_cast<float>(cv::contourArea(cnt));
-        if (area < 8.0f)
-        {
-            continue;
-        }
-        const cv::RotatedRect rr = cv::minAreaRect(cnt);
-        const float w = std::min(rr.size.width, rr.size.height);
-        const float h = std::max(rr.size.width, rr.size.height);
-        if (w < 1.0f || h < 4.0f)
-        {
-            continue;
-        }
-        if ((h / w) < 1.2f)
-        {
-            continue;
-        }
-
-        cv::Point2f pts[4];
-        rr.points(pts);
-        std::array<cv::Point2f, 4> p = {pts[0], pts[1], pts[2], pts[3]};
-        std::sort(p.begin(), p.end(), [](const cv::Point2f &lhs, const cv::Point2f &rhs) {
-            return lhs.y < rhs.y;
-        });
-
-        LightBarGeom geom;
-        geom.top = (p[0] + p[1]) * 0.5f;
-        geom.bottom = (p[2] + p[3]) * 0.5f;
-        geom.center = rr.center;
-        geom.area = area;
-
-        const cv::Point2f offset(static_cast<float>(roi.x), static_cast<float>(roi.y));
-        geom.top += offset;
-        geom.bottom += offset;
-        geom.center += offset;
-        bars.push_back(geom);
-    }
-
-    if (bars.size() < 2)
-    {
-        return false;
-    }
-
-    std::sort(bars.begin(), bars.end(), [](const LightBarGeom &a, const LightBarGeom &b) {
-        return a.area > b.area;
-    });
-
-    LightBarGeom bar_a = bars[0];
-    LightBarGeom bar_b = bars[1];
-    if (bar_a.center.x > bar_b.center.x)
-    {
-        std::swap(bar_a, bar_b);
-    }
-
-    cross_lines[0] = bar_a.top;
-    cross_lines[1] = bar_b.bottom;
-    cross_lines[2] = bar_a.bottom;
-    cross_lines[3] = bar_b.top;
-
-    if (!ComputeLineIntersection(cross_lines[0], cross_lines[1], cross_lines[2], cross_lines[3], center))
-    {
-        center = (bar_a.center + bar_b.center) * 0.5f;
-    }
-    return true;
-}
-
-static const char *LightColorShortName(LightColor c)
-{
-    switch (c)
-    {
-    case LightColor::RED:
-        return "R";
-    case LightColor::BLUE:
-        return "B";
-    default:
-        return "U";
-    }
 }
 
 static bool g_foxglove_debug = false;
+static app::logging::LogConfig g_log_cfg{};
+static bool g_infer_fps_log_enable = true;
+static bool g_e2e_log_enable = true;
 
 static AppConfig g_cfg = []() {
+    const app::logging::LogConfig early_log_cfg = LoadEarlyLoggingConfig();
+    app::logging::InitAsyncLogging(early_log_cfg);
+
     AppConfig cfg = MakeDefaultAppConfig();
-    LoadYoloConfig(cfg, g_color_cfg, g_foxglove_debug);
+    LoadYoloConfig(cfg, g_color_cfg, g_foxglove_debug, g_log_cfg, g_infer_fps_log_enable, g_e2e_log_enable);
     return cfg;
 }();
 
@@ -435,8 +409,12 @@ static void DumpFrameForFoxglove(const cv::Mat& img)
     static bool init = false;
     if (!init)
     {
-        std::string cmd = "mkdir -p " + kDir;
-        std::system(cmd.c_str());
+        std::error_code ec;
+        std::filesystem::create_directories(kDir, ec);
+        if (ec)
+        {
+            spdlog::warn("mkdir failed for {} error={}", kDir, ec.message());
+        }
         init = true;
     }
 
@@ -461,6 +439,8 @@ struct ResultMParam : public GMessageParam
     int infer_id = 0;
     double latency_ms = 0.0;
     int det_count = 0;
+    bool has_center = false;
+    cv::Point2f center = cv::Point2f(0.0f, 0.0f);
 };
 
 struct Detection
@@ -469,6 +449,12 @@ struct Detection
     int class_id = -1;
     float confidence = 0.0f;
 };
+
+static cv::Point2f ComputeBoxCenter(const cv::Rect &box)
+{
+    return cv::Point2f(static_cast<float>(box.x) + static_cast<float>(box.width) * 0.5f,
+                       static_cast<float>(box.y) + static_cast<float>(box.height) * 0.5f);
+}
 
 static int64_t NowMs()
 {
@@ -519,11 +505,18 @@ public:
             conf_thres_ = conf_thres;
             nms_thres_ = nms_thres;
             const std::string resolved_model_path = ResolveModelPath(model_path);
-            auto model = ov::Core().read_model(resolved_model_path);
-            compiled = ov::Core().compile_model(model, device);
+            auto model = core_.read_model(resolved_model_path);
+            // Explicit low-latency policy: prefer shortest response time over maximum throughput.
+            compiled = core_.compile_model(
+                model,
+                device,
+                ov::hint::performance_mode(ov::hint::PerformanceMode::LATENCY),
+                ov::num_streams(1)
+            );
             request_ = compiled.create_infer_request();
             input_port_ = compiled.input();
             output_port_ = compiled.output();
+            spdlog::info("OpenVINO policy: device={} performance_mode=LATENCY num_streams=1", device);
             auto in_shape = input_port_.get_shape();
             if (in_shape.size() != 4 || in_shape[1] != 3)
             {
@@ -535,7 +528,7 @@ public:
             }
             input_h_ = static_cast<int>(in_shape[2]);
             input_w_ = static_cast<int>(in_shape[3]);
-            input_data_.resize(static_cast<size_t>(3 * input_h_ * input_w_));
+            letterbox_img_.create(input_h_, input_w_, CV_8UC3);
             return true;
         }
         catch (const std::exception &e)
@@ -548,7 +541,12 @@ public:
         }
     }
 
-    bool infer(const cv::Mat &frame, cv::Mat &vis, int &det_count, std::string *error)
+    bool infer(const cv::Mat &frame,
+               cv::Mat &vis,
+               int &det_count,
+               bool &has_center,
+               cv::Point2f &center,
+               std::string *error)
     {
         if (frame.empty())
         {
@@ -559,7 +557,9 @@ public:
             return false;
         }
         preprocess(frame);
-        ov::Tensor in_tensor(ov::element::f32, ov::Shape{1, 3, static_cast<size_t>(input_h_), static_cast<size_t>(input_w_)}, input_data_.data());
+        ov::Tensor in_tensor(ov::element::f32,
+                     ov::Shape{1, 3, static_cast<size_t>(input_h_), static_cast<size_t>(input_w_)},
+                     blob_.ptr<float>());
         request_.set_input_tensor(in_tensor);
         request_.infer();
         ov::Tensor out = request_.get_output_tensor();
@@ -575,41 +575,45 @@ public:
         }
 
         int kept_count = 0;
+        bool has_best_center = false;
+        cv::Point2f best_center(0.0f, 0.0f);
+        float best_conf = -1.0f;
+        const TargetColor target = ParseTargetColor(g_cfg.target_color);
+        const cv::Scalar box_color = (target == TargetColor::Red)
+                                         ? cv::Scalar(0, 0, 255)
+                                         : (target == TargetColor::Blue ? cv::Scalar(255, 0, 0) : cv::Scalar(0, 255, 0));
         for (const auto &d : dets)
         {
-            const LightColor light_color = ClassifyLightColorInBoxBinary(frame, d.box);
-            if (!IsColorMatched(light_color, g_cfg.target_color))
+            if (!IsBoxMatchedTargetColor(frame, d.box, target))
             {
                 continue;
             }
             ++kept_count;
+
+            const cv::Point2f center_pt = ComputeBoxCenter(d.box);
+            if (d.confidence > best_conf)
+            {
+                best_conf = d.confidence;
+                best_center = center_pt;
+                has_best_center = true;
+            }
 
             if (!enable_vis)
             {
                 continue;
             }
 
-            const cv::Scalar box_color = (light_color == LightColor::RED)
-                                             ? cv::Scalar(0, 0, 255)
-                                             : (light_color == LightColor::BLUE ? cv::Scalar(255, 0, 0) : cv::Scalar(0, 255, 0));
             cv::rectangle(vis, d.box, box_color, 2);
             std::string text = "id=" + std::to_string(d.class_id) +
-                               " conf=" + cv::format("%.2f", d.confidence) +
-                               " clr=" + std::string(LightColorShortName(light_color));
+                               " conf=" + cv::format("%.2f", d.confidence);
             int ty = std::max(0, d.box.y - 5);
             cv::putText(vis, text, cv::Point(d.box.x, ty), cv::FONT_HERSHEY_SIMPLEX, 0.5, box_color, 2, cv::LINE_AA);
 
-            cv::Point2f center_pt;
-            std::array<cv::Point2f, 4> cross_lines;
-            if (EstimateCenterByLightBars(frame, d.box, light_color, center_pt, cross_lines))
-            {
-                const cv::Scalar cross_color(0, 255, 255);
-                cv::line(vis, cross_lines[0], cross_lines[1], cross_color, 2, cv::LINE_AA);
-                cv::line(vis, cross_lines[2], cross_lines[3], cross_color, 2, cv::LINE_AA);
-                cv::circle(vis, center_pt, 4, cv::Scalar(255, 255, 255), -1, cv::LINE_AA);
-            }
+            cv::circle(vis, center_pt, 4, cv::Scalar(255, 255, 255), -1, cv::LINE_AA);
         }
         det_count = kept_count;
+        has_center = has_best_center;
+        center = best_center;
         return true;
     }
 
@@ -621,41 +625,23 @@ private:
         int pad_h = 0;
     };
 
-    cv::Mat letterbox(const cv::Mat &src, LetterBoxInfo &lb) const
-    {
-        int src_w = src.cols;
-        int src_h = src.rows;
-        lb.scale = std::min(static_cast<float>(input_w_) / src_w, static_cast<float>(input_h_) / src_h);
-        int nw = static_cast<int>(std::round(src_w * lb.scale));
-        int nh = static_cast<int>(std::round(src_h * lb.scale));
-        lb.pad_w = (input_w_ - nw) / 2;
-        lb.pad_h = (input_h_ - nh) / 2;
-        cv::Mat resized;
-        cv::resize(src, resized, cv::Size(nw, nh));
-        cv::Mat out(input_h_, input_w_, CV_8UC3, cv::Scalar(114, 114, 114));
-        resized.copyTo(out(cv::Rect(lb.pad_w, lb.pad_h, nw, nh)));
-        return out;
-    };
-
     void preprocess(const cv::Mat &bgr)
     {
-        cv::Mat lb_img = letterbox(bgr, lb_);
-        cv::Mat rgb;
-        cv::cvtColor(lb_img, rgb, cv::COLOR_BGR2RGB);
-        cv::Mat f32;
-        rgb.convertTo(f32, CV_32FC3, 1.0f / 255.0f);
-        const int H = input_h_;
-        const int W = input_w_;
-        for (int y = 0; y < H; ++y)
-        {
-            const cv::Vec3f *row = f32.ptr<cv::Vec3f>(y);
-            for (int x = 0; x < W; ++x)
-            {
-                input_data_[0 * H * W + y * W + x] = row[x][0];
-                input_data_[1 * H * W + y * W + x] = row[x][1];
-                input_data_[2 * H * W + y * W + x] = row[x][2];
-            }
-        }
+        const int src_w = bgr.cols;
+        const int src_h = bgr.rows;
+        lb_.scale = std::min(static_cast<float>(input_w_) / static_cast<float>(src_w),
+                             static_cast<float>(input_h_) / static_cast<float>(src_h));
+        const int nw = static_cast<int>(std::round(src_w * lb_.scale));
+        const int nh = static_cast<int>(std::round(src_h * lb_.scale));
+        lb_.pad_w = (input_w_ - nw) / 2;
+        lb_.pad_h = (input_h_ - nh) / 2;
+
+        letterbox_img_.setTo(cv::Scalar(114, 114, 114));
+        cv::resize(bgr, resized_img_, cv::Size(nw, nh), 0.0, 0.0, cv::INTER_LINEAR);
+        resized_img_.copyTo(letterbox_img_(cv::Rect(lb_.pad_w, lb_.pad_h, nw, nh)));
+
+        // Build NCHW float tensor with SIMD-optimized OpenCV path (scale + swapRB + layout transform).
+        cv::dnn::blobFromImage(letterbox_img_, blob_, 1.0 / 255.0, cv::Size(), cv::Scalar(), true, false, CV_32F);
     }
     std::vector<Detection> postprocess(const cv::Mat &orig, ov::Tensor &out) const
     {
@@ -670,6 +656,9 @@ private:
         const bool channel_first = (shape[1] < shape[2]);
         const int C = static_cast<int>(channel_first ? shape[1] : shape[2]);
         const int N = static_cast<int>(channel_first ? shape[2] : shape[1]);
+        boxes.reserve(static_cast<size_t>(N));
+        class_ids.reserve(static_cast<size_t>(N));
+        scores.reserve(static_cast<size_t>(N));
 
         auto at = [&](int c, int i) -> float
         {
@@ -812,7 +801,9 @@ private:
     float conf_thres_ = 0.25f;
     float nms_thres_ = 0.45f;
     mutable LetterBoxInfo lb_;
-    std::vector<float> input_data_;
+    cv::Mat letterbox_img_;
+    cv::Mat resized_img_;
+    cv::Mat blob_;
 };
 class CameraPubNode : public GNode
 {
@@ -843,7 +834,7 @@ public:
             msg->frame = std::move(frame);
             msg->frame_id = ++frame_id_;
             msg->ts_ms = NowMs();
-            CStatus st = CGRAPH_SEND_MPARAM(FrameMParam, FRAME_TOPIC, msg, GMessagePushStrategy::WAIT);
+            CStatus st = CGRAPH_SEND_MPARAM(FrameMParam, FRAME_TOPIC, msg, GMessagePushStrategy::REPLACE);
             if (st.isErr())
                 return st;
         }
@@ -863,6 +854,8 @@ private:
 private:
     static int parseInferId(const std::string &name)
     {
+        if (name.find("infer_1") != std::string::npos)
+            return 1;
         if (name.find("infer_2") != std::string::npos)
             return 2;
         return -1;
@@ -881,6 +874,9 @@ public:
     CStatus run() override
     {
         const int infer_id = parseInferId(this->getName());
+        auto infer_log_start = std::chrono::steady_clock::now();
+        int infer_count = 0;
+        double infer_ms_sum = 0.0;
         while (!g_stop.load())
         {
             std::shared_ptr<FrameMParam> in = nullptr;
@@ -895,18 +891,43 @@ public:
                 continue;
             cv::Mat vis;
             int det_count = 0;
+            bool has_center = false;
+            cv::Point2f center(0.0f, 0.0f);
             std::string err;
-            if (!yolo_.infer(in->frame, vis, det_count, &err))
+
+            const auto infer_begin = std::chrono::steady_clock::now();
+            if (!yolo_.infer(in->frame, vis, det_count, has_center, center, &err))
             {
                 return CStatus(err);
             }
+            const auto infer_end = std::chrono::steady_clock::now();
+            const double infer_ms = static_cast<double>(std::chrono::duration_cast<std::chrono::milliseconds>(infer_end - infer_begin).count());
+            ++infer_count;
+            infer_ms_sum += infer_ms;
+
+            const auto infer_log_dt_ms = std::chrono::duration_cast<std::chrono::milliseconds>(infer_end - infer_log_start).count();
+            if (g_infer_fps_log_enable && infer_log_dt_ms >= 1000)
+            {
+                const double infer_fps = infer_count * 1000.0 / static_cast<double>(infer_log_dt_ms);
+                const double infer_ms_avg = (infer_count > 0) ? (infer_ms_sum / static_cast<double>(infer_count)) : 0.0;
+                spdlog::info("[YOLO_INFER_FPS] infer={} fps={} infer_ms_avg={}",
+                             infer_id,
+                             static_cast<int>(infer_fps + 0.5),
+                             static_cast<int>(infer_ms_avg + 0.5));
+                infer_count = 0;
+                infer_ms_sum = 0.0;
+                infer_log_start = infer_end;
+            }
+
             std::shared_ptr<ResultMParam> out(new ResultMParam());
             out->vis = vis;
             out->frame_id = in->frame_id;
             out->infer_id = infer_id;
             out->latency_ms = static_cast<double>(NowMs() - in->ts_ms);
             out->det_count = det_count;
-            st = CGRAPH_SEND_MPARAM(ResultMParam, RESULT_TOPIC, out, GMessagePushStrategy::WAIT);
+            out->has_center = has_center;
+            out->center = center;
+            st = CGRAPH_SEND_MPARAM(ResultMParam, RESULT_TOPIC, out, GMessagePushStrategy::REPLACE);
             if (st.isErr())
                 return st;
         }
@@ -922,6 +943,8 @@ public:
         count_ = 0;
         log_count_ = 0;
         fps_ = 0.0;
+        latency_sum_ms_ = 0.0;
+        latency_max_ms_ = 0.0;
         return CStatus();
     }
 
@@ -937,6 +960,8 @@ public:
             if (!r) continue;
             ++count_;
             ++log_count_;
+            latency_sum_ms_ += r->latency_ms;
+            latency_max_ms_ = std::max(latency_max_ms_, r->latency_ms);
             auto now = std::chrono::steady_clock::now();
             auto dt_ms = std::chrono::duration_cast<std::chrono::milliseconds>(now - fps_start_).count();
             if (dt_ms >= 1000) {
@@ -946,13 +971,18 @@ public:
             }
 
             auto log_dt_ms = std::chrono::duration_cast<std::chrono::milliseconds>(now - log_start_).count();
-            if (log_dt_ms >= 1000) {
+            if (g_e2e_log_enable && log_dt_ms >= 1000) {
                 double real_fps = log_count_ * 1000.0 / static_cast<double>(log_dt_ms);
-                std::cout << "[REAL_FPS] fps=" << static_cast<int>(real_fps + 0.5)
-                          << " latency_ms=" << static_cast<int>(r->latency_ms + 0.5)
-                          << " det=" << r->det_count
-                          << " infer=" << r->infer_id << std::endl;
+                const double latency_avg_ms = (log_count_ > 0) ? (latency_sum_ms_ / static_cast<double>(log_count_)) : 0.0;
+                spdlog::info("[E2E] fps={} latency_ms_avg={} latency_ms_max={} det={} infer={}",
+                             static_cast<int>(real_fps + 0.5),
+                             static_cast<int>(latency_avg_ms + 0.5),
+                             static_cast<int>(latency_max_ms_ + 0.5),
+                             r->det_count,
+                             r->infer_id);
                 log_count_ = 0;
+                latency_sum_ms_ = 0.0;
+                latency_max_ms_ = 0.0;
                 log_start_ = now;
             }
 
@@ -964,9 +994,17 @@ public:
             std::string t1 = "frame=" + std::to_string(r->frame_id) + " infer=" + std::to_string(r->infer_id) + " det=" + std::to_string(r->det_count);
             std::string t2 = "fps=" + std::to_string(static_cast<int>(fps_ + 0.5));
             std::string t3 = "latency=" + std::to_string(static_cast<int>(r->latency_ms + 0.5)) + "ms";
+            std::string t4 = "center=none";
+            if (r->has_center)
+            {
+                t4 = "center=(" + std::to_string(static_cast<int>(std::round(r->center.x))) +
+                     "," + std::to_string(static_cast<int>(std::round(r->center.y))) + ")";
+                cv::circle(show, r->center, 6, cv::Scalar(0, 255, 255), 2, cv::LINE_AA);
+            }
             cv::putText(show, t1, cv::Point(20, 30), cv::FONT_HERSHEY_SIMPLEX, 0.7, cv::Scalar(255, 255, 0), 2, cv::LINE_AA);
             cv::putText(show, t2, cv::Point(20, 60), cv::FONT_HERSHEY_SIMPLEX, 0.7, cv::Scalar(0, 255, 0), 2, cv::LINE_AA);
             cv::putText(show, t3, cv::Point(20, 90), cv::FONT_HERSHEY_SIMPLEX, 0.7, cv::Scalar(0, 200, 255), 2, cv::LINE_AA);
+            cv::putText(show, t4, cv::Point(20, 120), cv::FONT_HERSHEY_SIMPLEX, 0.7, cv::Scalar(0, 255, 255), 2, cv::LINE_AA);
             DumpFrameForFoxglove(show);
         }
         return CStatus();
@@ -982,6 +1020,8 @@ private:
     int count_ = 0;
     int log_count_ = 0;
     double fps_ = 0.0;
+    double latency_sum_ms_ = 0.0;
+    double latency_max_ms_ = 0.0;
 };
 
 const AppConfig& GetAppConfig() {

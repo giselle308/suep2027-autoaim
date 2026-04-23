@@ -1,3 +1,11 @@
 {
-    "cmake.ignoreCMakeListsMissing": true
+    "cmake.ignoreCMakeListsMissing": true,
+    "cmake.sourceDirectory": "${workspaceFolder}",
+    "cmake.buildDirectory": "${workspaceFolder}/2027rm_ws/build",
+    "cmake.generator": "Ninja",
+    "cmake.buildType": "Release",
+    "cmake.configureSettings": {
+        "CMAKE_BUILD_TYPE": "Release"
+    },
+    "C_Cpp.default.configurationProvider": "ms-vscode.cmake-tools"
 }

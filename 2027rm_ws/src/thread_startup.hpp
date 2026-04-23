@@ -1,6 +1,6 @@
 #pragma once
 
-#include <iostream>
+#include <spdlog/spdlog.h>
 
 #include <CGraph.h>
 
@@ -12,7 +12,7 @@ int RunThreadedPipeline(int thread_num, RegisterElementsFn register_elements) {
 
 	auto st = register_elements(pipeline);
 	if (st.isErr()) {
-		std::cerr << "register failed: " << st.getInfo() << std::endl;
+		spdlog::error("register failed: {}", st.getInfo());
 		CGraph::GPipelineFactory::clear();
 		return -1;
 	}
@@ -24,7 +24,7 @@ int RunThreadedPipeline(int thread_num, RegisterElementsFn register_elements) {
 
 	st = pipeline->process();
 	if (st.isErr()) {
-		std::cerr << "process exit: " << st.getInfo() << std::endl;
+		spdlog::error("process exit: {}", st.getInfo());
 	}
 
 	CGraph::GPipelineFactory::clear();

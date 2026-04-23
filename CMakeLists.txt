@@ -1,6 +1,25 @@
 cmake_minimum_required(VERSION 3.16)
 project(CameraApp LANGUAGES CXX)
 
+if(CMAKE_CONFIGURATION_TYPES)
+    set(CMAKE_CONFIGURATION_TYPES "Release" CACHE STRING "Available build types" FORCE)
+endif()
+
+set(CMAKE_BUILD_TYPE Release CACHE STRING "Build type" FORCE)
+set_property(CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS "Release")
+
+if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
+    set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O3 -march=native -DNDEBUG")
+endif()
+
+include(CheckIPOSupported)
+check_ipo_supported(RESULT ipo_supported OUTPUT ipo_error)
+if(ipo_supported)
+    set(CMAKE_INTERPROCEDURAL_OPTIMIZATION_RELEASE ON)
+else()
+    message(STATUS "IPO/LTO not enabled: ${ipo_error}")
+endif()
+
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
@@ -24,6 +43,7 @@ set(CAMERA_SDK_LIBS
 find_package(OpenCV REQUIRED)
 find_package(yaml-cpp REQUIRED)
 find_package(OpenVINO REQUIRED COMPONENTS Runtime)
+find_package(spdlog REQUIRED)
 
 file(GLOB_RECURSE CGRAPH_SOURCES CONFIGURE_DEPENDS
     ${PROJECT_ROOT}/include/CGraph/src/*.cpp
@@ -48,6 +68,7 @@ function(configure_common_target target_name)
     target_link_libraries(${target_name} PRIVATE
         ${OpenCV_LIBS}
         yaml-cpp
+        spdlog::spdlog
         pthread
     )
 endfunction()
@@ -94,6 +115,25 @@ endif()
 
 add_custom_target(all_apps
     DEPENDS ${ALL_APP_TARGETS}
+)
+
+add_custom_target(configure_release
+    COMMAND ${CMAKE_COMMAND}
+        -S ${WORKSPACE_ROOT}
+        -B ${WORKSPACE_ROOT}/2027rm_ws/build
+        -DCMAKE_BUILD_TYPE=Release
+    WORKING_DIRECTORY ${WORKSPACE_ROOT}
+    USES_TERMINAL
+)
+
+add_custom_target(build_release
+    COMMAND ${CMAKE_COMMAND}
+        --build ${WORKSPACE_ROOT}/2027rm_ws/build
+        --target cgraph_camera_detector
+        -j
+    DEPENDS configure_release
+    WORKING_DIRECTORY ${WORKSPACE_ROOT}
+    USES_TERMINAL
 )
 
 add_custom_target(run_camera_app

@@ -1,7 +1,7 @@
 #include <chrono>
 #include <cctype>
 #include <fstream>
-#include <iostream>
+#include <spdlog/spdlog.h>
 #include <string>
 #include <vector>
 
@@ -10,6 +10,7 @@
 #include <yaml-cpp/yaml.h>
 
 #include "camera_node.hpp"
+#include "logging.hpp"
 
 #ifndef CAMERA_CONFIG_PATH
 #define CAMERA_CONFIG_PATH "../config/config.yaml"
@@ -120,11 +121,12 @@ bool HikCameraNode::init(std::string *error) {
         return false;
     }
 
-    std::cout << "Loaded camera config: " << configPath
-              << " | pixel_format=" << cfg.pixel_format
-              << " | size=" << cfg.width << "x" << cfg.height
-              << " | exposure=" << cfg.exposure_time << "us"
-              << std::endl;
+    spdlog::info("Loaded camera config: {} | pixel_format={} | size={}x{} | exposure={}us",
+                 configPath,
+                 cfg.pixel_format,
+                 cfg.width,
+                 cfg.height,
+                 cfg.exposure_time);
 
     MV_CC_DEVICE_INFO_LIST deviceList{};
     int nRet = MV_CC_EnumDevices(MV_USB_DEVICE, &deviceList);
@@ -211,7 +213,7 @@ bool HikCameraNode::init(std::string *error) {
         return false;
     }
 
-    std::cout << "Camera stream started." << std::endl;
+    spdlog::info("Camera stream started.");
     return true;
 }
 
@@ -247,10 +249,12 @@ void HikCameraNode::shutdown() {
 
 #ifndef CAMERA_NODE_LIBRARY
 int main() {
+    app::logging::InitAsyncLogging();
+
     HikCameraNode camera;
     std::string error;
     if (!camera.init(&error)) {
-        std::cerr << "Camera init failed: " << error << std::endl;
+        spdlog::error("Camera init failed: {}", error);
         return -1;
     }
 
@@ -262,7 +266,7 @@ int main() {
 
     while (true) {
         if (!camera.grab(img, &error)) {
-            std::cerr << "Grab failed: " << error << std::endl;
+            spdlog::error("Grab failed: {}", error);
             continue;
         }
 

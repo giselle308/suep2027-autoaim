@@ -1,16 +1,25 @@
-#include <iostream>
+#include <spdlog/spdlog.h>
 
+#include "logging.hpp"
 #include <CGraph.h>
 
 #include "thread_startup.hpp"
 #include "yolo_app.hpp"
 
 int main() {
+    app::logging::InitAsyncLogging();
+
     const AppConfig &cfg = GetAppConfig();
 
-    std::cout << "model=" << cfg.model_path << " device=" << cfg.device << " classes=" << cfg.num_classes
-              << " conf=" << cfg.conf_thres << " nms=" << cfg.nms_thres << " threads=" << cfg.thread_num
-              << " workers=" << cfg.infer_workers << " target_color=" << cfg.target_color << std::endl;
+    spdlog::info("model={} device={} classes={} conf={} nms={} threads={} workers={} target_color={}",
+                 cfg.model_path,
+                 cfg.device,
+                 cfg.num_classes,
+                 cfg.conf_thres,
+                 cfg.nms_thres,
+                 cfg.thread_num,
+                 cfg.infer_workers,
+                 cfg.target_color);
 
     InitYoloMessageTopics();
     int ret = app::RunThreadedPipeline(cfg.thread_num, RegisterYoloPipelineElements);

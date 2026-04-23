@@ -113,6 +113,7 @@ preinstall/fast:
 
 # clear depends
 depend:
+	$(CMAKE_COMMAND) -P /home/ubuntu/桌面/test/2027rm_ws/build/CMakeFiles/VerifyGlobs.cmake
 	$(CMAKE_COMMAND) -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 1
 .PHONY : depend
 
@@ -167,6 +168,58 @@ cgraph_camera_detector: cmake_check_build_system
 cgraph_camera_detector/fast:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/cgraph_camera_detector.dir/build.make CMakeFiles/cgraph_camera_detector.dir/build
 .PHONY : cgraph_camera_detector/fast
+
+#=============================================================================
+# Target rules for targets named all_apps
+
+# Build rule for target.
+all_apps: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 all_apps
+.PHONY : all_apps
+
+# fast build rule for target.
+all_apps/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/all_apps.dir/build.make CMakeFiles/all_apps.dir/build
+.PHONY : all_apps/fast
+
+#=============================================================================
+# Target rules for targets named run_camera_app
+
+# Build rule for target.
+run_camera_app: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 run_camera_app
+.PHONY : run_camera_app
+
+# fast build rule for target.
+run_camera_app/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/run_camera_app.dir/build.make CMakeFiles/run_camera_app.dir/build
+.PHONY : run_camera_app/fast
+
+#=============================================================================
+# Target rules for targets named run_detector_app
+
+# Build rule for target.
+run_detector_app: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 run_detector_app
+.PHONY : run_detector_app
+
+# fast build rule for target.
+run_detector_app/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/run_detector_app.dir/build.make CMakeFiles/run_detector_app.dir/build
+.PHONY : run_detector_app/fast
+
+#=============================================================================
+# Target rules for targets named run_cgraph_camera_detector
+
+# Build rule for target.
+run_cgraph_camera_detector: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 run_cgraph_camera_detector
+.PHONY : run_cgraph_camera_detector
+
+# fast build rule for target.
+run_cgraph_camera_detector/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/run_cgraph_camera_detector.dir/build.make CMakeFiles/run_cgraph_camera_detector.dir/build
+.PHONY : run_cgraph_camera_detector/fast
 
 2027rm_ws/include/CGraph/src/DomainCtrl/Ann/DAnnNode.o: 2027rm_ws/include/CGraph/src/DomainCtrl/Ann/DAnnNode.cpp.o
 .PHONY : 2027rm_ws/include/CGraph/src/DomainCtrl/Ann/DAnnNode.o
@@ -990,6 +1043,7 @@ cgraph_camera_detector/fast:
 # target to build an object file
 2027rm_ws/src/camera.cpp.o:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/camera_app.dir/build.make CMakeFiles/camera_app.dir/2027rm_ws/src/camera.cpp.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/cgraph_camera_detector.dir/build.make CMakeFiles/cgraph_camera_detector.dir/2027rm_ws/src/camera.cpp.o
 .PHONY : 2027rm_ws/src/camera.cpp.o
 
 2027rm_ws/src/camera.i: 2027rm_ws/src/camera.cpp.i
@@ -998,6 +1052,7 @@ cgraph_camera_detector/fast:
 # target to preprocess a source file
 2027rm_ws/src/camera.cpp.i:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/camera_app.dir/build.make CMakeFiles/camera_app.dir/2027rm_ws/src/camera.cpp.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/cgraph_camera_detector.dir/build.make CMakeFiles/cgraph_camera_detector.dir/2027rm_ws/src/camera.cpp.i
 .PHONY : 2027rm_ws/src/camera.cpp.i
 
 2027rm_ws/src/camera.s: 2027rm_ws/src/camera.cpp.s
@@ -1006,31 +1061,8 @@ cgraph_camera_detector/fast:
 # target to generate assembly for a file
 2027rm_ws/src/camera.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/camera_app.dir/build.make CMakeFiles/camera_app.dir/2027rm_ws/src/camera.cpp.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/cgraph_camera_detector.dir/build.make CMakeFiles/cgraph_camera_detector.dir/2027rm_ws/src/camera.cpp.s
 .PHONY : 2027rm_ws/src/camera.cpp.s
-
-2027rm_ws/src/cgraph_camera_detector.o: 2027rm_ws/src/cgraph_camera_detector.cpp.o
-.PHONY : 2027rm_ws/src/cgraph_camera_detector.o
-
-# target to build an object file
-2027rm_ws/src/cgraph_camera_detector.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/cgraph_camera_detector.dir/build.make CMakeFiles/cgraph_camera_detector.dir/2027rm_ws/src/cgraph_camera_detector.cpp.o
-.PHONY : 2027rm_ws/src/cgraph_camera_detector.cpp.o
-
-2027rm_ws/src/cgraph_camera_detector.i: 2027rm_ws/src/cgraph_camera_detector.cpp.i
-.PHONY : 2027rm_ws/src/cgraph_camera_detector.i
-
-# target to preprocess a source file
-2027rm_ws/src/cgraph_camera_detector.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/cgraph_camera_detector.dir/build.make CMakeFiles/cgraph_camera_detector.dir/2027rm_ws/src/cgraph_camera_detector.cpp.i
-.PHONY : 2027rm_ws/src/cgraph_camera_detector.cpp.i
-
-2027rm_ws/src/cgraph_camera_detector.s: 2027rm_ws/src/cgraph_camera_detector.cpp.s
-.PHONY : 2027rm_ws/src/cgraph_camera_detector.s
-
-# target to generate assembly for a file
-2027rm_ws/src/cgraph_camera_detector.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/cgraph_camera_detector.dir/build.make CMakeFiles/cgraph_camera_detector.dir/2027rm_ws/src/cgraph_camera_detector.cpp.s
-.PHONY : 2027rm_ws/src/cgraph_camera_detector.cpp.s
 
 2027rm_ws/src/detector.o: 2027rm_ws/src/detector.cpp.o
 .PHONY : 2027rm_ws/src/detector.o
@@ -1056,6 +1088,54 @@ cgraph_camera_detector/fast:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/detector_app.dir/build.make CMakeFiles/detector_app.dir/2027rm_ws/src/detector.cpp.s
 .PHONY : 2027rm_ws/src/detector.cpp.s
 
+2027rm_ws/src/startup_main.o: 2027rm_ws/src/startup_main.cpp.o
+.PHONY : 2027rm_ws/src/startup_main.o
+
+# target to build an object file
+2027rm_ws/src/startup_main.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/cgraph_camera_detector.dir/build.make CMakeFiles/cgraph_camera_detector.dir/2027rm_ws/src/startup_main.cpp.o
+.PHONY : 2027rm_ws/src/startup_main.cpp.o
+
+2027rm_ws/src/startup_main.i: 2027rm_ws/src/startup_main.cpp.i
+.PHONY : 2027rm_ws/src/startup_main.i
+
+# target to preprocess a source file
+2027rm_ws/src/startup_main.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/cgraph_camera_detector.dir/build.make CMakeFiles/cgraph_camera_detector.dir/2027rm_ws/src/startup_main.cpp.i
+.PHONY : 2027rm_ws/src/startup_main.cpp.i
+
+2027rm_ws/src/startup_main.s: 2027rm_ws/src/startup_main.cpp.s
+.PHONY : 2027rm_ws/src/startup_main.s
+
+# target to generate assembly for a file
+2027rm_ws/src/startup_main.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/cgraph_camera_detector.dir/build.make CMakeFiles/cgraph_camera_detector.dir/2027rm_ws/src/startup_main.cpp.s
+.PHONY : 2027rm_ws/src/startup_main.cpp.s
+
+2027rm_ws/src/yolo.o: 2027rm_ws/src/yolo.cpp.o
+.PHONY : 2027rm_ws/src/yolo.o
+
+# target to build an object file
+2027rm_ws/src/yolo.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/cgraph_camera_detector.dir/build.make CMakeFiles/cgraph_camera_detector.dir/2027rm_ws/src/yolo.cpp.o
+.PHONY : 2027rm_ws/src/yolo.cpp.o
+
+2027rm_ws/src/yolo.i: 2027rm_ws/src/yolo.cpp.i
+.PHONY : 2027rm_ws/src/yolo.i
+
+# target to preprocess a source file
+2027rm_ws/src/yolo.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/cgraph_camera_detector.dir/build.make CMakeFiles/cgraph_camera_detector.dir/2027rm_ws/src/yolo.cpp.i
+.PHONY : 2027rm_ws/src/yolo.cpp.i
+
+2027rm_ws/src/yolo.s: 2027rm_ws/src/yolo.cpp.s
+.PHONY : 2027rm_ws/src/yolo.s
+
+# target to generate assembly for a file
+2027rm_ws/src/yolo.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/cgraph_camera_detector.dir/build.make CMakeFiles/cgraph_camera_detector.dir/2027rm_ws/src/yolo.cpp.s
+.PHONY : 2027rm_ws/src/yolo.cpp.s
+
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -1064,6 +1144,10 @@ help:
 	@echo "... depend"
 	@echo "... edit_cache"
 	@echo "... rebuild_cache"
+	@echo "... all_apps"
+	@echo "... run_camera_app"
+	@echo "... run_cgraph_camera_detector"
+	@echo "... run_detector_app"
 	@echo "... camera_app"
 	@echo "... cgraph_camera_detector"
 	@echo "... cgraph_runtime"
@@ -1173,12 +1257,15 @@ help:
 	@echo "... 2027rm_ws/src/camera.o"
 	@echo "... 2027rm_ws/src/camera.i"
 	@echo "... 2027rm_ws/src/camera.s"
-	@echo "... 2027rm_ws/src/cgraph_camera_detector.o"
-	@echo "... 2027rm_ws/src/cgraph_camera_detector.i"
-	@echo "... 2027rm_ws/src/cgraph_camera_detector.s"
 	@echo "... 2027rm_ws/src/detector.o"
 	@echo "... 2027rm_ws/src/detector.i"
 	@echo "... 2027rm_ws/src/detector.s"
+	@echo "... 2027rm_ws/src/startup_main.o"
+	@echo "... 2027rm_ws/src/startup_main.i"
+	@echo "... 2027rm_ws/src/startup_main.s"
+	@echo "... 2027rm_ws/src/yolo.o"
+	@echo "... 2027rm_ws/src/yolo.i"
+	@echo "... 2027rm_ws/src/yolo.s"
 .PHONY : help
 
 
@@ -1190,6 +1277,7 @@ help:
 # No rule that depends on this can have commands that come from listfiles
 # because they might be regenerated.
 cmake_check_build_system:
+	$(CMAKE_COMMAND) -P /home/ubuntu/桌面/test/2027rm_ws/build/CMakeFiles/VerifyGlobs.cmake
 	$(CMAKE_COMMAND) -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 0
 .PHONY : cmake_check_build_system
 
