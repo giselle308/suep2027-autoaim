@@ -1,0 +1,17 @@
+
+digraph CGraph {
+compound=true;
+p0x6031b6531fe0[label="相机发布
+camera_pub"];
+p0x6031b6531fe0 -> p0x6031b6532220;
+p0x6031b6532220[label="OpenVINO 异步推理
+async_infer"];
+p0x6031b6532220 -> p0x6031b6534460;
+p0x6031b6532220 -> p0x6031b6536030;
+p0x6031b6534460[label="PnP 解算
+pnp_solver"];
+p0x6031b6534460 -> p0x6031b6536030;
+p0x6031b6536030[label="显示/调试
+display"];
+}
+

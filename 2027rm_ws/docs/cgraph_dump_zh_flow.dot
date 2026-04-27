@@ -1,0 +1,75 @@
+digraph CGraph {
+    compound=true;
+    rankdir=LR;
+    bgcolor="white";
+    labelloc=t;
+    label="当前 CGraph 节点流程图（OpenVINO 异步推理）\nCGraph 负责节点与消息流；async_infer 节点内部使用 2 个 OpenVINO InferRequest 异步流水线";
+
+    graph [fontname="Noto Sans CJK SC"];
+    node [
+        fontname="Noto Sans CJK SC",
+        shape=box,
+        style="rounded,filled",
+        color="#475569",
+        fillcolor="#f8fafc"
+    ];
+    edge [
+        fontname="Noto Sans CJK SC",
+        color="#2563eb",
+        fontcolor="#334155"
+    ];
+
+    camera_pub [
+        label="相机发布节点\ncamera_pub\n采集图像帧"
+    ];
+    async_infer [
+        label="OpenVINO 异步推理节点\nasync_infer\nstart_async + wait_for(0)\n2 个 InferRequest 槽位"
+    ];
+    pnp_solver [
+        label="PnP 解算节点\npnp_solver\n由装甲板角点解算位姿"
+    ];
+    display [
+        label="显示/调试节点\ndisplay\n统计帧率、延迟并输出可视化"
+    ];
+
+    frame_topic [
+        label="图像帧 Topic\nrm/frame/topic\nFrameMParam\n队列满时保留最新帧",
+        shape=note,
+        color="#0284c7",
+        fillcolor="#e0f2fe"
+    ];
+    result_topic [
+        label="识别结果 Topic\nrm/result/topic\nResultMParam\n异步完成后发布",
+        shape=note,
+        color="#059669",
+        fillcolor="#dcfce7"
+    ];
+    pnp_topic [
+        label="位姿结果 Topic\nrm/pnp/topic\nPnpResultMParam",
+        shape=note,
+        color="#ea580c",
+        fillcolor="#ffedd5"
+    ];
+
+    camera_pub -> frame_topic [
+        label="发送最新图像帧\nCGRAPH_SEND_MPARAM(REPLACE)"
+    ];
+    frame_topic -> async_infer [
+        label="空闲 InferRequest 可用时取帧\nCGRAPH_RECV_MPARAM_WITH_TIMEOUT"
+    ];
+    async_infer -> result_topic [
+        label="推理完成后后处理并发布\nCGRAPH_PUB_MPARAM(REPLACE)"
+    ];
+    result_topic -> pnp_solver [
+        label="订阅角点结果\nCGRAPH_SUB_MPARAM_WITH_TIMEOUT"
+    ];
+    result_topic -> display [
+        label="订阅识别结果"
+    ];
+    pnp_solver -> pnp_topic [
+        label="发布位姿/无位姿结果"
+    ];
+    pnp_topic -> display [
+        label="订阅并匹配同帧位姿"
+    ];
+}

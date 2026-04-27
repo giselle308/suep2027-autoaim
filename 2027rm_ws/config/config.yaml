@@ -20,7 +20,7 @@ camera:
     height: 1080
     # pixel_format: 相机 Bayer 排列（常见: BayerRG8/BayerBG8/BayerGB8/BayerGR8）
     # 如果出现“红色看成蓝色”，一般改成 BayerBG8 可修复
-    pixel_format: BayerBG8
+    pixel_format: BayerRG8
     # frame_rate: 目标帧率（MV-CS016-10UC最大249fps）
     frame_rate: 249
     # frame_rate_enable: 是否启用帧率限制（false=最大速度）

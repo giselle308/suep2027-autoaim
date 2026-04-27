@@ -5,34 +5,42 @@ yolo:
   model_path: model/last.xml
   device: CPU
   # <=0 means infer from model output channels
-  num_classes: 0
+  num_classes: 2
   conf_thres: 0.20
   nms_thres: 0.25
-  # thread_num is clamped to >= 2
+  # FastNMS: keep only the top-K scoring boxes before NMS. <=0 disables the cap.
+  fast_nms_topk: 200
+  # thread_num covers long-running CGraph nodes: camera + async_infer + pnp + display.
   thread_num: 4
-  # infer_workers is clamped to [1, 2]
+  # Number of OpenVINO async InferRequest slots inside the single async_infer node.
+  # Clamped to [1, 2] in code for low-latency real-time use.
   infer_workers: 2
+  # Only evaluate color on the top-K post-NMS boxes to bound target-hit latency.
+  max_color_candidates: 8
+  # EMA filter for detected armor corner points before display and PnP.
+  # alpha closer to 1.0 is more responsive; closer to 0.0 is smoother.
+  ema_enable: true
+  ema_alpha: 0.45
+  ema_reset_frame_gap: 10
   # supported: red | blue
   target_color: red
 
-color_filter:
-  # Per-box resize cap to bound CPU cost under many detections
-  roi_max_side: 100
-  # Binary threshold for bright color channel (0-255)
-  bright_threshold: 80
-  # Binary threshold for color dominance map (0-255)
-  dominance_threshold: 12
-  # Minimum colored pixel ratio inside ROI
-  min_color_ratio: 0.005
-  # Ratio needed to decide red vs blue dominance
-  dominance_ratio: 1.0
-  # Morph open kernel size (odd number recommended)
-  morph_kernel: 3
-  # Lightweight prefilter before binary refinement (latency oriented)
-  fast_roi_max_side: 48
-  fast_bright_threshold: 90
-  fast_dominance_threshold: 8
-  fast_dominance_ratio: 1.08
+pnp:
+  enable: true
+  # Physical armor size in meters.
+  # Detected points are ordered lightbar endpoints:
+  # left-top -> right-top -> right-bottom -> left-bottom.
+  small_armor_width_m: 0.137
+  big_armor_width_m: 0.230
+  armor_length_m: 0.125
+  lightbar_length_m: 0.057
+  # Rigid pose validation: reject PnP results whose fixed 3D armor rectangle
+  # cannot reproject tightly onto detected image corners.
+  rigid_constraint_enable: true
+  max_mean_reprojection_error_px: 4.0
+  max_corner_reprojection_error_px: 8.0
+  min_depth_m: 0.05
+  max_depth_m: 20.0
 
 debug:
   # true: generate and send visualization frames for foxglove
@@ -50,9 +58,7 @@ logging:
   thread_count: 1
   # overrun_oldest | block
   overflow_policy: overrun_oldest
-  # true: print per-infer-node YOLO infer FPS logs
-  infer_fps_enable: true
-  # true: print end-to-end FPS and latency logs
+  # true: print total FPS, end-to-end latency, and det count logs
   e2e_enable: true
   # spdlog pattern
   pattern: "[%Y-%m-%d %H:%M:%S.%e] [%^%l%$] [tid %t] %v"

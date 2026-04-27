@@ -1,5 +1,6 @@
 #include <chrono>
 #include <cctype>
+#include <cstring>
 #include <fstream>
 #include <spdlog/spdlog.h>
 #include <string>
@@ -51,12 +52,50 @@ static unsigned int GetPixelFormatEnum(const std::string &fmt)
     return PixelType_Gvsp_BayerRG8;
 }
 
-static int GetBayerCvtCode(const std::string &fmt) {
-    const std::string f = ToLower(fmt);
-    if (f == "bayerbg8") return cv::COLOR_BayerBG2BGR;
-    if (f == "bayergb8") return cv::COLOR_BayerGB2BGR;
-    if (f == "bayergr8") return cv::COLOR_BayerGR2BGR;
-    return cv::COLOR_BayerRG2BGR;
+static const char *PixelFormatName(unsigned int fmt)
+{
+    switch (fmt) {
+        case PixelType_Gvsp_BayerBG8: return "BayerBG8";
+        case PixelType_Gvsp_BayerGB8: return "BayerGB8";
+        case PixelType_Gvsp_BayerGR8: return "BayerGR8";
+        case PixelType_Gvsp_BayerRG8: return "BayerRG8";
+        case PixelType_Gvsp_BGR8_Packed: return "BGR8_Packed";
+        case PixelType_Gvsp_RGB8_Packed: return "RGB8_Packed";
+        case PixelType_Gvsp_Mono8: return "Mono8";
+        case PixelType_Gvsp_HB_BayerBG8: return "HB_BayerBG8";
+        case PixelType_Gvsp_HB_BayerGB8: return "HB_BayerGB8";
+        case PixelType_Gvsp_HB_BayerGR8: return "HB_BayerGR8";
+        case PixelType_Gvsp_HB_BayerRG8: return "HB_BayerRG8";
+        case PixelType_Gvsp_HB_BGR8_Packed: return "HB_BGR8_Packed";
+        default: return "Unknown";
+    }
+}
+
+static std::string DescribePixelFormatSupport(void *handle)
+{
+    MVCC_ENUMVALUE enum_value{};
+    const int ret = MV_CC_GetEnumValue(handle, "PixelFormat", &enum_value);
+    if (ret != MV_OK) {
+        return "unavailable";
+    }
+
+    std::string desc = "current=" + std::string(PixelFormatName(enum_value.nCurValue)) +
+                       "(" + std::to_string(enum_value.nCurValue) + ")";
+    if (enum_value.nSupportedNum > 0) {
+        desc += " supported=";
+        const unsigned int limit = std::min(enum_value.nSupportedNum, 8U);
+        for (unsigned int i = 0; i < limit; ++i) {
+            if (i > 0) {
+                desc += ",";
+            }
+            const unsigned int value = enum_value.nSupportValue[i];
+            desc += std::string(PixelFormatName(value)) + "(" + std::to_string(value) + ")";
+        }
+        if (enum_value.nSupportedNum > limit) {
+            desc += ",...";
+        }
+    }
+    return desc;
 }
 
 static YAML::Node LoadConfigWithFallback(std::string &usedPath) {
@@ -152,10 +191,24 @@ bool HikCameraNode::init(std::string *error) {
         return false;
     }
 
-    bayer_cvt_code_ = GetBayerCvtCode(cfg.pixel_format);
-    MV_CC_SetIntValue(handle_, "Width", cfg.width);
-    MV_CC_SetIntValue(handle_, "Height", cfg.height);
-    MV_CC_SetEnumValue(handle_, "PixelFormat", GetPixelFormatEnum(cfg.pixel_format));
+    nRet = MV_CC_SetIntValue(handle_, "Width", cfg.width);
+    if (nRet != MV_OK) {
+        if (error) *error = "设置宽度失败";
+        shutdown();
+        return false;
+    }
+    nRet = MV_CC_SetIntValue(handle_, "Height", cfg.height);
+    if (nRet != MV_OK) {
+        if (error) *error = "设置高度失败";
+        shutdown();
+        return false;
+    }
+    nRet = MV_CC_SetEnumValue(handle_, "PixelFormat", GetPixelFormatEnum(cfg.pixel_format));
+    if (nRet != MV_OK) {
+        spdlog::warn("Set PixelFormat={} failed, fallback to camera current format. {}",
+                     cfg.pixel_format,
+                     DescribePixelFormatSupport(handle_));
+    }
 
     if (cfg.trigger_mode == "off") {
         MV_CC_SetEnumValue(handle_, "TriggerMode", 0);
@@ -206,6 +259,8 @@ bool HikCameraNode::init(std::string *error) {
         return false;
     }
 
+    (void)MV_CC_SetBayerCvtQuality(handle_, 1);
+
     nRet = MV_CC_StartGrabbing(handle_);
     if (nRet != MV_OK) {
         if (error) *error = "开始取流失败";
@@ -217,7 +272,9 @@ bool HikCameraNode::init(std::string *error) {
     return true;
 }
 
-bool HikCameraNode::grab(cv::Mat &bgr, std::string *error) {
+bool HikCameraNode::grab(cv::Mat &bgr,
+                         std::chrono::steady_clock::time_point *capture_tp,
+                         std::string *error) {
     if (handle_ == nullptr) {
         if (error) *error = "camera not initialized";
         return false;
@@ -229,11 +286,35 @@ bool HikCameraNode::grab(cv::Mat &bgr, std::string *error) {
         if (error) *error = "获取图像失败";
         return false;
     }
+    if (capture_tp) {
+        *capture_tp = std::chrono::steady_clock::now();
+    }
 
     const int h = static_cast<int>(frame.stFrameInfo.nHeight);
     const int w = static_cast<int>(frame.stFrameInfo.nWidth);
-    cv::Mat raw(h, w, CV_8UC1, frame.pBufAddr);
-    cv::cvtColor(raw, bgr, bayer_cvt_code_);
+    const auto src_pixel_type = static_cast<MvGvspPixelType>(frame.stFrameInfo.enPixelType);
+
+    bgr.create(h, w, CV_8UC3);
+    if (src_pixel_type == PixelType_Gvsp_BGR8_Packed || src_pixel_type == PixelType_Gvsp_HB_BGR8_Packed) {
+        std::memcpy(bgr.data, frame.pBufAddr, static_cast<std::size_t>(h) * static_cast<std::size_t>(w) * 3U);
+    } else {
+        MV_CC_PIXEL_CONVERT_PARAM_EX convert_param{};
+        convert_param.nWidth = static_cast<unsigned int>(w);
+        convert_param.nHeight = static_cast<unsigned int>(h);
+        convert_param.enSrcPixelType = src_pixel_type;
+        convert_param.pSrcData = static_cast<unsigned char *>(frame.pBufAddr);
+        convert_param.nSrcDataLen = frame.stFrameInfo.nFrameLen;
+        convert_param.enDstPixelType = PixelType_Gvsp_BGR8_Packed;
+        convert_param.pDstBuffer = bgr.data;
+        convert_param.nDstBufferSize = static_cast<unsigned int>(bgr.total() * bgr.elemSize());
+
+        const int convert_ret = MV_CC_ConvertPixelTypeEx(handle_, &convert_param);
+        if (convert_ret != MV_OK) {
+            MV_CC_FreeImageBuffer(handle_, &frame);
+            if (error) *error = "像素格式转换失败";
+            return false;
+        }
+    }
     MV_CC_FreeImageBuffer(handle_, &frame);
     return true;
 }
@@ -265,7 +346,7 @@ int main() {
     auto fpsStart = std::chrono::steady_clock::now();
 
     while (true) {
-        if (!camera.grab(img, &error)) {
+        if (!camera.grab(img, nullptr, &error)) {
             spdlog::error("Grab failed: {}", error);
             continue;
         }

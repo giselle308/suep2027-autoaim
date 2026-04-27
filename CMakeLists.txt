@@ -93,7 +93,12 @@ endif()
 add_executable(cgraph_camera_detector
     $<TARGET_OBJECTS:cgraph_runtime>
     ${PROJECT_ROOT}/src/camera.cpp
+    ${PROJECT_ROOT}/src/display_node.cpp
+    ${PROJECT_ROOT}/src/pnp_solver.cpp
+    ${PROJECT_ROOT}/src/postprocess.cpp
     ${PROJECT_ROOT}/src/yolo.cpp
+    ${PROJECT_ROOT}/src/yolo_config_loader.cpp
+    ${PROJECT_ROOT}/src/yolo_openvino.cpp
     ${PROJECT_ROOT}/src/startup_main.cpp
 )
 configure_common_target(cgraph_camera_detector)
