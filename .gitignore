@@ -1,10 +1,15 @@
 # Build directories
 /build/
 /2027rm_ws/build/
+/2027rm_ws/build-perf/
 
 # Generated output directory
 /output/
 /2027rm_ws/output/
+
+# Profiling outputs
+/perf.svg
+/2027rm_ws/perf/
 
 # CMake generated files (root only)
 /CMakeCache.txt
@@ -35,6 +40,7 @@
 # Logs
 *.log
 *.log.*
+/MvSdkLog/
 
 # Python cache and virtual environment
 __pycache__/
@@ -50,4 +56,3 @@ __pycache__/
 # OS generated files
 .DS_Store
 Thumbs.db
-

@@ -6,6 +6,7 @@
 #include <spdlog/spdlog.h>
 
 #include "yolo_common.hpp"
+#include "profiling.hpp"
 
 bool YoloOpenvino::init(const AppConfig &cfg, std::string *error)
 {
@@ -105,11 +106,15 @@ bool YoloOpenvino::submit(const FrameMParam &frame_msg, std::string *error)
     slot.frame = frame_msg.frame;
     slot.frame_id = frame_msg.frame_id;
     slot.capture_tp = frame_msg.capture_tp;
-    preprocess(slot.frame, slot.resized_img, slot.blob, slot.lb);
+    {
+        app::profiling::ScopedTimer timer(app::profiling::Stage::Preprocess);
+        preprocess(slot.frame, slot.resized_img, slot.blob, slot.lb);
+    }
     ov::Tensor in_tensor(ov::element::f32,
                          ov::Shape{1, 3, static_cast<size_t>(input_h_), static_cast<size_t>(input_w_)},
                          slot.blob.ptr<float>());
     slot.request.set_input_tensor(in_tensor);
+    slot.submit_tp = std::chrono::steady_clock::now();
     slot.request.start_async();
     slot.busy = true;
     return true;
@@ -187,6 +192,8 @@ bool YoloOpenvino::finishSlot(AsyncSlot &slot, std::shared_ptr<ResultMParam> &re
 {
     try
     {
+        app::profiling::Record(app::profiling::Stage::InferAsync, ElapsedMsSince(slot.submit_tp));
+        app::profiling::ScopedTimer post_timer(app::profiling::Stage::Postprocess);
         ov::Tensor out = slot.request.get_output_tensor();
         const TargetColor target = ParseTargetColor(GetAppConfig().target_color);
         std::vector<Detection> dets = postprocessor_->run(slot.frame, out, slot.lb, GetAppConfig(), [&](int class_id) {

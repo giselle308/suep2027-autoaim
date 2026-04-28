@@ -12,6 +12,7 @@
 
 #include "camera_node.hpp"
 #include "logging.hpp"
+#include "profiling.hpp"
 
 #ifndef CAMERA_CONFIG_PATH
 #define CAMERA_CONFIG_PATH "../config/config.yaml"
@@ -275,6 +276,7 @@ bool HikCameraNode::init(std::string *error) {
 bool HikCameraNode::grab(cv::Mat &bgr,
                          std::chrono::steady_clock::time_point *capture_tp,
                          std::string *error) {
+    app::profiling::ScopedTimer grab_timer(app::profiling::Stage::CameraGrab);
     if (handle_ == nullptr) {
         if (error) *error = "camera not initialized";
         return false;
@@ -308,6 +310,7 @@ bool HikCameraNode::grab(cv::Mat &bgr,
         convert_param.pDstBuffer = bgr.data;
         convert_param.nDstBufferSize = static_cast<unsigned int>(bgr.total() * bgr.elemSize());
 
+        app::profiling::ScopedTimer convert_timer(app::profiling::Stage::PixelConvert);
         const int convert_ret = MV_CC_ConvertPixelTypeEx(handle_, &convert_param);
         if (convert_ret != MV_OK) {
             MV_CC_FreeImageBuffer(handle_, &frame);

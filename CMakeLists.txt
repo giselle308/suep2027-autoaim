@@ -24,6 +24,12 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
+option(CAMERAAPP_PERF_SYMBOLS "Build with debug symbols and frame pointers for perf" OFF)
+if(CAMERAAPP_PERF_SYMBOLS AND CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
+    set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -g -fno-omit-frame-pointer")
+    set(CMAKE_INTERPROCEDURAL_OPTIMIZATION_RELEASE OFF)
+endif()
+
 set(WORKSPACE_ROOT ${CMAKE_CURRENT_SOURCE_DIR})
 set(PROJECT_ROOT ${WORKSPACE_ROOT}/2027rm_ws)
 
@@ -75,6 +81,7 @@ endfunction()
 
 add_executable(camera_app
     ${PROJECT_ROOT}/src/camera.cpp
+    ${PROJECT_ROOT}/src/profiling.cpp
 )
 configure_common_target(camera_app)
 target_link_libraries(camera_app PRIVATE ${CAMERA_SDK_LIBS})
@@ -96,6 +103,7 @@ add_executable(cgraph_camera_detector
     ${PROJECT_ROOT}/src/display_node.cpp
     ${PROJECT_ROOT}/src/pnp_solver.cpp
     ${PROJECT_ROOT}/src/postprocess.cpp
+    ${PROJECT_ROOT}/src/profiling.cpp
     ${PROJECT_ROOT}/src/yolo.cpp
     ${PROJECT_ROOT}/src/yolo_config_loader.cpp
     ${PROJECT_ROOT}/src/yolo_openvino.cpp

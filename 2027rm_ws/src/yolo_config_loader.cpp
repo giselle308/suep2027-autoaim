@@ -123,7 +123,7 @@ void LoadYoloConfig(AppConfig &cfg)
             if (yolo["nms_thres"]) cfg.nms_thres = yolo["nms_thres"].as<float>();
             if (yolo["fast_nms_topk"]) cfg.fast_nms_topk = yolo["fast_nms_topk"].as<int>();
             if (yolo["thread_num"]) cfg.thread_num = std::max(2, yolo["thread_num"].as<int>());
-            if (yolo["infer_workers"]) cfg.infer_workers = std::max(1, std::min(2, yolo["infer_workers"].as<int>()));
+            if (yolo["infer_workers"]) cfg.infer_workers = std::max(1, yolo["infer_workers"].as<int>());
             if (yolo["max_color_candidates"]) cfg.max_color_candidates = std::max(1, yolo["max_color_candidates"].as<int>());
             if (yolo["ema_enable"]) cfg.ema_enable = yolo["ema_enable"].as<bool>();
             if (yolo["ema_alpha"]) cfg.ema_alpha = std::clamp(yolo["ema_alpha"].as<double>(), 0.0, 1.0);
@@ -150,6 +150,13 @@ void LoadYoloConfig(AppConfig &cfg)
         if (debug && debug["foxglove_enable"])
         {
             g_foxglove_debug = debug["foxglove_enable"].as<bool>();
+        }
+
+        const YAML::Node profiling = root["profiling"];
+        if (profiling)
+        {
+            if (profiling["enable"]) cfg.profiling_enable = profiling["enable"].as<bool>();
+            if (profiling["interval_ms"]) cfg.profiling_interval_ms = std::max(100, profiling["interval_ms"].as<int>());
         }
 
         if (cfg.target_color != "red" && cfg.target_color != "blue")

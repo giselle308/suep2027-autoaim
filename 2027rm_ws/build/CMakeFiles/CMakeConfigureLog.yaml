@@ -4383,3 +4383,81 @@ events:
         
       exitCode: 0
 ...
+
+---
+events:
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "/usr/share/cmake-4.2/Modules/CheckIPOSupported.cmake:197 (try_compile)"
+      - "/usr/share/cmake-4.2/Modules/CheckIPOSupported.cmake:320 (_ipo_run_language_check)"
+      - "CMakeLists.txt:16 (check_ipo_supported)"
+    directories:
+      source: "/home/ubuntu/\u684c\u9762/test/2027rm_ws/build/CMakeFiles/_CMakeLTOTest-CXX/src"
+      binary: "/home/ubuntu/\u684c\u9762/test/2027rm_ws/build/CMakeFiles/_CMakeLTOTest-CXX/bin"
+    buildResult:
+      variable: "_IPO_LANGUAGE_CHECK_RESULT"
+      cached: true
+      stdout: |
+        Change Dir: '/home/ubuntu/桌面/test/2027rm_ws/build/CMakeFiles/_CMakeLTOTest-CXX/bin'
+        
+        Run Build Command(s): /usr/bin/ninja -v
+        [1/4] /usr/bin/c++   -flto=auto -fno-fat-lto-objects -o CMakeFiles/boo.dir/main.cpp.o -c '/home/ubuntu/桌面/test/2027rm_ws/build/CMakeFiles/_CMakeLTOTest-CXX/src/main.cpp'
+        [2/4] /usr/bin/c++   -flto=auto -fno-fat-lto-objects -o CMakeFiles/foo.dir/foo.cpp.o -c '/home/ubuntu/桌面/test/2027rm_ws/build/CMakeFiles/_CMakeLTOTest-CXX/src/foo.cpp'
+        [3/4] : && /usr/bin/cmake -E rm -f libfoo.a && "/usr/bin/gcc-ar-11" qc libfoo.a  CMakeFiles/foo.dir/foo.cpp.o && "/usr/bin/gcc-ranlib-11" libfoo.a && :
+        [4/4] : && /usr/bin/c++ -flto=auto -fno-fat-lto-objects  CMakeFiles/boo.dir/main.cpp.o -o boo  libfoo.a && :
+        
+      exitCode: 0
+...
+
+---
+events:
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "/usr/share/cmake-4.2/Modules/CheckIPOSupported.cmake:197 (try_compile)"
+      - "/usr/share/cmake-4.2/Modules/CheckIPOSupported.cmake:320 (_ipo_run_language_check)"
+      - "CMakeLists.txt:16 (check_ipo_supported)"
+    directories:
+      source: "/home/ubuntu/\u684c\u9762/test/2027rm_ws/build/CMakeFiles/_CMakeLTOTest-CXX/src"
+      binary: "/home/ubuntu/\u684c\u9762/test/2027rm_ws/build/CMakeFiles/_CMakeLTOTest-CXX/bin"
+    buildResult:
+      variable: "_IPO_LANGUAGE_CHECK_RESULT"
+      cached: true
+      stdout: |
+        Change Dir: '/home/ubuntu/桌面/test/2027rm_ws/build/CMakeFiles/_CMakeLTOTest-CXX/bin'
+        
+        Run Build Command(s): /usr/bin/ninja -v
+        [1/4] /usr/bin/c++   -flto=auto -fno-fat-lto-objects -o CMakeFiles/boo.dir/main.cpp.o -c '/home/ubuntu/桌面/test/2027rm_ws/build/CMakeFiles/_CMakeLTOTest-CXX/src/main.cpp'
+        [2/4] /usr/bin/c++   -flto=auto -fno-fat-lto-objects -o CMakeFiles/foo.dir/foo.cpp.o -c '/home/ubuntu/桌面/test/2027rm_ws/build/CMakeFiles/_CMakeLTOTest-CXX/src/foo.cpp'
+        [3/4] : && /usr/bin/cmake -E rm -f libfoo.a && "/usr/bin/gcc-ar-11" qc libfoo.a  CMakeFiles/foo.dir/foo.cpp.o && "/usr/bin/gcc-ranlib-11" libfoo.a && :
+        [4/4] : && /usr/bin/c++ -flto=auto -fno-fat-lto-objects  CMakeFiles/boo.dir/main.cpp.o -o boo  libfoo.a && :
+        
+      exitCode: 0
+...
+
+---
+events:
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "/usr/share/cmake-4.2/Modules/CheckIPOSupported.cmake:197 (try_compile)"
+      - "/usr/share/cmake-4.2/Modules/CheckIPOSupported.cmake:320 (_ipo_run_language_check)"
+      - "CMakeLists.txt:16 (check_ipo_supported)"
+    directories:
+      source: "/home/ubuntu/\u684c\u9762/test/2027rm_ws/build/CMakeFiles/_CMakeLTOTest-CXX/src"
+      binary: "/home/ubuntu/\u684c\u9762/test/2027rm_ws/build/CMakeFiles/_CMakeLTOTest-CXX/bin"
+    buildResult:
+      variable: "_IPO_LANGUAGE_CHECK_RESULT"
+      cached: true
+      stdout: |
+        Change Dir: '/home/ubuntu/桌面/test/2027rm_ws/build/CMakeFiles/_CMakeLTOTest-CXX/bin'
+        
+        Run Build Command(s): /usr/bin/ninja -v
+        [1/4] /usr/bin/c++   -flto=auto -fno-fat-lto-objects -o CMakeFiles/foo.dir/foo.cpp.o -c '/home/ubuntu/桌面/test/2027rm_ws/build/CMakeFiles/_CMakeLTOTest-CXX/src/foo.cpp'
+        [2/4] /usr/bin/c++   -flto=auto -fno-fat-lto-objects -o CMakeFiles/boo.dir/main.cpp.o -c '/home/ubuntu/桌面/test/2027rm_ws/build/CMakeFiles/_CMakeLTOTest-CXX/src/main.cpp'
+        [3/4] : && /usr/bin/cmake -E rm -f libfoo.a && "/usr/bin/gcc-ar-11" qc libfoo.a  CMakeFiles/foo.dir/foo.cpp.o && "/usr/bin/gcc-ranlib-11" libfoo.a && :
+        [4/4] : && /usr/bin/c++ -flto=auto -fno-fat-lto-objects  CMakeFiles/boo.dir/main.cpp.o -o boo  libfoo.a && :
+        
+      exitCode: 0
+...

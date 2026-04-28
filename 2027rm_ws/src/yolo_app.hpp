@@ -32,6 +32,8 @@ struct AppConfig {
     double pnp_max_corner_reprojection_error_px = 8.0;
     double pnp_min_depth_m = 0.05;
     double pnp_max_depth_m = 20.0;
+    bool profiling_enable = false;
+    int profiling_interval_ms = 1000;
 };
 
 inline constexpr const char *FRAME_TOPIC = "rm/frame/topic";

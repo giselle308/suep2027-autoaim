@@ -3,6 +3,7 @@
 #include "logging.hpp"
 #include <CGraph.h>
 
+#include "profiling.hpp"
 #include "thread_startup.hpp"
 #include "yolo_app.hpp"
 
@@ -10,8 +11,9 @@ int main() {
     app::logging::InitAsyncLogging();
 
     const AppConfig &cfg = GetAppConfig();
+    app::profiling::Configure(cfg.profiling_enable, cfg.profiling_interval_ms);
 
-    spdlog::info("model={} device={} classes={} conf={} nms={} fast_nms_topk={} threads={} workers={} target_color={} pnp_enable={} pnp_small_width_m={} pnp_big_width_m={} pnp_armor_length_m={} pnp_lightbar_length_m={} pnp_rigid_constraint={} pnp_reproj_mean_px={} pnp_reproj_corner_px={} pnp_depth_range_m=[{},{}]",
+    spdlog::info("model={} device={} classes={} conf={} nms={} fast_nms_topk={} threads={} workers={} target_color={} pnp_enable={} pnp_small_width_m={} pnp_big_width_m={} pnp_armor_length_m={} pnp_lightbar_length_m={} pnp_rigid_constraint={} pnp_reproj_mean_px={} pnp_reproj_corner_px={} pnp_depth_range_m=[{},{}] profiling={} profiling_interval_ms={}",
                  cfg.model_path,
                  cfg.device,
                  cfg.num_classes,
@@ -30,7 +32,9 @@ int main() {
                  cfg.pnp_max_mean_reprojection_error_px,
                  cfg.pnp_max_corner_reprojection_error_px,
                  cfg.pnp_min_depth_m,
-                 cfg.pnp_max_depth_m);
+                 cfg.pnp_max_depth_m,
+                 cfg.profiling_enable,
+                 cfg.profiling_interval_ms);
 
     InitYoloMessageTopics();
     int ret = app::RunThreadedPipeline(cfg.thread_num, RegisterYoloPipelineElements);

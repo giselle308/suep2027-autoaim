@@ -13,8 +13,8 @@ yolo:
   # thread_num covers long-running CGraph nodes: camera + async_infer + pnp + display.
   thread_num: 4
   # Number of OpenVINO async InferRequest slots inside the single async_infer node.
-  # Clamped to [1, 2] in code for low-latency real-time use.
-  infer_workers: 2
+  # Values above 2 may improve throughput but can increase latency/resource use.
+  infer_workers: 3
   # Only evaluate color on the top-K post-NMS boxes to bound target-hit latency.
   max_color_candidates: 8
   # EMA filter for detected armor corner points before display and PnP.
@@ -46,6 +46,12 @@ debug:
   # true: generate and send visualization frames for foxglove
   # false: normal run without visualization rendering
   foxglove_enable: false
+
+profiling:
+  # true: print per-stage timing logs for performance tuning
+  enable: true
+  # profiling summary interval in milliseconds
+  interval_ms: 1000
   
 logging:
   # trace | debug | info | warn | error | critical | off

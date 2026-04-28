@@ -13,6 +13,7 @@
 #include <spdlog/spdlog.h>
 #include <yaml-cpp/yaml.h>
 
+#include "profiling.hpp"
 #include "yolo_app.hpp"
 
 using namespace CGraph;
@@ -561,6 +562,7 @@ public:
             }
             last_processed_frame_id_ = result->frame_id;
 
+            app::profiling::ScopedTimer pnp_total_timer(app::profiling::Stage::PnpTotal);
             const std::vector<cv::Point2f> image_corners(result->corners.begin(), result->corners.end());
             const ArmorType armor_type = InferArmorType(result->corners, geometry_);
             const std::vector<cv::Point3f> &object_corners =
@@ -572,37 +574,41 @@ public:
             cv::Mat rvec;
             cv::Mat tvec;
 
-            bool ok = SolveArmorPnpIppe(object_corners,
-                                        image_corners,
-                                        calibration_,
-                                        constraint_,
-                                        rvec,
-                                        tvec);
-            if (!ok)
-            {
-                ok = cv::solvePnP(object_corners,
-                                  image_corners,
-                                  calibration_.camera_matrix,
-                                  calibration_.distortion_coeffs,
-                                  rvec,
-                                  tvec,
-                                  false,
-                                  cv::SOLVEPNP_ITERATIVE);
-            }
             ReprojectionStats reprojection_stats;
             bool valid_depth = false;
             bool valid_reprojection = false;
-            if (ok)
+            bool ok = false;
             {
-                reprojection_stats = ComputeReprojectionStats(object_corners,
-                                                              image_corners,
-                                                              calibration_,
-                                                              rvec,
-                                                              tvec);
-                valid_depth = HasValidRigidDepth(object_corners, rvec, tvec, constraint_);
-                valid_reprojection =
-                    reprojection_stats.mean_error_px <= constraint_.max_mean_reprojection_error_px &&
-                    reprojection_stats.max_error_px <= constraint_.max_corner_reprojection_error_px;
+                app::profiling::ScopedTimer pnp_solve_timer(app::profiling::Stage::PnpSolve);
+                ok = SolveArmorPnpIppe(object_corners,
+                                       image_corners,
+                                       calibration_,
+                                       constraint_,
+                                       rvec,
+                                       tvec);
+                if (!ok)
+                {
+                    ok = cv::solvePnP(object_corners,
+                                      image_corners,
+                                      calibration_.camera_matrix,
+                                      calibration_.distortion_coeffs,
+                                      rvec,
+                                      tvec,
+                                      false,
+                                      cv::SOLVEPNP_ITERATIVE);
+                }
+                if (ok)
+                {
+                    reprojection_stats = ComputeReprojectionStats(object_corners,
+                                                                  image_corners,
+                                                                  calibration_,
+                                                                  rvec,
+                                                                  tvec);
+                    valid_depth = HasValidRigidDepth(object_corners, rvec, tvec, constraint_);
+                    valid_reprojection =
+                        reprojection_stats.mean_error_px <= constraint_.max_mean_reprojection_error_px &&
+                        reprojection_stats.max_error_px <= constraint_.max_corner_reprojection_error_px;
+                }
             }
             if (ok && constraint_.enable && !valid_depth)
             {
@@ -660,6 +666,7 @@ public:
             DumpPnpForFoxglove(*pnp_result);
             ++solved_count;
             maybe_log_stats();
+            app::profiling::LogIfDue();
         }
 
         return CStatus();

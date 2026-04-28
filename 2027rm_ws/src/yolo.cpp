@@ -7,6 +7,7 @@
 
 #include "camera_node.hpp"
 #include "display_node.hpp"
+#include "profiling.hpp"
 #include "yolo_app.hpp"
 #include "yolo_common.hpp"
 #include "yolo_openvino.hpp"
@@ -51,6 +52,7 @@ public:
             {
                 return st;
             }
+            app::profiling::LogIfDue();
         }
         return CStatus();
     }
@@ -139,6 +141,7 @@ public:
             {
                 return CStatus(err);
             }
+            app::profiling::LogIfDue();
         }
 
         std::vector<std::shared_ptr<ResultMParam>> tail_results;
