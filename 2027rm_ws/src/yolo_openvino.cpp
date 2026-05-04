@@ -3,7 +3,7 @@
 #include <algorithm>
 #include <cmath>
 
-#include <opencv2/dnn.hpp>
+#include <openvino/core/preprocess/pre_post_process.hpp>
 #include <spdlog/spdlog.h>
 
 #include "yolo_common.hpp"
@@ -16,9 +16,22 @@ bool YoloOpenvino::init(const AppConfig &cfg, std::string *error)
         num_classes_ = cfg.num_classes;
         conf_thres_ = cfg.conf_thres;
         nms_thres_ = cfg.nms_thres;
+        target_color_ = ParseTargetColor(cfg.target_color);
+        max_color_candidates_ = std::max(1, cfg.max_color_candidates);
         const std::string resolved_model_path = ResolveModelPath(cfg.model_path);
         class_labels_ = LoadModelLabels(resolved_model_path);
         auto model = core_.read_model(resolved_model_path);
+        ov::preprocess::PrePostProcessor ppp(model);
+        ppp.input().tensor()
+            .set_element_type(ov::element::u8)
+            .set_layout("NHWC")
+            .set_color_format(ov::preprocess::ColorFormat::BGR);
+        ppp.input().model().set_layout("NCHW");
+        ppp.input().preprocess()
+            .convert_element_type(ov::element::f32)
+            .convert_color(ov::preprocess::ColorFormat::RGB)
+            .scale(255.0f);
+        model = ppp.build();
         compiled = core_.compile_model(
             model,
             cfg.device,
@@ -62,10 +75,9 @@ bool YoloOpenvino::init(const AppConfig &cfg, std::string *error)
                 notifyRequestCompleted(exception);
             });
             slot.infer_id = i + 1;
-            slot.blob.create(1, 3 * input_h_ * input_w_, CV_32F);
             slots_.push_back(std::move(slot));
         }
-        spdlog::info("OpenVINO policy: device={} performance_mode=LATENCY num_streams=1 async_requests={}",
+        spdlog::info("OpenVINO policy: device={} performance_mode=LATENCY num_streams=1 async_requests={} preprocess=u8_nhwc_bgr",
                      cfg.device,
                      async_request_count_);
         return true;
@@ -110,10 +122,13 @@ bool YoloOpenvino::submit(const FrameMParam &frame_msg, std::string *error)
     slot.frame = frame_msg.frame;
     slot.frame_id = frame_msg.frame_id;
     slot.capture_tp = frame_msg.capture_tp;
-    preprocess(slot);
-    ov::Tensor in_tensor(ov::element::f32,
-                         ov::Shape{1, 3, static_cast<size_t>(input_h_), static_cast<size_t>(input_w_)},
-                         slot.blob.ptr<float>());
+    {
+        app::profiling::ScopedTimer preprocess_timer(app::profiling::Stage::Preprocess);
+        preprocess(slot);
+    }
+    ov::Tensor in_tensor(ov::element::u8,
+                         ov::Shape{1, static_cast<size_t>(input_h_), static_cast<size_t>(input_w_), 3},
+                         slot.letterbox_img.data);
     slot.request.set_input_tensor(in_tensor);
     slot.submit_tp = std::chrono::steady_clock::now();
     slot.request.start_async();
@@ -260,14 +275,17 @@ bool YoloOpenvino::finishSlot(AsyncSlot &slot, std::shared_ptr<ResultMParam> &re
         app::profiling::Record(app::profiling::Stage::InferAsync, ElapsedMsSince(slot.submit_tp));
         app::profiling::ScopedTimer post_timer(app::profiling::Stage::Postprocess);
         ov::Tensor out = slot.request.get_output_tensor();
-        const TargetColor target = ParseTargetColor(GetAppConfig().target_color);
-        std::vector<Detection> dets = postprocessor_->run(slot.frame, out, slot.lb, GetAppConfig(), [&](int class_id) {
-            return MatchTargetColorByClass(class_id, target);
-        });
-        std::sort(dets.begin(), dets.end(), [](const Detection &a, const Detection &b) {
-            return a.confidence > b.confidence;
+        const AppConfig &cfg = GetAppConfig();
+        std::vector<Detection> dets = postprocessor_->run(slot.frame, out, slot.lb, cfg, [&](int class_id) {
+            return MatchTargetColorByClass(class_id, target_color_);
         });
         const bool enable_vis = IsFoxgloveDebugEnabled();
+        if (enable_vis)
+        {
+            std::sort(dets.begin(), dets.end(), [](const Detection &a, const Detection &b) {
+                return a.confidence > b.confidence;
+            });
+        }
         cv::Mat vis;
         if (enable_vis)
         {
@@ -286,10 +304,11 @@ bool YoloOpenvino::finishSlot(AsyncSlot &slot, std::shared_ptr<ResultMParam> &re
             cv::Point2f(0.0f, 0.0f),
             cv::Point2f(0.0f, 0.0f)};
         float best_conf = -1.0f;
-        const cv::Scalar box_color = (target == TargetColor::Red)
+        const cv::Scalar box_color = (target_color_ == TargetColor::Red)
                                          ? cv::Scalar(0, 0, 255)
-                                         : (target == TargetColor::Blue ? cv::Scalar(255, 0, 0) : cv::Scalar(0, 255, 0));
-        const int candidate_limit = std::min(static_cast<int>(dets.size()), std::max(1, GetAppConfig().max_color_candidates));
+                                         : (target_color_ == TargetColor::Blue ? cv::Scalar(255, 0, 0) : cv::Scalar(0, 255, 0));
+        const int candidate_limit = enable_vis ? std::min(static_cast<int>(dets.size()), max_color_candidates_)
+                                               : static_cast<int>(dets.size());
         for (int i = 0; i < candidate_limit; ++i)
         {
             const auto &d = dets[static_cast<std::size_t>(i)];
@@ -305,10 +324,6 @@ bool YoloOpenvino::finishSlot(AsyncSlot &slot, std::shared_ptr<ResultMParam> &re
                 best_conf = d.confidence;
                 best_corners = corner_pts;
                 has_best_corners = true;
-                if (!enable_vis)
-                {
-                    break;
-                }
             }
 
             if (!enable_vis)
@@ -410,14 +425,6 @@ void YoloOpenvino::preprocess(AsyncSlot &slot) const
     cv::resize(bgr, roi, cv::Size(nw, nh), 0.0, 0.0, cv::INTER_LINEAR);
     slot.resized_img = roi;
 
-    cv::dnn::blobFromImage(slot.letterbox_img,
-                           slot.blob,
-                           1.0 / 255.0,
-                           cv::Size(input_w_, input_h_),
-                           cv::Scalar(),
-                           true,
-                           false,
-                           CV_32F);
 }
 
 void YoloResultFilter::EmaScalar::reset()

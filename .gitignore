@@ -2,6 +2,9 @@
 /build/
 /2027rm_ws/build/
 /2027rm_ws/build-perf/
+build*/
+cmake-build-*/
+out/
 
 # Generated output directory
 /output/
@@ -10,13 +13,23 @@
 # Profiling outputs
 /perf.svg
 /2027rm_ws/perf/
+perf.data*
+*.folded
+flamegraph.svg
+perf-report.txt
+perf-stat.txt
 
-# CMake generated files (root only)
-/CMakeCache.txt
-/cmake_install.cmake
-/compile_commands.json
-/Makefile
-/CMakeFiles/
+# CMake/Ninja generated files
+CMakeCache.txt
+cmake_install.cmake
+compile_commands.json
+Makefile
+CMakeFiles/
+.cmake/
+build.ninja
+.ninja_deps
+.ninja_log
+install_manifest.txt
 
 # Generated executables in this project
 /camera_app
@@ -36,6 +49,7 @@
 *.exe
 *.out
 *.app
+*.d
 
 # Logs
 *.log
@@ -48,10 +62,25 @@ __pycache__/
 *.pyo
 *.pyd
 .venv/
+venv/
+env/
+.env
+.env.*
+!.env.example
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+dist/
+build/
+*.egg-info/
 
 # Editor/IDE files
 .vscode/
 .idea/
+*.swp
+*.swo
 
 # OS generated files
 .DS_Store

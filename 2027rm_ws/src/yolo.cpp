@@ -9,6 +9,7 @@
 #include "camera_node.hpp"
 #include "display_node.hpp"
 #include "message_pool.hpp"
+#include "profiling.hpp"
 #include "yolo_app.hpp"
 #include "yolo_common.hpp"
 #include "yolo_openvino.hpp"

@@ -14,7 +14,9 @@
 #include <yaml-cpp/yaml.h>
 
 #include "message_pool.hpp"
+#include "profiling.hpp"
 #include "yolo_app.hpp"
+#include "yolo_common.hpp"
 
 using namespace CGraph;
 
@@ -247,6 +249,11 @@ cv::Vec4d RodriguesToQuaternion(const cv::Mat &rvec)
 
 void DumpPnpForFoxglove(const PnpResultMParam &result)
 {
+    if (!IsFoxgloveDebugEnabled())
+    {
+        return;
+    }
+
     static const std::string kDir = "/tmp/rm_rerun";
     static const std::string kTmp = kDir + "/pnp_latest.tmp.json";
     static const std::string kOut = kDir + "/pnp_latest.json";
@@ -572,6 +579,10 @@ public:
             }
             last_processed_frame_id_ = result->frame_id;
 
+            const auto pnp_total_start = std::chrono::steady_clock::now();
+            auto record_pnp_total = [&]() {
+                app::profiling::Record(app::profiling::Stage::PnpTotal, ElapsedMsSince(pnp_total_start));
+            };
             image_corners_.assign(result->corners.begin(), result->corners.end());
             const ArmorType armor_type = InferArmorType(result->corners, geometry_);
             const std::vector<cv::Point3f> &object_corners =
@@ -586,24 +597,28 @@ public:
             const cv::Vec2d armor_size_m = ArmorSizeMeters(armor_type, geometry_);
             cv::Mat rvec;
             cv::Mat tvec;
+            bool ok = false;
 
-            bool ok = SolveArmorPnpIppe(object_corners,
-                                        object_corners_mat,
-                                        image_corners_,
-                                        calibration_,
-                                        constraint_,
-                                        rvec,
-                                        tvec);
-            if (!ok)
             {
-                ok = cv::solvePnP(object_corners_mat,
-                                  image_corners_,
-                                  calibration_.camera_matrix,
-                                  calibration_.distortion_coeffs,
-                                  rvec,
-                                  tvec,
-                                  false,
-                                  cv::SOLVEPNP_ITERATIVE);
+                app::profiling::ScopedTimer pnp_solve_timer(app::profiling::Stage::PnpSolve);
+                ok = SolveArmorPnpIppe(object_corners,
+                                       object_corners_mat,
+                                       image_corners_,
+                                       calibration_,
+                                       constraint_,
+                                       rvec,
+                                       tvec);
+                if (!ok)
+                {
+                    ok = cv::solvePnP(object_corners_mat,
+                                      image_corners_,
+                                      calibration_.camera_matrix,
+                                      calibration_.distortion_coeffs,
+                                      rvec,
+                                      tvec,
+                                      false,
+                                      cv::SOLVEPNP_ITERATIVE);
+                }
             }
             ReprojectionStats reprojection_stats;
             bool valid_depth = false;
@@ -633,6 +648,7 @@ public:
                              constraint_.max_depth_m);
                 ++reject_count;
                 PublishNoPose(result->frame_id, result->infer_id, FormatReprojectionStatus("depth_rejected", reprojection_stats));
+                record_pnp_total();
                 maybe_log_stats();
                 continue;
             }
@@ -641,6 +657,7 @@ public:
                 spdlog::warn("[PNP] solve failed frame={} infer={}", result->frame_id, result->infer_id);
                 ++fail_count;
                 PublishNoPose(result->frame_id, result->infer_id, "failed");
+                record_pnp_total();
                 maybe_log_stats();
                 continue;
             }
@@ -675,6 +692,7 @@ public:
             }
             DumpPnpForFoxglove(*pnp_result);
             ++solved_count;
+            record_pnp_total();
             maybe_log_stats();
             app::profiling::LogIfDue();
         }

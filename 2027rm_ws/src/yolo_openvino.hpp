@@ -27,7 +27,6 @@ private:
         cv::Mat frame;
         cv::Mat resized_img;
         cv::Mat letterbox_img;
-        cv::Mat blob;
         uint64_t frame_id = 0;
         std::chrono::steady_clock::time_point capture_tp;
         std::chrono::steady_clock::time_point submit_tp;
@@ -64,6 +63,8 @@ private:
     int num_classes_ = 80;
     float conf_thres_ = 0.25f;
     float nms_thres_ = 0.45f;
+    TargetColor target_color_ = TargetColor::Any;
+    int max_color_candidates_ = 1;
     std::vector<std::string> class_labels_;
     std::optional<YoloPostprocessor> postprocessor_;
     SharedParamPool<ResultMParam> result_pool_;
