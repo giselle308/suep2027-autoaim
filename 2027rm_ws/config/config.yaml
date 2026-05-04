@@ -18,9 +18,10 @@ camera:
     # 要达到249fps，建议使用更小分辨率或ROI
     width: 1440
     height: 1080
-    # pixel_format: 相机 Bayer 排列（常见: BayerRG8/BayerBG8/BayerGB8/BayerGR8）
-    # 如果出现“红色看成蓝色”，一般改成 BayerBG8 可修复
-    pixel_format: BayerRG8
+    # pixel_format: 优先使用 BGR8_Packed，避免程序内 Bayer -> BGR 像素转换
+    # 如果相机不支持，会保留当前格式并在日志中打印 supported 列表
+    # 常见可选: BGR8_Packed/RGB8_Packed/BayerRG8/BayerBG8/BayerGB8/BayerGR8
+    pixel_format: BGR8_Packed
     # frame_rate: 目标帧率（MV-CS016-10UC最大249fps）
     frame_rate: 249
     # frame_rate_enable: 是否启用帧率限制（false=最大速度）

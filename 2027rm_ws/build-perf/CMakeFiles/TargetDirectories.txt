@@ -1,0 +1,10 @@
+/home/ubuntu/桌面/test/2027rm_ws/build-perf/CMakeFiles/cgraph_runtime.dir
+/home/ubuntu/桌面/test/2027rm_ws/build-perf/CMakeFiles/camera_app.dir
+/home/ubuntu/桌面/test/2027rm_ws/build-perf/CMakeFiles/cgraph_camera_detector.dir
+/home/ubuntu/桌面/test/2027rm_ws/build-perf/CMakeFiles/all_apps.dir
+/home/ubuntu/桌面/test/2027rm_ws/build-perf/CMakeFiles/configure_release.dir
+/home/ubuntu/桌面/test/2027rm_ws/build-perf/CMakeFiles/build_release.dir
+/home/ubuntu/桌面/test/2027rm_ws/build-perf/CMakeFiles/run_camera_app.dir
+/home/ubuntu/桌面/test/2027rm_ws/build-perf/CMakeFiles/run_cgraph_camera_detector.dir
+/home/ubuntu/桌面/test/2027rm_ws/build-perf/CMakeFiles/edit_cache.dir
+/home/ubuntu/桌面/test/2027rm_ws/build-perf/CMakeFiles/rebuild_cache.dir

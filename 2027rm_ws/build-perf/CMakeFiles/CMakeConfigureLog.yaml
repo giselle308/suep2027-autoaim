@@ -1,0 +1,2528 @@
+
+---
+events:
+  -
+    kind: "find-v1"
+    backtrace:
+      - "/usr/share/cmake-4.2/Modules/CMakeDetermineSystem.cmake:12 (find_program)"
+      - "CMakeLists.txt:2 (project)"
+    mode: "program"
+    variable: "CMAKE_UNAME"
+    description: "Path to a program."
+    settings:
+      SearchFramework: "NEVER"
+      SearchAppBundle: "NEVER"
+      CMAKE_FIND_USE_CMAKE_PATH: true
+      CMAKE_FIND_USE_CMAKE_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_SYSTEM_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_CMAKE_SYSTEM_PATH: true
+      CMAKE_FIND_USE_INSTALL_PREFIX: true
+    names:
+      - "uname"
+    candidate_directories:
+      - "/home/ubuntu/.config/Code/User/globalStorage/github.copilot-chat/debugCommand/"
+      - "/home/ubuntu/.config/Code/User/globalStorage/github.copilot-chat/copilotCli/"
+      - "/opt/ros/humble/bin/"
+      - "/opt/anaconda3/condabin/"
+      - "/home/ubuntu/.cargo/bin/"
+      - "/home/ubuntu/.local/bin/"
+      - "/usr/bin/"
+      - "/usr/local/cuda-12.8/bin/"
+      - "/usr/local/sbin/"
+      - "/usr/local/bin/"
+      - "/usr/sbin/"
+      - "/sbin/"
+      - "/bin/"
+      - "/usr/games/"
+      - "/usr/local/games/"
+      - "/snap/bin/"
+      - "/home/ubuntu/.vscode/extensions/ms-python.debugpy-2025.18.0-linux-x64/bundled/scripts/noConfigScripts/"
+    searched_directories:
+      - "/home/ubuntu/.config/Code/User/globalStorage/github.copilot-chat/debugCommand/uname"
+      - "/home/ubuntu/.config/Code/User/globalStorage/github.copilot-chat/copilotCli/uname"
+      - "/opt/ros/humble/bin/uname"
+      - "/opt/anaconda3/condabin/uname"
+      - "/home/ubuntu/.cargo/bin/uname"
+      - "/home/ubuntu/.local/bin/uname"
+    found: "/usr/bin/uname"
+    search_context:
+      ENV{PATH}:
+        - "/home/ubuntu/.config/Code/User/globalStorage/github.copilot-chat/debugCommand"
+        - "/home/ubuntu/.config/Code/User/globalStorage/github.copilot-chat/copilotCli"
+        - "/opt/ros/humble/bin"
+        - "/opt/anaconda3/condabin"
+        - "/home/ubuntu/.cargo/bin"
+        - "/home/ubuntu/.local/bin"
+        - "/usr/bin"
+        - "/usr/local/cuda-12.8/bin"
+        - "/usr/local/sbin"
+        - "/usr/local/bin"
+        - "/usr/sbin"
+        - "/usr/bin"
+        - "/sbin"
+        - "/bin"
+        - "/usr/games"
+        - "/usr/local/games"
+        - "/snap/bin"
+        - "/snap/bin"
+        - "/home/ubuntu/.vscode/extensions/ms-python.debugpy-2025.18.0-linux-x64/bundled/scripts/noConfigScripts"
+  -
+    kind: "message-v1"
+    backtrace:
+      - "/usr/share/cmake-4.2/Modules/CMakeDetermineSystem.cmake:212 (message)"
+      - "CMakeLists.txt:2 (project)"
+    message: |
+      The system is: Linux - 6.8.0-94-generic - x86_64
+  -
+    kind: "find-v1"
+    backtrace:
+      - "/usr/share/cmake-4.2/Modules/CMakeUnixFindMake.cmake:5 (find_program)"
+      - "CMakeLists.txt:2 (project)"
+    mode: "program"
+    variable: "CMAKE_MAKE_PROGRAM"
+    description: "Path to a program."
+    settings:
+      SearchFramework: "NEVER"
+      SearchAppBundle: "NEVER"
+      CMAKE_FIND_USE_CMAKE_PATH: true
+      CMAKE_FIND_USE_CMAKE_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_SYSTEM_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_CMAKE_SYSTEM_PATH: true
+      CMAKE_FIND_USE_INSTALL_PREFIX: true
+    names:
+      - "gmake"
+      - "make"
+      - "smake"
+    candidate_directories:
+      - "/home/ubuntu/.config/Code/User/globalStorage/github.copilot-chat/debugCommand/"
+      - "/home/ubuntu/.config/Code/User/globalStorage/github.copilot-chat/copilotCli/"
+      - "/opt/ros/humble/bin/"
+      - "/opt/anaconda3/condabin/"
+      - "/home/ubuntu/.cargo/bin/"
+      - "/home/ubuntu/.local/bin/"
+      - "/usr/bin/"
+      - "/usr/local/cuda-12.8/bin/"
+      - "/usr/local/sbin/"
+      - "/usr/local/bin/"
+      - "/usr/sbin/"
+      - "/sbin/"
+      - "/bin/"
+      - "/usr/games/"
+      - "/usr/local/games/"
+      - "/snap/bin/"
+      - "/home/ubuntu/.vscode/extensions/ms-python.debugpy-2025.18.0-linux-x64/bundled/scripts/noConfigScripts/"
+    searched_directories:
+      - "/home/ubuntu/.config/Code/User/globalStorage/github.copilot-chat/debugCommand/gmake"
+      - "/home/ubuntu/.config/Code/User/globalStorage/github.copilot-chat/copilotCli/gmake"
+      - "/opt/ros/humble/bin/gmake"
+      - "/opt/anaconda3/condabin/gmake"
+      - "/home/ubuntu/.cargo/bin/gmake"
+      - "/home/ubuntu/.local/bin/gmake"
+    found: "/usr/bin/gmake"
+    search_context:
+      ENV{PATH}:
+        - "/home/ubuntu/.config/Code/User/globalStorage/github.copilot-chat/debugCommand"
+        - "/home/ubuntu/.config/Code/User/globalStorage/github.copilot-chat/copilotCli"
+        - "/opt/ros/humble/bin"
+        - "/opt/anaconda3/condabin"
+        - "/home/ubuntu/.cargo/bin"
+        - "/home/ubuntu/.local/bin"
+        - "/usr/bin"
+        - "/usr/local/cuda-12.8/bin"
+        - "/usr/local/sbin"
+        - "/usr/local/bin"
+        - "/usr/sbin"
+        - "/usr/bin"
+        - "/sbin"
+        - "/bin"
+        - "/usr/games"
+        - "/usr/local/games"
+        - "/snap/bin"
+        - "/snap/bin"
+        - "/home/ubuntu/.vscode/extensions/ms-python.debugpy-2025.18.0-linux-x64/bundled/scripts/noConfigScripts"
+  -
+    kind: "find-v1"
+    backtrace:
+      - "/usr/share/cmake-4.2/Modules/CMakeDetermineCompiler.cmake:73 (find_program)"
+      - "/usr/share/cmake-4.2/Modules/CMakeDetermineCXXCompiler.cmake:69 (_cmake_find_compiler)"
+      - "CMakeLists.txt:2 (project)"
+    mode: "program"
+    variable: "CMAKE_CXX_COMPILER"
+    description: "CXX compiler"
+    settings:
+      SearchFramework: "NEVER"
+      SearchAppBundle: "NEVER"
+      CMAKE_FIND_USE_CMAKE_PATH: true
+      CMAKE_FIND_USE_CMAKE_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_SYSTEM_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_CMAKE_SYSTEM_PATH: true
+      CMAKE_FIND_USE_INSTALL_PREFIX: true
+    names:
+      - "c++"
+      - "CC"
+      - "g++"
+      - "aCC"
+      - "cl"
+      - "bcc"
+      - "xlC"
+      - "icpx"
+      - "icx"
+      - "clang++"
+    candidate_directories:
+      - "/home/ubuntu/.config/Code/User/globalStorage/github.copilot-chat/debugCommand/"
+      - "/home/ubuntu/.config/Code/User/globalStorage/github.copilot-chat/copilotCli/"
+      - "/opt/ros/humble/bin/"
+      - "/opt/anaconda3/condabin/"
+      - "/home/ubuntu/.cargo/bin/"
+      - "/home/ubuntu/.local/bin/"
+      - "/usr/bin/"
+      - "/usr/local/cuda-12.8/bin/"
+      - "/usr/local/sbin/"
+      - "/usr/local/bin/"
+      - "/usr/sbin/"
+      - "/sbin/"
+      - "/bin/"
+      - "/usr/games/"
+      - "/usr/local/games/"
+      - "/snap/bin/"
+      - "/home/ubuntu/.vscode/extensions/ms-python.debugpy-2025.18.0-linux-x64/bundled/scripts/noConfigScripts/"
+    searched_directories:
+      - "/home/ubuntu/.config/Code/User/globalStorage/github.copilot-chat/debugCommand/c++"
+      - "/home/ubuntu/.config/Code/User/globalStorage/github.copilot-chat/copilotCli/c++"
+      - "/opt/ros/humble/bin/c++"
+      - "/opt/anaconda3/condabin/c++"
+      - "/home/ubuntu/.cargo/bin/c++"
+      - "/home/ubuntu/.local/bin/c++"
+    found: "/usr/bin/c++"
+    search_context:
+      ENV{PATH}:
+        - "/home/ubuntu/.config/Code/User/globalStorage/github.copilot-chat/debugCommand"
+        - "/home/ubuntu/.config/Code/User/globalStorage/github.copilot-chat/copilotCli"
+        - "/opt/ros/humble/bin"
+        - "/opt/anaconda3/condabin"
+        - "/home/ubuntu/.cargo/bin"
+        - "/home/ubuntu/.local/bin"
+        - "/usr/bin"
+        - "/usr/local/cuda-12.8/bin"
+        - "/usr/local/sbin"
+        - "/usr/local/bin"
+        - "/usr/sbin"
+        - "/usr/bin"
+        - "/sbin"
+        - "/bin"
+        - "/usr/games"
+        - "/usr/local/games"
+        - "/snap/bin"
+        - "/snap/bin"
+        - "/home/ubuntu/.vscode/extensions/ms-python.debugpy-2025.18.0-linux-x64/bundled/scripts/noConfigScripts"
+  -
+    kind: "find-v1"
+    backtrace:
+      - "/usr/share/cmake-4.2/Modules/CMakeDetermineCompilerId.cmake:462 (find_file)"
+      - "/usr/share/cmake-4.2/Modules/CMakeDetermineCompilerId.cmake:500 (CMAKE_DETERMINE_COMPILER_ID_WRITE)"
+      - "/usr/share/cmake-4.2/Modules/CMakeDetermineCompilerId.cmake:8 (CMAKE_DETERMINE_COMPILER_ID_BUILD)"
+      - "/usr/share/cmake-4.2/Modules/CMakeDetermineCompilerId.cmake:64 (__determine_compiler_id_test)"
+      - "/usr/share/cmake-4.2/Modules/CMakeDetermineCXXCompiler.cmake:125 (CMAKE_DETERMINE_COMPILER_ID)"
+      - "CMakeLists.txt:2 (project)"
+    mode: "file"
+    variable: "src_in"
+    description: "Path to a file."
+    settings:
+      SearchFramework: "NEVER"
+      SearchAppBundle: "NEVER"
+      CMAKE_FIND_USE_CMAKE_PATH: true
+      CMAKE_FIND_USE_CMAKE_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_SYSTEM_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_CMAKE_SYSTEM_PATH: true
+      CMAKE_FIND_USE_INSTALL_PREFIX: true
+    names:
+      - "CMakeCXXCompilerId.cpp.in"
+    candidate_directories:
+      - "/usr/share/cmake-4.2/Modules/"
+    found: "/usr/share/cmake-4.2/Modules/CMakeCXXCompilerId.cpp.in"
+    search_context:
+      ENV{PATH}:
+        - "/home/ubuntu/.config/Code/User/globalStorage/github.copilot-chat/debugCommand"
+        - "/home/ubuntu/.config/Code/User/globalStorage/github.copilot-chat/copilotCli"
+        - "/opt/ros/humble/bin"
+        - "/opt/anaconda3/condabin"
+        - "/home/ubuntu/.cargo/bin"
+        - "/home/ubuntu/.local/bin"
+        - "/usr/bin"
+        - "/usr/local/cuda-12.8/bin"
+        - "/usr/local/sbin"
+        - "/usr/local/bin"
+        - "/usr/sbin"
+        - "/usr/bin"
+        - "/sbin"
+        - "/bin"
+        - "/usr/games"
+        - "/usr/local/games"
+        - "/snap/bin"
+        - "/snap/bin"
+        - "/home/ubuntu/.vscode/extensions/ms-python.debugpy-2025.18.0-linux-x64/bundled/scripts/noConfigScripts"
+  -
+    kind: "message-v1"
+    backtrace:
+      - "/usr/share/cmake-4.2/Modules/CMakeDetermineCompilerId.cmake:17 (message)"
+      - "/usr/share/cmake-4.2/Modules/CMakeDetermineCompilerId.cmake:64 (__determine_compiler_id_test)"
+      - "/usr/share/cmake-4.2/Modules/CMakeDetermineCXXCompiler.cmake:125 (CMAKE_DETERMINE_COMPILER_ID)"
+      - "CMakeLists.txt:2 (project)"
+    message: |
+      Compiling the CXX compiler identification source file "CMakeCXXCompilerId.cpp" succeeded.
+      Compiler: /usr/bin/c++ 
+      Build flags: 
+      Id flags:  
+      
+      The output was:
+      0
+      
+      
+      Compilation of the CXX compiler identification source "CMakeCXXCompilerId.cpp" produced "a.out"
+      
+      The CXX compiler identification is GNU, found in:
+        /home/ubuntu/桌面/test/2027rm_ws/build-perf/CMakeFiles/4.2.3/CompilerIdCXX/a.out
+      
+  -
+    kind: "find-v1"
+    backtrace:
+      - "/usr/share/cmake-4.2/Modules/CMakeFindBinUtils.cmake:243 (find_program)"
+      - "/usr/share/cmake-4.2/Modules/CMakeDetermineCXXCompiler.cmake:206 (include)"
+      - "CMakeLists.txt:2 (project)"
+    mode: "program"
+    variable: "CMAKE_AR"
+    description: "Path to a program."
+    settings:
+      SearchFramework: "NEVER"
+      SearchAppBundle: "NEVER"
+      CMAKE_FIND_USE_CMAKE_PATH: false
+      CMAKE_FIND_USE_CMAKE_ENVIRONMENT_PATH: false
+      CMAKE_FIND_USE_SYSTEM_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_CMAKE_SYSTEM_PATH: true
+      CMAKE_FIND_USE_INSTALL_PREFIX: true
+    names:
+      - "ar"
+    candidate_directories:
+      - "/usr/bin/"
+      - "/home/ubuntu/.config/Code/User/globalStorage/github.copilot-chat/debugCommand/"
+      - "/home/ubuntu/.config/Code/User/globalStorage/github.copilot-chat/copilotCli/"
+      - "/opt/ros/humble/bin/"
+      - "/opt/anaconda3/condabin/"
+      - "/home/ubuntu/.cargo/bin/"
+      - "/home/ubuntu/.local/bin/"
+      - "/usr/local/cuda-12.8/bin/"
+      - "/usr/local/sbin/"
+      - "/usr/local/bin/"
+      - "/usr/sbin/"
+      - "/sbin/"
+      - "/bin/"
+      - "/usr/games/"
+      - "/usr/local/games/"
+      - "/snap/bin/"
+      - "/home/ubuntu/.vscode/extensions/ms-python.debugpy-2025.18.0-linux-x64/bundled/scripts/noConfigScripts/"
+    found: "/usr/bin/ar"
+    search_context:
+      ENV{PATH}:
+        - "/home/ubuntu/.config/Code/User/globalStorage/github.copilot-chat/debugCommand"
+        - "/home/ubuntu/.config/Code/User/globalStorage/github.copilot-chat/copilotCli"
+        - "/opt/ros/humble/bin"
+        - "/opt/anaconda3/condabin"
+        - "/home/ubuntu/.cargo/bin"
+        - "/home/ubuntu/.local/bin"
+        - "/usr/bin"
+        - "/usr/local/cuda-12.8/bin"
+        - "/usr/local/sbin"
+        - "/usr/local/bin"
+        - "/usr/sbin"
+        - "/usr/bin"
+        - "/sbin"
+        - "/bin"
+        - "/usr/games"
+        - "/usr/local/games"
+        - "/snap/bin"
+        - "/snap/bin"
+        - "/home/ubuntu/.vscode/extensions/ms-python.debugpy-2025.18.0-linux-x64/bundled/scripts/noConfigScripts"
+  -
+    kind: "find-v1"
+    backtrace:
+      - "/usr/share/cmake-4.2/Modules/CMakeFindBinUtils.cmake:243 (find_program)"
+      - "/usr/share/cmake-4.2/Modules/CMakeDetermineCXXCompiler.cmake:206 (include)"
+      - "CMakeLists.txt:2 (project)"
+    mode: "program"
+    variable: "CMAKE_RANLIB"
+    description: "Path to a program."
+    settings:
+      SearchFramework: "NEVER"
+      SearchAppBundle: "NEVER"
+      CMAKE_FIND_USE_CMAKE_PATH: false
+      CMAKE_FIND_USE_CMAKE_ENVIRONMENT_PATH: false
+      CMAKE_FIND_USE_SYSTEM_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_CMAKE_SYSTEM_PATH: true
+      CMAKE_FIND_USE_INSTALL_PREFIX: true
+    names:
+      - "ranlib"
+    candidate_directories:
+      - "/usr/bin/"
+      - "/home/ubuntu/.config/Code/User/globalStorage/github.copilot-chat/debugCommand/"
+      - "/home/ubuntu/.config/Code/User/globalStorage/github.copilot-chat/copilotCli/"
+      - "/opt/ros/humble/bin/"
+      - "/opt/anaconda3/condabin/"
+      - "/home/ubuntu/.cargo/bin/"
+      - "/home/ubuntu/.local/bin/"
+      - "/usr/local/cuda-12.8/bin/"
+      - "/usr/local/sbin/"
+      - "/usr/local/bin/"
+      - "/usr/sbin/"
+      - "/sbin/"
+      - "/bin/"
+      - "/usr/games/"
+      - "/usr/local/games/"
+      - "/snap/bin/"
+      - "/home/ubuntu/.vscode/extensions/ms-python.debugpy-2025.18.0-linux-x64/bundled/scripts/noConfigScripts/"
+    found: "/usr/bin/ranlib"
+    search_context:
+      ENV{PATH}:
+        - "/home/ubuntu/.config/Code/User/globalStorage/github.copilot-chat/debugCommand"
+        - "/home/ubuntu/.config/Code/User/globalStorage/github.copilot-chat/copilotCli"
+        - "/opt/ros/humble/bin"
+        - "/opt/anaconda3/condabin"
+        - "/home/ubuntu/.cargo/bin"
+        - "/home/ubuntu/.local/bin"
+        - "/usr/bin"
+        - "/usr/local/cuda-12.8/bin"
+        - "/usr/local/sbin"
+        - "/usr/local/bin"
+        - "/usr/sbin"
+        - "/usr/bin"
+        - "/sbin"
+        - "/bin"
+        - "/usr/games"
+        - "/usr/local/games"
+        - "/snap/bin"
+        - "/snap/bin"
+        - "/home/ubuntu/.vscode/extensions/ms-python.debugpy-2025.18.0-linux-x64/bundled/scripts/noConfigScripts"
+  -
+    kind: "find-v1"
+    backtrace:
+      - "/usr/share/cmake-4.2/Modules/CMakeFindBinUtils.cmake:243 (find_program)"
+      - "/usr/share/cmake-4.2/Modules/CMakeDetermineCXXCompiler.cmake:206 (include)"
+      - "CMakeLists.txt:2 (project)"
+    mode: "program"
+    variable: "CMAKE_STRIP"
+    description: "Path to a program."
+    settings:
+      SearchFramework: "NEVER"
+      SearchAppBundle: "NEVER"
+      CMAKE_FIND_USE_CMAKE_PATH: false
+      CMAKE_FIND_USE_CMAKE_ENVIRONMENT_PATH: false
+      CMAKE_FIND_USE_SYSTEM_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_CMAKE_SYSTEM_PATH: true
+      CMAKE_FIND_USE_INSTALL_PREFIX: true
+    names:
+      - "strip"
+    candidate_directories:
+      - "/usr/bin/"
+      - "/home/ubuntu/.config/Code/User/globalStorage/github.copilot-chat/debugCommand/"
+      - "/home/ubuntu/.config/Code/User/globalStorage/github.copilot-chat/copilotCli/"
+      - "/opt/ros/humble/bin/"
+      - "/opt/anaconda3/condabin/"
+      - "/home/ubuntu/.cargo/bin/"
+      - "/home/ubuntu/.local/bin/"
+      - "/usr/local/cuda-12.8/bin/"
+      - "/usr/local/sbin/"
+      - "/usr/local/bin/"
+      - "/usr/sbin/"
+      - "/sbin/"
+      - "/bin/"
+      - "/usr/games/"
+      - "/usr/local/games/"
+      - "/snap/bin/"
+      - "/home/ubuntu/.vscode/extensions/ms-python.debugpy-2025.18.0-linux-x64/bundled/scripts/noConfigScripts/"
+    found: "/usr/bin/strip"
+    search_context:
+      ENV{PATH}:
+        - "/home/ubuntu/.config/Code/User/globalStorage/github.copilot-chat/debugCommand"
+        - "/home/ubuntu/.config/Code/User/globalStorage/github.copilot-chat/copilotCli"
+        - "/opt/ros/humble/bin"
+        - "/opt/anaconda3/condabin"
+        - "/home/ubuntu/.cargo/bin"
+        - "/home/ubuntu/.local/bin"
+        - "/usr/bin"
+        - "/usr/local/cuda-12.8/bin"
+        - "/usr/local/sbin"
+        - "/usr/local/bin"
+        - "/usr/sbin"
+        - "/usr/bin"
+        - "/sbin"
+        - "/bin"
+        - "/usr/games"
+        - "/usr/local/games"
+        - "/snap/bin"
+        - "/snap/bin"
+        - "/home/ubuntu/.vscode/extensions/ms-python.debugpy-2025.18.0-linux-x64/bundled/scripts/noConfigScripts"
+  -
+    kind: "find-v1"
+    backtrace:
+      - "/usr/share/cmake-4.2/Modules/CMakeFindBinUtils.cmake:243 (find_program)"
+      - "/usr/share/cmake-4.2/Modules/CMakeDetermineCXXCompiler.cmake:206 (include)"
+      - "CMakeLists.txt:2 (project)"
+    mode: "program"
+    variable: "CMAKE_LINKER"
+    description: "Path to a program."
+    settings:
+      SearchFramework: "NEVER"
+      SearchAppBundle: "NEVER"
+      CMAKE_FIND_USE_CMAKE_PATH: false
+      CMAKE_FIND_USE_CMAKE_ENVIRONMENT_PATH: false
+      CMAKE_FIND_USE_SYSTEM_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_CMAKE_SYSTEM_PATH: true
+      CMAKE_FIND_USE_INSTALL_PREFIX: true
+    names:
+      - "ld"
+    candidate_directories:
+      - "/usr/bin/"
+      - "/home/ubuntu/.config/Code/User/globalStorage/github.copilot-chat/debugCommand/"
+      - "/home/ubuntu/.config/Code/User/globalStorage/github.copilot-chat/copilotCli/"
+      - "/opt/ros/humble/bin/"
+      - "/opt/anaconda3/condabin/"
+      - "/home/ubuntu/.cargo/bin/"
+      - "/home/ubuntu/.local/bin/"
+      - "/usr/local/cuda-12.8/bin/"
+      - "/usr/local/sbin/"
+      - "/usr/local/bin/"
+      - "/usr/sbin/"
+      - "/sbin/"
+      - "/bin/"
+      - "/usr/games/"
+      - "/usr/local/games/"
+      - "/snap/bin/"
+      - "/home/ubuntu/.vscode/extensions/ms-python.debugpy-2025.18.0-linux-x64/bundled/scripts/noConfigScripts/"
+    found: "/usr/bin/ld"
+    search_context:
+      ENV{PATH}:
+        - "/home/ubuntu/.config/Code/User/globalStorage/github.copilot-chat/debugCommand"
+        - "/home/ubuntu/.config/Code/User/globalStorage/github.copilot-chat/copilotCli"
+        - "/opt/ros/humble/bin"
+        - "/opt/anaconda3/condabin"
+        - "/home/ubuntu/.cargo/bin"
+        - "/home/ubuntu/.local/bin"
+        - "/usr/bin"
+        - "/usr/local/cuda-12.8/bin"
+        - "/usr/local/sbin"
+        - "/usr/local/bin"
+        - "/usr/sbin"
+        - "/usr/bin"
+        - "/sbin"
+        - "/bin"
+        - "/usr/games"
+        - "/usr/local/games"
+        - "/snap/bin"
+        - "/snap/bin"
+        - "/home/ubuntu/.vscode/extensions/ms-python.debugpy-2025.18.0-linux-x64/bundled/scripts/noConfigScripts"
+  -
+    kind: "find-v1"
+    backtrace:
+      - "/usr/share/cmake-4.2/Modules/CMakeFindBinUtils.cmake:243 (find_program)"
+      - "/usr/share/cmake-4.2/Modules/CMakeDetermineCXXCompiler.cmake:206 (include)"
+      - "CMakeLists.txt:2 (project)"
+    mode: "program"
+    variable: "CMAKE_NM"
+    description: "Path to a program."
+    settings:
+      SearchFramework: "NEVER"
+      SearchAppBundle: "NEVER"
+      CMAKE_FIND_USE_CMAKE_PATH: false
+      CMAKE_FIND_USE_CMAKE_ENVIRONMENT_PATH: false
+      CMAKE_FIND_USE_SYSTEM_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_CMAKE_SYSTEM_PATH: true
+      CMAKE_FIND_USE_INSTALL_PREFIX: true
+    names:
+      - "nm"
+    candidate_directories:
+      - "/usr/bin/"
+      - "/home/ubuntu/.config/Code/User/globalStorage/github.copilot-chat/debugCommand/"
+      - "/home/ubuntu/.config/Code/User/globalStorage/github.copilot-chat/copilotCli/"
+      - "/opt/ros/humble/bin/"
+      - "/opt/anaconda3/condabin/"
+      - "/home/ubuntu/.cargo/bin/"
+      - "/home/ubuntu/.local/bin/"
+      - "/usr/local/cuda-12.8/bin/"
+      - "/usr/local/sbin/"
+      - "/usr/local/bin/"
+      - "/usr/sbin/"
+      - "/sbin/"
+      - "/bin/"
+      - "/usr/games/"
+      - "/usr/local/games/"
+      - "/snap/bin/"
+      - "/home/ubuntu/.vscode/extensions/ms-python.debugpy-2025.18.0-linux-x64/bundled/scripts/noConfigScripts/"
+    found: "/usr/bin/nm"
+    search_context:
+      ENV{PATH}:
+        - "/home/ubuntu/.config/Code/User/globalStorage/github.copilot-chat/debugCommand"
+        - "/home/ubuntu/.config/Code/User/globalStorage/github.copilot-chat/copilotCli"
+        - "/opt/ros/humble/bin"
+        - "/opt/anaconda3/condabin"
+        - "/home/ubuntu/.cargo/bin"
+        - "/home/ubuntu/.local/bin"
+        - "/usr/bin"
+        - "/usr/local/cuda-12.8/bin"
+        - "/usr/local/sbin"
+        - "/usr/local/bin"
+        - "/usr/sbin"
+        - "/usr/bin"
+        - "/sbin"
+        - "/bin"
+        - "/usr/games"
+        - "/usr/local/games"
+        - "/snap/bin"
+        - "/snap/bin"
+        - "/home/ubuntu/.vscode/extensions/ms-python.debugpy-2025.18.0-linux-x64/bundled/scripts/noConfigScripts"
+  -
+    kind: "find-v1"
+    backtrace:
+      - "/usr/share/cmake-4.2/Modules/CMakeFindBinUtils.cmake:243 (find_program)"
+      - "/usr/share/cmake-4.2/Modules/CMakeDetermineCXXCompiler.cmake:206 (include)"
+      - "CMakeLists.txt:2 (project)"
+    mode: "program"
+    variable: "CMAKE_OBJDUMP"
+    description: "Path to a program."
+    settings:
+      SearchFramework: "NEVER"
+      SearchAppBundle: "NEVER"
+      CMAKE_FIND_USE_CMAKE_PATH: false
+      CMAKE_FIND_USE_CMAKE_ENVIRONMENT_PATH: false
+      CMAKE_FIND_USE_SYSTEM_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_CMAKE_SYSTEM_PATH: true
+      CMAKE_FIND_USE_INSTALL_PREFIX: true
+    names:
+      - "objdump"
+    candidate_directories:
+      - "/usr/bin/"
+      - "/home/ubuntu/.config/Code/User/globalStorage/github.copilot-chat/debugCommand/"
+      - "/home/ubuntu/.config/Code/User/globalStorage/github.copilot-chat/copilotCli/"
+      - "/opt/ros/humble/bin/"
+      - "/opt/anaconda3/condabin/"
+      - "/home/ubuntu/.cargo/bin/"
+      - "/home/ubuntu/.local/bin/"
+      - "/usr/local/cuda-12.8/bin/"
+      - "/usr/local/sbin/"
+      - "/usr/local/bin/"
+      - "/usr/sbin/"
+      - "/sbin/"
+      - "/bin/"
+      - "/usr/games/"
+      - "/usr/local/games/"
+      - "/snap/bin/"
+      - "/home/ubuntu/.vscode/extensions/ms-python.debugpy-2025.18.0-linux-x64/bundled/scripts/noConfigScripts/"
+    found: "/usr/bin/objdump"
+    search_context:
+      ENV{PATH}:
+        - "/home/ubuntu/.config/Code/User/globalStorage/github.copilot-chat/debugCommand"
+        - "/home/ubuntu/.config/Code/User/globalStorage/github.copilot-chat/copilotCli"
+        - "/opt/ros/humble/bin"
+        - "/opt/anaconda3/condabin"
+        - "/home/ubuntu/.cargo/bin"
+        - "/home/ubuntu/.local/bin"
+        - "/usr/bin"
+        - "/usr/local/cuda-12.8/bin"
+        - "/usr/local/sbin"
+        - "/usr/local/bin"
+        - "/usr/sbin"
+        - "/usr/bin"
+        - "/sbin"
+        - "/bin"
+        - "/usr/games"
+        - "/usr/local/games"
+        - "/snap/bin"
+        - "/snap/bin"
+        - "/home/ubuntu/.vscode/extensions/ms-python.debugpy-2025.18.0-linux-x64/bundled/scripts/noConfigScripts"
+  -
+    kind: "find-v1"
+    backtrace:
+      - "/usr/share/cmake-4.2/Modules/CMakeFindBinUtils.cmake:243 (find_program)"
+      - "/usr/share/cmake-4.2/Modules/CMakeDetermineCXXCompiler.cmake:206 (include)"
+      - "CMakeLists.txt:2 (project)"
+    mode: "program"
+    variable: "CMAKE_OBJCOPY"
+    description: "Path to a program."
+    settings:
+      SearchFramework: "NEVER"
+      SearchAppBundle: "NEVER"
+      CMAKE_FIND_USE_CMAKE_PATH: false
+      CMAKE_FIND_USE_CMAKE_ENVIRONMENT_PATH: false
+      CMAKE_FIND_USE_SYSTEM_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_CMAKE_SYSTEM_PATH: true
+      CMAKE_FIND_USE_INSTALL_PREFIX: true
+    names:
+      - "objcopy"
+    candidate_directories:
+      - "/usr/bin/"
+      - "/home/ubuntu/.config/Code/User/globalStorage/github.copilot-chat/debugCommand/"
+      - "/home/ubuntu/.config/Code/User/globalStorage/github.copilot-chat/copilotCli/"
+      - "/opt/ros/humble/bin/"
+      - "/opt/anaconda3/condabin/"
+      - "/home/ubuntu/.cargo/bin/"
+      - "/home/ubuntu/.local/bin/"
+      - "/usr/local/cuda-12.8/bin/"
+      - "/usr/local/sbin/"
+      - "/usr/local/bin/"
+      - "/usr/sbin/"
+      - "/sbin/"
+      - "/bin/"
+      - "/usr/games/"
+      - "/usr/local/games/"
+      - "/snap/bin/"
+      - "/home/ubuntu/.vscode/extensions/ms-python.debugpy-2025.18.0-linux-x64/bundled/scripts/noConfigScripts/"
+    found: "/usr/bin/objcopy"
+    search_context:
+      ENV{PATH}:
+        - "/home/ubuntu/.config/Code/User/globalStorage/github.copilot-chat/debugCommand"
+        - "/home/ubuntu/.config/Code/User/globalStorage/github.copilot-chat/copilotCli"
+        - "/opt/ros/humble/bin"
+        - "/opt/anaconda3/condabin"
+        - "/home/ubuntu/.cargo/bin"
+        - "/home/ubuntu/.local/bin"
+        - "/usr/bin"
+        - "/usr/local/cuda-12.8/bin"
+        - "/usr/local/sbin"
+        - "/usr/local/bin"
+        - "/usr/sbin"
+        - "/usr/bin"
+        - "/sbin"
+        - "/bin"
+        - "/usr/games"
+        - "/usr/local/games"
+        - "/snap/bin"
+        - "/snap/bin"
+        - "/home/ubuntu/.vscode/extensions/ms-python.debugpy-2025.18.0-linux-x64/bundled/scripts/noConfigScripts"
+  -
+    kind: "find-v1"
+    backtrace:
+      - "/usr/share/cmake-4.2/Modules/CMakeFindBinUtils.cmake:243 (find_program)"
+      - "/usr/share/cmake-4.2/Modules/CMakeDetermineCXXCompiler.cmake:206 (include)"
+      - "CMakeLists.txt:2 (project)"
+    mode: "program"
+    variable: "CMAKE_READELF"
+    description: "Path to a program."
+    settings:
+      SearchFramework: "NEVER"
+      SearchAppBundle: "NEVER"
+      CMAKE_FIND_USE_CMAKE_PATH: false
+      CMAKE_FIND_USE_CMAKE_ENVIRONMENT_PATH: false
+      CMAKE_FIND_USE_SYSTEM_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_CMAKE_SYSTEM_PATH: true
+      CMAKE_FIND_USE_INSTALL_PREFIX: true
+    names:
+      - "readelf"
+    candidate_directories:
+      - "/usr/bin/"
+      - "/home/ubuntu/.config/Code/User/globalStorage/github.copilot-chat/debugCommand/"
+      - "/home/ubuntu/.config/Code/User/globalStorage/github.copilot-chat/copilotCli/"
+      - "/opt/ros/humble/bin/"
+      - "/opt/anaconda3/condabin/"
+      - "/home/ubuntu/.cargo/bin/"
+      - "/home/ubuntu/.local/bin/"
+      - "/usr/local/cuda-12.8/bin/"
+      - "/usr/local/sbin/"
+      - "/usr/local/bin/"
+      - "/usr/sbin/"
+      - "/sbin/"
+      - "/bin/"
+      - "/usr/games/"
+      - "/usr/local/games/"
+      - "/snap/bin/"
+      - "/home/ubuntu/.vscode/extensions/ms-python.debugpy-2025.18.0-linux-x64/bundled/scripts/noConfigScripts/"
+    found: "/usr/bin/readelf"
+    search_context:
+      ENV{PATH}:
+        - "/home/ubuntu/.config/Code/User/globalStorage/github.copilot-chat/debugCommand"
+        - "/home/ubuntu/.config/Code/User/globalStorage/github.copilot-chat/copilotCli"
+        - "/opt/ros/humble/bin"
+        - "/opt/anaconda3/condabin"
+        - "/home/ubuntu/.cargo/bin"
+        - "/home/ubuntu/.local/bin"
+        - "/usr/bin"
+        - "/usr/local/cuda-12.8/bin"
+        - "/usr/local/sbin"
+        - "/usr/local/bin"
+        - "/usr/sbin"
+        - "/usr/bin"
+        - "/sbin"
+        - "/bin"
+        - "/usr/games"
+        - "/usr/local/games"
+        - "/snap/bin"
+        - "/snap/bin"
+        - "/home/ubuntu/.vscode/extensions/ms-python.debugpy-2025.18.0-linux-x64/bundled/scripts/noConfigScripts"
+  -
+    kind: "find-v1"
+    backtrace:
+      - "/usr/share/cmake-4.2/Modules/CMakeFindBinUtils.cmake:243 (find_program)"
+      - "/usr/share/cmake-4.2/Modules/CMakeDetermineCXXCompiler.cmake:206 (include)"
+      - "CMakeLists.txt:2 (project)"
+    mode: "program"
+    variable: "CMAKE_DLLTOOL"
+    description: "Path to a program."
+    settings:
+      SearchFramework: "NEVER"
+      SearchAppBundle: "NEVER"
+      CMAKE_FIND_USE_CMAKE_PATH: false
+      CMAKE_FIND_USE_CMAKE_ENVIRONMENT_PATH: false
+      CMAKE_FIND_USE_SYSTEM_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_CMAKE_SYSTEM_PATH: true
+      CMAKE_FIND_USE_INSTALL_PREFIX: true
+    names:
+      - "dlltool"
+    candidate_directories:
+      - "/usr/bin/"
+      - "/home/ubuntu/.config/Code/User/globalStorage/github.copilot-chat/debugCommand/"
+      - "/home/ubuntu/.config/Code/User/globalStorage/github.copilot-chat/copilotCli/"
+      - "/opt/ros/humble/bin/"
+      - "/opt/anaconda3/condabin/"
+      - "/home/ubuntu/.cargo/bin/"
+      - "/home/ubuntu/.local/bin/"
+      - "/usr/local/cuda-12.8/bin/"
+      - "/usr/local/sbin/"
+      - "/usr/local/bin/"
+      - "/usr/sbin/"
+      - "/sbin/"
+      - "/bin/"
+      - "/usr/games/"
+      - "/usr/local/games/"
+      - "/snap/bin/"
+      - "/home/ubuntu/.vscode/extensions/ms-python.debugpy-2025.18.0-linux-x64/bundled/scripts/noConfigScripts/"
+    searched_directories:
+      - "/usr/bin/dlltool"
+      - "/home/ubuntu/.config/Code/User/globalStorage/github.copilot-chat/debugCommand/dlltool"
+      - "/home/ubuntu/.config/Code/User/globalStorage/github.copilot-chat/copilotCli/dlltool"
+      - "/opt/ros/humble/bin/dlltool"
+      - "/opt/anaconda3/condabin/dlltool"
+      - "/home/ubuntu/.cargo/bin/dlltool"
+      - "/home/ubuntu/.local/bin/dlltool"
+      - "/usr/local/cuda-12.8/bin/dlltool"
+      - "/usr/local/sbin/dlltool"
+      - "/usr/local/bin/dlltool"
+      - "/usr/sbin/dlltool"
+      - "/sbin/dlltool"
+      - "/bin/dlltool"
+      - "/usr/games/dlltool"
+      - "/usr/local/games/dlltool"
+      - "/snap/bin/dlltool"
+      - "/home/ubuntu/.vscode/extensions/ms-python.debugpy-2025.18.0-linux-x64/bundled/scripts/noConfigScripts/dlltool"
+    found: false
+    search_context:
+      ENV{PATH}:
+        - "/home/ubuntu/.config/Code/User/globalStorage/github.copilot-chat/debugCommand"
+        - "/home/ubuntu/.config/Code/User/globalStorage/github.copilot-chat/copilotCli"
+        - "/opt/ros/humble/bin"
+        - "/opt/anaconda3/condabin"
+        - "/home/ubuntu/.cargo/bin"
+        - "/home/ubuntu/.local/bin"
+        - "/usr/bin"
+        - "/usr/local/cuda-12.8/bin"
+        - "/usr/local/sbin"
+        - "/usr/local/bin"
+        - "/usr/sbin"
+        - "/usr/bin"
+        - "/sbin"
+        - "/bin"
+        - "/usr/games"
+        - "/usr/local/games"
+        - "/snap/bin"
+        - "/snap/bin"
+        - "/home/ubuntu/.vscode/extensions/ms-python.debugpy-2025.18.0-linux-x64/bundled/scripts/noConfigScripts"
+  -
+    kind: "find-v1"
+    backtrace:
+      - "/usr/share/cmake-4.2/Modules/CMakeFindBinUtils.cmake:243 (find_program)"
+      - "/usr/share/cmake-4.2/Modules/CMakeDetermineCXXCompiler.cmake:206 (include)"
+      - "CMakeLists.txt:2 (project)"
+    mode: "program"
+    variable: "CMAKE_ADDR2LINE"
+    description: "Path to a program."
+    settings:
+      SearchFramework: "NEVER"
+      SearchAppBundle: "NEVER"
+      CMAKE_FIND_USE_CMAKE_PATH: false
+      CMAKE_FIND_USE_CMAKE_ENVIRONMENT_PATH: false
+      CMAKE_FIND_USE_SYSTEM_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_CMAKE_SYSTEM_PATH: true
+      CMAKE_FIND_USE_INSTALL_PREFIX: true
+    names:
+      - "addr2line"
+    candidate_directories:
+      - "/usr/bin/"
+      - "/home/ubuntu/.config/Code/User/globalStorage/github.copilot-chat/debugCommand/"
+      - "/home/ubuntu/.config/Code/User/globalStorage/github.copilot-chat/copilotCli/"
+      - "/opt/ros/humble/bin/"
+      - "/opt/anaconda3/condabin/"
+      - "/home/ubuntu/.cargo/bin/"
+      - "/home/ubuntu/.local/bin/"
+      - "/usr/local/cuda-12.8/bin/"
+      - "/usr/local/sbin/"
+      - "/usr/local/bin/"
+      - "/usr/sbin/"
+      - "/sbin/"
+      - "/bin/"
+      - "/usr/games/"
+      - "/usr/local/games/"
+      - "/snap/bin/"
+      - "/home/ubuntu/.vscode/extensions/ms-python.debugpy-2025.18.0-linux-x64/bundled/scripts/noConfigScripts/"
+    found: "/usr/bin/addr2line"
+    search_context:
+      ENV{PATH}:
+        - "/home/ubuntu/.config/Code/User/globalStorage/github.copilot-chat/debugCommand"
+        - "/home/ubuntu/.config/Code/User/globalStorage/github.copilot-chat/copilotCli"
+        - "/opt/ros/humble/bin"
+        - "/opt/anaconda3/condabin"
+        - "/home/ubuntu/.cargo/bin"
+        - "/home/ubuntu/.local/bin"
+        - "/usr/bin"
+        - "/usr/local/cuda-12.8/bin"
+        - "/usr/local/sbin"
+        - "/usr/local/bin"
+        - "/usr/sbin"
+        - "/usr/bin"
+        - "/sbin"
+        - "/bin"
+        - "/usr/games"
+        - "/usr/local/games"
+        - "/snap/bin"
+        - "/snap/bin"
+        - "/home/ubuntu/.vscode/extensions/ms-python.debugpy-2025.18.0-linux-x64/bundled/scripts/noConfigScripts"
+  -
+    kind: "find-v1"
+    backtrace:
+      - "/usr/share/cmake-4.2/Modules/CMakeFindBinUtils.cmake:243 (find_program)"
+      - "/usr/share/cmake-4.2/Modules/CMakeDetermineCXXCompiler.cmake:206 (include)"
+      - "CMakeLists.txt:2 (project)"
+    mode: "program"
+    variable: "CMAKE_TAPI"
+    description: "Path to a program."
+    settings:
+      SearchFramework: "NEVER"
+      SearchAppBundle: "NEVER"
+      CMAKE_FIND_USE_CMAKE_PATH: false
+      CMAKE_FIND_USE_CMAKE_ENVIRONMENT_PATH: false
+      CMAKE_FIND_USE_SYSTEM_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_CMAKE_SYSTEM_PATH: true
+      CMAKE_FIND_USE_INSTALL_PREFIX: true
+    names:
+      - "tapi"
+    candidate_directories:
+      - "/usr/bin/"
+      - "/home/ubuntu/.config/Code/User/globalStorage/github.copilot-chat/debugCommand/"
+      - "/home/ubuntu/.config/Code/User/globalStorage/github.copilot-chat/copilotCli/"
+      - "/opt/ros/humble/bin/"
+      - "/opt/anaconda3/condabin/"
+      - "/home/ubuntu/.cargo/bin/"
+      - "/home/ubuntu/.local/bin/"
+      - "/usr/local/cuda-12.8/bin/"
+      - "/usr/local/sbin/"
+      - "/usr/local/bin/"
+      - "/usr/sbin/"
+      - "/sbin/"
+      - "/bin/"
+      - "/usr/games/"
+      - "/usr/local/games/"
+      - "/snap/bin/"
+      - "/home/ubuntu/.vscode/extensions/ms-python.debugpy-2025.18.0-linux-x64/bundled/scripts/noConfigScripts/"
+    searched_directories:
+      - "/usr/bin/tapi"
+      - "/home/ubuntu/.config/Code/User/globalStorage/github.copilot-chat/debugCommand/tapi"
+      - "/home/ubuntu/.config/Code/User/globalStorage/github.copilot-chat/copilotCli/tapi"
+      - "/opt/ros/humble/bin/tapi"
+      - "/opt/anaconda3/condabin/tapi"
+      - "/home/ubuntu/.cargo/bin/tapi"
+      - "/home/ubuntu/.local/bin/tapi"
+      - "/usr/local/cuda-12.8/bin/tapi"
+      - "/usr/local/sbin/tapi"
+      - "/usr/local/bin/tapi"
+      - "/usr/sbin/tapi"
+      - "/sbin/tapi"
+      - "/bin/tapi"
+      - "/usr/games/tapi"
+      - "/usr/local/games/tapi"
+      - "/snap/bin/tapi"
+      - "/home/ubuntu/.vscode/extensions/ms-python.debugpy-2025.18.0-linux-x64/bundled/scripts/noConfigScripts/tapi"
+    found: false
+    search_context:
+      ENV{PATH}:
+        - "/home/ubuntu/.config/Code/User/globalStorage/github.copilot-chat/debugCommand"
+        - "/home/ubuntu/.config/Code/User/globalStorage/github.copilot-chat/copilotCli"
+        - "/opt/ros/humble/bin"
+        - "/opt/anaconda3/condabin"
+        - "/home/ubuntu/.cargo/bin"
+        - "/home/ubuntu/.local/bin"
+        - "/usr/bin"
+        - "/usr/local/cuda-12.8/bin"
+        - "/usr/local/sbin"
+        - "/usr/local/bin"
+        - "/usr/sbin"
+        - "/usr/bin"
+        - "/sbin"
+        - "/bin"
+        - "/usr/games"
+        - "/usr/local/games"
+        - "/snap/bin"
+        - "/snap/bin"
+        - "/home/ubuntu/.vscode/extensions/ms-python.debugpy-2025.18.0-linux-x64/bundled/scripts/noConfigScripts"
+  -
+    kind: "find-v1"
+    backtrace:
+      - "/usr/share/cmake-4.2/Modules/Compiler/GNU-FindBinUtils.cmake:18 (find_program)"
+      - "/usr/share/cmake-4.2/Modules/CMakeDetermineCXXCompiler.cmake:207 (include)"
+      - "CMakeLists.txt:2 (project)"
+    mode: "program"
+    variable: "CMAKE_CXX_COMPILER_AR"
+    description: "A wrapper around 'ar' adding the appropriate '--plugin' option for the GCC compiler"
+    settings:
+      SearchFramework: "NEVER"
+      SearchAppBundle: "NEVER"
+      CMAKE_FIND_USE_CMAKE_PATH: false
+      CMAKE_FIND_USE_CMAKE_ENVIRONMENT_PATH: false
+      CMAKE_FIND_USE_SYSTEM_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_CMAKE_SYSTEM_PATH: true
+      CMAKE_FIND_USE_INSTALL_PREFIX: true
+    names:
+      - "gcc-ar-11.4"
+      - "gcc-ar-11"
+      - "gcc-ar11"
+      - "gcc-ar"
+    candidate_directories:
+      - "/usr/bin/"
+      - "/home/ubuntu/.config/Code/User/globalStorage/github.copilot-chat/debugCommand/"
+      - "/home/ubuntu/.config/Code/User/globalStorage/github.copilot-chat/copilotCli/"
+      - "/opt/ros/humble/bin/"
+      - "/opt/anaconda3/condabin/"
+      - "/home/ubuntu/.cargo/bin/"
+      - "/home/ubuntu/.local/bin/"
+      - "/usr/local/cuda-12.8/bin/"
+      - "/usr/local/sbin/"
+      - "/usr/local/bin/"
+      - "/usr/sbin/"
+      - "/sbin/"
+      - "/bin/"
+      - "/usr/games/"
+      - "/usr/local/games/"
+      - "/snap/bin/"
+      - "/home/ubuntu/.vscode/extensions/ms-python.debugpy-2025.18.0-linux-x64/bundled/scripts/noConfigScripts/"
+    searched_directories:
+      - "/usr/bin/gcc-ar-11.4"
+      - "/home/ubuntu/.config/Code/User/globalStorage/github.copilot-chat/debugCommand/gcc-ar-11.4"
+      - "/home/ubuntu/.config/Code/User/globalStorage/github.copilot-chat/copilotCli/gcc-ar-11.4"
+      - "/opt/ros/humble/bin/gcc-ar-11.4"
+      - "/opt/anaconda3/condabin/gcc-ar-11.4"
+      - "/home/ubuntu/.cargo/bin/gcc-ar-11.4"
+      - "/home/ubuntu/.local/bin/gcc-ar-11.4"
+      - "/usr/local/cuda-12.8/bin/gcc-ar-11.4"
+      - "/usr/local/sbin/gcc-ar-11.4"
+      - "/usr/local/bin/gcc-ar-11.4"
+      - "/usr/sbin/gcc-ar-11.4"
+      - "/sbin/gcc-ar-11.4"
+      - "/bin/gcc-ar-11.4"
+      - "/usr/games/gcc-ar-11.4"
+      - "/usr/local/games/gcc-ar-11.4"
+      - "/snap/bin/gcc-ar-11.4"
+      - "/home/ubuntu/.vscode/extensions/ms-python.debugpy-2025.18.0-linux-x64/bundled/scripts/noConfigScripts/gcc-ar-11.4"
+    found: "/usr/bin/gcc-ar-11"
+    search_context:
+      ENV{PATH}:
+        - "/home/ubuntu/.config/Code/User/globalStorage/github.copilot-chat/debugCommand"
+        - "/home/ubuntu/.config/Code/User/globalStorage/github.copilot-chat/copilotCli"
+        - "/opt/ros/humble/bin"
+        - "/opt/anaconda3/condabin"
+        - "/home/ubuntu/.cargo/bin"
+        - "/home/ubuntu/.local/bin"
+        - "/usr/bin"
+        - "/usr/local/cuda-12.8/bin"
+        - "/usr/local/sbin"
+        - "/usr/local/bin"
+        - "/usr/sbin"
+        - "/usr/bin"
+        - "/sbin"
+        - "/bin"
+        - "/usr/games"
+        - "/usr/local/games"
+        - "/snap/bin"
+        - "/snap/bin"
+        - "/home/ubuntu/.vscode/extensions/ms-python.debugpy-2025.18.0-linux-x64/bundled/scripts/noConfigScripts"
+  -
+    kind: "find-v1"
+    backtrace:
+      - "/usr/share/cmake-4.2/Modules/Compiler/GNU-FindBinUtils.cmake:30 (find_program)"
+      - "/usr/share/cmake-4.2/Modules/CMakeDetermineCXXCompiler.cmake:207 (include)"
+      - "CMakeLists.txt:2 (project)"
+    mode: "program"
+    variable: "CMAKE_CXX_COMPILER_RANLIB"
+    description: "A wrapper around 'ranlib' adding the appropriate '--plugin' option for the GCC compiler"
+    settings:
+      SearchFramework: "NEVER"
+      SearchAppBundle: "NEVER"
+      CMAKE_FIND_USE_CMAKE_PATH: false
+      CMAKE_FIND_USE_CMAKE_ENVIRONMENT_PATH: false
+      CMAKE_FIND_USE_SYSTEM_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_CMAKE_SYSTEM_PATH: true
+      CMAKE_FIND_USE_INSTALL_PREFIX: true
+    names:
+      - "gcc-ranlib-11.4"
+      - "gcc-ranlib-11"
+      - "gcc-ranlib11"
+      - "gcc-ranlib"
+    candidate_directories:
+      - "/usr/bin/"
+      - "/home/ubuntu/.config/Code/User/globalStorage/github.copilot-chat/debugCommand/"
+      - "/home/ubuntu/.config/Code/User/globalStorage/github.copilot-chat/copilotCli/"
+      - "/opt/ros/humble/bin/"
+      - "/opt/anaconda3/condabin/"
+      - "/home/ubuntu/.cargo/bin/"
+      - "/home/ubuntu/.local/bin/"
+      - "/usr/local/cuda-12.8/bin/"
+      - "/usr/local/sbin/"
+      - "/usr/local/bin/"
+      - "/usr/sbin/"
+      - "/sbin/"
+      - "/bin/"
+      - "/usr/games/"
+      - "/usr/local/games/"
+      - "/snap/bin/"
+      - "/home/ubuntu/.vscode/extensions/ms-python.debugpy-2025.18.0-linux-x64/bundled/scripts/noConfigScripts/"
+    searched_directories:
+      - "/usr/bin/gcc-ranlib-11.4"
+      - "/home/ubuntu/.config/Code/User/globalStorage/github.copilot-chat/debugCommand/gcc-ranlib-11.4"
+      - "/home/ubuntu/.config/Code/User/globalStorage/github.copilot-chat/copilotCli/gcc-ranlib-11.4"
+      - "/opt/ros/humble/bin/gcc-ranlib-11.4"
+      - "/opt/anaconda3/condabin/gcc-ranlib-11.4"
+      - "/home/ubuntu/.cargo/bin/gcc-ranlib-11.4"
+      - "/home/ubuntu/.local/bin/gcc-ranlib-11.4"
+      - "/usr/local/cuda-12.8/bin/gcc-ranlib-11.4"
+      - "/usr/local/sbin/gcc-ranlib-11.4"
+      - "/usr/local/bin/gcc-ranlib-11.4"
+      - "/usr/sbin/gcc-ranlib-11.4"
+      - "/sbin/gcc-ranlib-11.4"
+      - "/bin/gcc-ranlib-11.4"
+      - "/usr/games/gcc-ranlib-11.4"
+      - "/usr/local/games/gcc-ranlib-11.4"
+      - "/snap/bin/gcc-ranlib-11.4"
+      - "/home/ubuntu/.vscode/extensions/ms-python.debugpy-2025.18.0-linux-x64/bundled/scripts/noConfigScripts/gcc-ranlib-11.4"
+    found: "/usr/bin/gcc-ranlib-11"
+    search_context:
+      ENV{PATH}:
+        - "/home/ubuntu/.config/Code/User/globalStorage/github.copilot-chat/debugCommand"
+        - "/home/ubuntu/.config/Code/User/globalStorage/github.copilot-chat/copilotCli"
+        - "/opt/ros/humble/bin"
+        - "/opt/anaconda3/condabin"
+        - "/home/ubuntu/.cargo/bin"
+        - "/home/ubuntu/.local/bin"
+        - "/usr/bin"
+        - "/usr/local/cuda-12.8/bin"
+        - "/usr/local/sbin"
+        - "/usr/local/bin"
+        - "/usr/sbin"
+        - "/usr/bin"
+        - "/sbin"
+        - "/bin"
+        - "/usr/games"
+        - "/usr/local/games"
+        - "/snap/bin"
+        - "/snap/bin"
+        - "/home/ubuntu/.vscode/extensions/ms-python.debugpy-2025.18.0-linux-x64/bundled/scripts/noConfigScripts"
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "/usr/share/cmake-4.2/Modules/CMakeDetermineCompilerABI.cmake:83 (try_compile)"
+      - "/usr/share/cmake-4.2/Modules/CMakeTestCXXCompiler.cmake:26 (CMAKE_DETERMINE_COMPILER_ABI)"
+      - "CMakeLists.txt:2 (project)"
+    checks:
+      - "Detecting CXX compiler ABI info"
+    directories:
+      source: "/home/ubuntu/\u684c\u9762/test/2027rm_ws/build-perf/CMakeFiles/CMakeScratch/TryCompile-GKZRWX"
+      binary: "/home/ubuntu/\u684c\u9762/test/2027rm_ws/build-perf/CMakeFiles/CMakeScratch/TryCompile-GKZRWX"
+    cmakeVariables:
+      CMAKE_CXX_FLAGS: ""
+      CMAKE_CXX_FLAGS_DEBUG: "-g"
+      CMAKE_CXX_SCAN_FOR_MODULES: "OFF"
+      CMAKE_EXE_LINKER_FLAGS: ""
+    buildResult:
+      variable: "CMAKE_CXX_ABI_COMPILED"
+      cached: true
+      stdout: |
+        Change Dir: '/home/ubuntu/桌面/test/2027rm_ws/build-perf/CMakeFiles/CMakeScratch/TryCompile-GKZRWX'
+        
+        Run Build Command(s): /usr/bin/cmake -E env VERBOSE=1 /usr/bin/gmake -f Makefile cmTC_9a95b/fast
+        /usr/bin/gmake  -f CMakeFiles/cmTC_9a95b.dir/build.make CMakeFiles/cmTC_9a95b.dir/build
+        gmake[1]: Entering directory '/home/ubuntu/桌面/test/2027rm_ws/build-perf/CMakeFiles/CMakeScratch/TryCompile-GKZRWX'
+        Building CXX object CMakeFiles/cmTC_9a95b.dir/CMakeCXXCompilerABI.cpp.o
+        /usr/bin/c++   -v -o CMakeFiles/cmTC_9a95b.dir/CMakeCXXCompilerABI.cpp.o -c /usr/share/cmake-4.2/Modules/CMakeCXXCompilerABI.cpp
+        Using built-in specs.
+        COLLECT_GCC=/usr/bin/c++
+        OFFLOAD_TARGET_NAMES=nvptx-none:amdgcn-amdhsa
+        OFFLOAD_TARGET_DEFAULT=1
+        Target: x86_64-linux-gnu
+        Configured with: ../src/configure -v --with-pkgversion='Ubuntu 11.4.0-1ubuntu1~22.04.2' --with-bugurl=file:///usr/share/doc/gcc-11/README.Bugs --enable-languages=c,ada,c++,go,brig,d,fortran,objc,obj-c++,m2 --prefix=/usr --with-gcc-major-version-only --program-suffix=-11 --program-prefix=x86_64-linux-gnu- --enable-shared --enable-linker-build-id --libexecdir=/usr/lib --without-included-gettext --enable-threads=posix --libdir=/usr/lib --enable-nls --enable-bootstrap --enable-clocale=gnu --enable-libstdcxx-debug --enable-libstdcxx-time=yes --with-default-libstdcxx-abi=new --enable-gnu-unique-object --disable-vtable-verify --enable-plugin --enable-default-pie --with-system-zlib --enable-libphobos-checking=release --with-target-system-zlib=auto --enable-objc-gc=auto --enable-multiarch --disable-werror --enable-cet --with-arch-32=i686 --with-abi=m64 --with-multilib-list=m32,m64,mx32 --enable-multilib --with-tune=generic --enable-offload-targets=nvptx-none=/build/gcc-11-2Y5pKs/gcc-11-11.4.0/debian/tmp-nvptx/usr,amdgcn-amdhsa=/build/gcc-11-2Y5pKs/gcc-11-11.4.0/debian/tmp-gcn/usr --without-cuda-driver --enable-checking=release --build=x86_64-linux-gnu --host=x86_64-linux-gnu --target=x86_64-linux-gnu --with-build-config=bootstrap-lto-lean --enable-link-serialization=2
+        Thread model: posix
+        Supported LTO compression algorithms: zlib zstd
+        gcc version 11.4.0 (Ubuntu 11.4.0-1ubuntu1~22.04.2) 
+        COLLECT_GCC_OPTIONS='-v' '-o' 'CMakeFiles/cmTC_9a95b.dir/CMakeCXXCompilerABI.cpp.o' '-c' '-shared-libgcc' '-mtune=generic' '-march=x86-64' '-dumpdir' 'CMakeFiles/cmTC_9a95b.dir/'
+         /usr/lib/gcc/x86_64-linux-gnu/11/cc1plus -quiet -v -imultiarch x86_64-linux-gnu -D_GNU_SOURCE /usr/share/cmake-4.2/Modules/CMakeCXXCompilerABI.cpp -quiet -dumpdir CMakeFiles/cmTC_9a95b.dir/ -dumpbase CMakeCXXCompilerABI.cpp.cpp -dumpbase-ext .cpp -mtune=generic -march=x86-64 -version -fasynchronous-unwind-tables -fstack-protector-strong -Wformat -Wformat-security -fstack-clash-protection -fcf-protection -o /tmp/ccKlsDCk.s
+        GNU C++17 (Ubuntu 11.4.0-1ubuntu1~22.04.2) version 11.4.0 (x86_64-linux-gnu)
+        	compiled by GNU C version 11.4.0, GMP version 6.2.1, MPFR version 4.1.0, MPC version 1.2.1, isl version isl-0.24-GMP
+        
+        GGC heuristics: --param ggc-min-expand=100 --param ggc-min-heapsize=131072
+        ignoring duplicate directory "/usr/include/x86_64-linux-gnu/c++/11"
+        ignoring nonexistent directory "/usr/local/include/x86_64-linux-gnu"
+        ignoring nonexistent directory "/usr/lib/gcc/x86_64-linux-gnu/11/include-fixed"
+        ignoring nonexistent directory "/usr/lib/gcc/x86_64-linux-gnu/11/../../../../x86_64-linux-gnu/include"
+        #include "..." search starts here:
+        #include <...> search starts here:
+         /usr/include/c++/11
+         /usr/include/x86_64-linux-gnu/c++/11
+         /usr/include/c++/11/backward
+         /usr/lib/gcc/x86_64-linux-gnu/11/include
+         /usr/local/include
+         /usr/include/x86_64-linux-gnu
+         /usr/include
+        End of search list.
+        GNU C++17 (Ubuntu 11.4.0-1ubuntu1~22.04.2) version 11.4.0 (x86_64-linux-gnu)
+        	compiled by GNU C version 11.4.0, GMP version 6.2.1, MPFR version 4.1.0, MPC version 1.2.1, isl version isl-0.24-GMP
+        
+        GGC heuristics: --param ggc-min-expand=100 --param ggc-min-heapsize=131072
+        Compiler executable checksum: 6c87588fc345655b93b8c25f48f88886
+        COLLECT_GCC_OPTIONS='-v' '-o' 'CMakeFiles/cmTC_9a95b.dir/CMakeCXXCompilerABI.cpp.o' '-c' '-shared-libgcc' '-mtune=generic' '-march=x86-64' '-dumpdir' 'CMakeFiles/cmTC_9a95b.dir/'
+         as -v --64 -o CMakeFiles/cmTC_9a95b.dir/CMakeCXXCompilerABI.cpp.o /tmp/ccKlsDCk.s
+        GNU assembler version 2.38 (x86_64-linux-gnu) using BFD version (GNU Binutils for Ubuntu) 2.38
+        COMPILER_PATH=/usr/lib/gcc/x86_64-linux-gnu/11/:/usr/lib/gcc/x86_64-linux-gnu/11/:/usr/lib/gcc/x86_64-linux-gnu/:/usr/lib/gcc/x86_64-linux-gnu/11/:/usr/lib/gcc/x86_64-linux-gnu/
+        LIBRARY_PATH=/usr/local/sbin/../lib/:/usr/local/bin/../lib/:/usr/sbin/../lib/:/usr/bin/../lib/:/sbin/../lib/:/bin/../lib/:/usr/games/../lib/:/usr/local/games/../lib/:/home/ubuntu/TensorRT/TensorRT-8.6.1.6/lib/../lib/:/usr/lib/gcc/x86_64-linux-gnu/11/:/usr/lib/gcc/x86_64-linux-gnu/11/../../../x86_64-linux-gnu/:/usr/lib/gcc/x86_64-linux-gnu/11/../../../../lib/:/lib/x86_64-linux-gnu/:/lib/../lib/:/usr/lib/x86_64-linux-gnu/:/usr/lib/../lib/:/usr/local/cuda-12.8/bin/:/usr/local/sbin/:/usr/local/bin/:/usr/sbin/:/usr/bin/:/sbin/:/bin/:/usr/games/:/usr/local/games/:/snap/bin/:/snap/bin/:/home/ubuntu/TensorRT/TensorRT-8.6.1.6/lib/:./:./:/usr/lib/gcc/x86_64-linux-gnu/11/../../../:/lib/:/usr/lib/
+        COLLECT_GCC_OPTIONS='-v' '-o' 'CMakeFiles/cmTC_9a95b.dir/CMakeCXXCompilerABI.cpp.o' '-c' '-shared-libgcc' '-mtune=generic' '-march=x86-64' '-dumpdir' 'CMakeFiles/cmTC_9a95b.dir/CMakeCXXCompilerABI.cpp.'
+        Linking CXX executable cmTC_9a95b
+        /usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_9a95b.dir/link.txt --verbose=1
+        Using built-in specs.
+        COLLECT_GCC=/usr/bin/c++
+        COLLECT_LTO_WRAPPER=/usr/lib/gcc/x86_64-linux-gnu/11/lto-wrapper
+        OFFLOAD_TARGET_NAMES=nvptx-none:amdgcn-amdhsa
+        OFFLOAD_TARGET_DEFAULT=1
+        Target: x86_64-linux-gnu
+        Configured with: ../src/configure -v --with-pkgversion='Ubuntu 11.4.0-1ubuntu1~22.04.2' --with-bugurl=file:///usr/share/doc/gcc-11/README.Bugs --enable-languages=c,ada,c++,go,brig,d,fortran,objc,obj-c++,m2 --prefix=/usr --with-gcc-major-version-only --program-suffix=-11 --program-prefix=x86_64-linux-gnu- --enable-shared --enable-linker-build-id --libexecdir=/usr/lib --without-included-gettext --enable-threads=posix --libdir=/usr/lib --enable-nls --enable-bootstrap --enable-clocale=gnu --enable-libstdcxx-debug --enable-libstdcxx-time=yes --with-default-libstdcxx-abi=new --enable-gnu-unique-object --disable-vtable-verify --enable-plugin --enable-default-pie --with-system-zlib --enable-libphobos-checking=release --with-target-system-zlib=auto --enable-objc-gc=auto --enable-multiarch --disable-werror --enable-cet --with-arch-32=i686 --with-abi=m64 --with-multilib-list=m32,m64,mx32 --enable-multilib --with-tune=generic --enable-offload-targets=nvptx-none=/build/gcc-11-2Y5pKs/gcc-11-11.4.0/debian/tmp-nvptx/usr,amdgcn-amdhsa=/build/gcc-11-2Y5pKs/gcc-11-11.4.0/debian/tmp-gcn/usr --without-cuda-driver --enable-checking=release --build=x86_64-linux-gnu --host=x86_64-linux-gnu --target=x86_64-linux-gnu --with-build-config=bootstrap-lto-lean --enable-link-serialization=2
+        Thread model: posix
+        Supported LTO compression algorithms: zlib zstd
+        gcc version 11.4.0 (Ubuntu 11.4.0-1ubuntu1~22.04.2) 
+        COMPILER_PATH=/usr/lib/gcc/x86_64-linux-gnu/11/:/usr/lib/gcc/x86_64-linux-gnu/11/:/usr/lib/gcc/x86_64-linux-gnu/:/usr/lib/gcc/x86_64-linux-gnu/11/:/usr/lib/gcc/x86_64-linux-gnu/
+        LIBRARY_PATH=/usr/local/sbin/../lib/:/usr/local/bin/../lib/:/usr/sbin/../lib/:/usr/bin/../lib/:/sbin/../lib/:/bin/../lib/:/usr/games/../lib/:/usr/local/games/../lib/:/home/ubuntu/TensorRT/TensorRT-8.6.1.6/lib/../lib/:/usr/lib/gcc/x86_64-linux-gnu/11/:/usr/lib/gcc/x86_64-linux-gnu/11/../../../x86_64-linux-gnu/:/usr/lib/gcc/x86_64-linux-gnu/11/../../../../lib/:/lib/x86_64-linux-gnu/:/lib/../lib/:/usr/lib/x86_64-linux-gnu/:/usr/lib/../lib/:/usr/local/cuda-12.8/bin/:/usr/local/sbin/:/usr/local/bin/:/usr/sbin/:/usr/bin/:/sbin/:/bin/:/usr/games/:/usr/local/games/:/snap/bin/:/snap/bin/:/home/ubuntu/TensorRT/TensorRT-8.6.1.6/lib/:./:./:/usr/lib/gcc/x86_64-linux-gnu/11/../../../:/lib/:/usr/lib/
+        COLLECT_GCC_OPTIONS='-v' '-o' 'cmTC_9a95b' '-shared-libgcc' '-mtune=generic' '-march=x86-64' '-dumpdir' 'cmTC_9a95b.'
+         /usr/lib/gcc/x86_64-linux-gnu/11/collect2 -plugin /usr/lib/gcc/x86_64-linux-gnu/11/liblto_plugin.so -plugin-opt=/usr/lib/gcc/x86_64-linux-gnu/11/lto-wrapper -plugin-opt=-fresolution=/tmp/ccovsKD2.res -plugin-opt=-pass-through=-lgcc_s -plugin-opt=-pass-through=-lgcc -plugin-opt=-pass-through=-lc -plugin-opt=-pass-through=-lgcc_s -plugin-opt=-pass-through=-lgcc --build-id --eh-frame-hdr -m elf_x86_64 --hash-style=gnu --as-needed -dynamic-linker /lib64/ld-linux-x86-64.so.2 -pie -z now -z relro -o cmTC_9a95b /usr/lib/gcc/x86_64-linux-gnu/11/../../../x86_64-linux-gnu/Scrt1.o /usr/lib/gcc/x86_64-linux-gnu/11/../../../x86_64-linux-gnu/crti.o /usr/lib/gcc/x86_64-linux-gnu/11/crtbeginS.o -L/usr/local/sbin/../lib -L/usr/local/bin/../lib -L/usr/sbin/../lib -L/usr/bin/../lib -L/sbin/../lib -L/bin/../lib -L/usr/games/../lib -L/usr/local/games/../lib -L/home/ubuntu/TensorRT/TensorRT-8.6.1.6/lib/../lib -L/usr/lib/gcc/x86_64-linux-gnu/11 -L/usr/lib/gcc/x86_64-linux-gnu/11/../../../x86_64-linux-gnu -L/usr/lib/gcc/x86_64-linux-gnu/11/../../../../lib -L/lib/x86_64-linux-gnu -L/lib/../lib -L/usr/lib/x86_64-linux-gnu -L/usr/lib/../lib -L/usr/local/cuda-12.8/bin -L/usr/local/sbin -L/usr/local/bin -L/usr/sbin -L/usr/bin -L/sbin -L/bin -L/usr/games -L/usr/local/games -L/snap/bin -L/snap/bin -L/home/ubuntu/TensorRT/TensorRT-8.6.1.6/lib -L. -L. -L/usr/lib/gcc/x86_64-linux-gnu/11/../../.. -v CMakeFiles/cmTC_9a95b.dir/CMakeCXXCompilerABI.cpp.o -lstdc++ -lm -lgcc_s -lgcc -lc -lgcc_s -lgcc /usr/lib/gcc/x86_64-linux-gnu/11/crtendS.o /usr/lib/gcc/x86_64-linux-gnu/11/../../../x86_64-linux-gnu/crtn.o
+        collect2 version 11.4.0
+        /usr/bin/ld -plugin /usr/lib/gcc/x86_64-linux-gnu/11/liblto_plugin.so -plugin-opt=/usr/lib/gcc/x86_64-linux-gnu/11/lto-wrapper -plugin-opt=-fresolution=/tmp/ccovsKD2.res -plugin-opt=-pass-through=-lgcc_s -plugin-opt=-pass-through=-lgcc -plugin-opt=-pass-through=-lc -plugin-opt=-pass-through=-lgcc_s -plugin-opt=-pass-through=-lgcc --build-id --eh-frame-hdr -m elf_x86_64 --hash-style=gnu --as-needed -dynamic-linker /lib64/ld-linux-x86-64.so.2 -pie -z now -z relro -o cmTC_9a95b /usr/lib/gcc/x86_64-linux-gnu/11/../../../x86_64-linux-gnu/Scrt1.o /usr/lib/gcc/x86_64-linux-gnu/11/../../../x86_64-linux-gnu/crti.o /usr/lib/gcc/x86_64-linux-gnu/11/crtbeginS.o -L/usr/local/sbin/../lib -L/usr/local/bin/../lib -L/usr/sbin/../lib -L/usr/bin/../lib -L/sbin/../lib -L/bin/../lib -L/usr/games/../lib -L/usr/local/games/../lib -L/home/ubuntu/TensorRT/TensorRT-8.6.1.6/lib/../lib -L/usr/lib/gcc/x86_64-linux-gnu/11 -L/usr/lib/gcc/x86_64-linux-gnu/11/../../../x86_64-linux-gnu -L/usr/lib/gcc/x86_64-linux-gnu/11/../../../../lib -L/lib/x86_64-linux-gnu -L/lib/../lib -L/usr/lib/x86_64-linux-gnu -L/usr/lib/../lib -L/usr/local/cuda-12.8/bin -L/usr/local/sbin -L/usr/local/bin -L/usr/sbin -L/usr/bin -L/sbin -L/bin -L/usr/games -L/usr/local/games -L/snap/bin -L/snap/bin -L/home/ubuntu/TensorRT/TensorRT-8.6.1.6/lib -L. -L. -L/usr/lib/gcc/x86_64-linux-gnu/11/../../.. -v CMakeFiles/cmTC_9a95b.dir/CMakeCXXCompilerABI.cpp.o -lstdc++ -lm -lgcc_s -lgcc -lc -lgcc_s -lgcc /usr/lib/gcc/x86_64-linux-gnu/11/crtendS.o /usr/lib/gcc/x86_64-linux-gnu/11/../../../x86_64-linux-gnu/crtn.o
+        GNU ld (GNU Binutils for Ubuntu) 2.38
+        COLLECT_GCC_OPTIONS='-v' '-o' 'cmTC_9a95b' '-shared-libgcc' '-mtune=generic' '-march=x86-64' '-dumpdir' 'cmTC_9a95b.'
+        /usr/bin/c++  -v -Wl,-v CMakeFiles/cmTC_9a95b.dir/CMakeCXXCompilerABI.cpp.o -o cmTC_9a95b
+        gmake[1]: Leaving directory '/home/ubuntu/桌面/test/2027rm_ws/build-perf/CMakeFiles/CMakeScratch/TryCompile-GKZRWX'
+        
+      exitCode: 0
+  -
+    kind: "message-v1"
+    backtrace:
+      - "/usr/share/cmake-4.2/Modules/CMakeDetermineCompilerABI.cmake:217 (message)"
+      - "/usr/share/cmake-4.2/Modules/CMakeTestCXXCompiler.cmake:26 (CMAKE_DETERMINE_COMPILER_ABI)"
+      - "CMakeLists.txt:2 (project)"
+    message: |
+      Parsed CXX implicit include dir info: rv=done
+        found start of include info
+        found start of implicit include info
+          add: [/usr/include/c++/11]
+          add: [/usr/include/x86_64-linux-gnu/c++/11]
+          add: [/usr/include/c++/11/backward]
+          add: [/usr/lib/gcc/x86_64-linux-gnu/11/include]
+          add: [/usr/local/include]
+          add: [/usr/include/x86_64-linux-gnu]
+          add: [/usr/include]
+        end of search list found
+        collapse include dir [/usr/include/c++/11] ==> [/usr/include/c++/11]
+        collapse include dir [/usr/include/x86_64-linux-gnu/c++/11] ==> [/usr/include/x86_64-linux-gnu/c++/11]
+        collapse include dir [/usr/include/c++/11/backward] ==> [/usr/include/c++/11/backward]
+        collapse include dir [/usr/lib/gcc/x86_64-linux-gnu/11/include] ==> [/usr/lib/gcc/x86_64-linux-gnu/11/include]
+        collapse include dir [/usr/local/include] ==> [/usr/local/include]
+        collapse include dir [/usr/include/x86_64-linux-gnu] ==> [/usr/include/x86_64-linux-gnu]
+        collapse include dir [/usr/include] ==> [/usr/include]
+        implicit include dirs: [/usr/include/c++/11;/usr/include/x86_64-linux-gnu/c++/11;/usr/include/c++/11/backward;/usr/lib/gcc/x86_64-linux-gnu/11/include;/usr/local/include;/usr/include/x86_64-linux-gnu;/usr/include]
+      
+      
+  -
+    kind: "message-v1"
+    backtrace:
+      - "/usr/share/cmake-4.2/Modules/CMakeDetermineCompilerABI.cmake:253 (message)"
+      - "/usr/share/cmake-4.2/Modules/CMakeTestCXXCompiler.cmake:26 (CMAKE_DETERMINE_COMPILER_ABI)"
+      - "CMakeLists.txt:2 (project)"
+    message: |
+      Parsed CXX implicit link information:
+        link line regex: [^( *|.*[/\\])(ld[0-9]*(|\\.[a-rt-z][a-z]*|\\.s[a-np-z][a-z]*|\\.so[a-z]+)|CMAKE_LINK_STARTFILE-NOTFOUND|([^/\\]+-)?ld|collect2)[^/\\]*( |$)]
+        linker tool regex: [^[ 	]*(->|"|[0-9]+>[ 	-]*Build:[ 	0-9]+ ms[ 	]*)?[ 	]*(([^"]*[/\\])?(ld[0-9]*(|\\.[a-rt-z][a-z]*|\\.s[a-np-z][a-z]*|\\.so[a-z]+)))("|,| |$)]
+        ignore line: [Change Dir: '/home/ubuntu/桌面/test/2027rm_ws/build-perf/CMakeFiles/CMakeScratch/TryCompile-GKZRWX']
+        ignore line: []
+        ignore line: [Run Build Command(s): /usr/bin/cmake -E env VERBOSE=1 /usr/bin/gmake -f Makefile cmTC_9a95b/fast]
+        ignore line: [/usr/bin/gmake  -f CMakeFiles/cmTC_9a95b.dir/build.make CMakeFiles/cmTC_9a95b.dir/build]
+        ignore line: [gmake[1]: Entering directory '/home/ubuntu/桌面/test/2027rm_ws/build-perf/CMakeFiles/CMakeScratch/TryCompile-GKZRWX']
+        ignore line: [Building CXX object CMakeFiles/cmTC_9a95b.dir/CMakeCXXCompilerABI.cpp.o]
+        ignore line: [/usr/bin/c++   -v -o CMakeFiles/cmTC_9a95b.dir/CMakeCXXCompilerABI.cpp.o -c /usr/share/cmake-4.2/Modules/CMakeCXXCompilerABI.cpp]
+        ignore line: [Using built-in specs.]
+        ignore line: [COLLECT_GCC=/usr/bin/c++]
+        ignore line: [OFFLOAD_TARGET_NAMES=nvptx-none:amdgcn-amdhsa]
+        ignore line: [OFFLOAD_TARGET_DEFAULT=1]
+        ignore line: [Target: x86_64-linux-gnu]
+        ignore line: [Configured with: ../src/configure -v --with-pkgversion='Ubuntu 11.4.0-1ubuntu1~22.04.2' --with-bugurl=file:///usr/share/doc/gcc-11/README.Bugs --enable-languages=c ada c++ go brig d fortran objc obj-c++ m2 --prefix=/usr --with-gcc-major-version-only --program-suffix=-11 --program-prefix=x86_64-linux-gnu- --enable-shared --enable-linker-build-id --libexecdir=/usr/lib --without-included-gettext --enable-threads=posix --libdir=/usr/lib --enable-nls --enable-bootstrap --enable-clocale=gnu --enable-libstdcxx-debug --enable-libstdcxx-time=yes --with-default-libstdcxx-abi=new --enable-gnu-unique-object --disable-vtable-verify --enable-plugin --enable-default-pie --with-system-zlib --enable-libphobos-checking=release --with-target-system-zlib=auto --enable-objc-gc=auto --enable-multiarch --disable-werror --enable-cet --with-arch-32=i686 --with-abi=m64 --with-multilib-list=m32 m64 mx32 --enable-multilib --with-tune=generic --enable-offload-targets=nvptx-none=/build/gcc-11-2Y5pKs/gcc-11-11.4.0/debian/tmp-nvptx/usr amdgcn-amdhsa=/build/gcc-11-2Y5pKs/gcc-11-11.4.0/debian/tmp-gcn/usr --without-cuda-driver --enable-checking=release --build=x86_64-linux-gnu --host=x86_64-linux-gnu --target=x86_64-linux-gnu --with-build-config=bootstrap-lto-lean --enable-link-serialization=2]
+        ignore line: [Thread model: posix]
+        ignore line: [Supported LTO compression algorithms: zlib zstd]
+        ignore line: [gcc version 11.4.0 (Ubuntu 11.4.0-1ubuntu1~22.04.2) ]
+        ignore line: [COLLECT_GCC_OPTIONS='-v' '-o' 'CMakeFiles/cmTC_9a95b.dir/CMakeCXXCompilerABI.cpp.o' '-c' '-shared-libgcc' '-mtune=generic' '-march=x86-64' '-dumpdir' 'CMakeFiles/cmTC_9a95b.dir/']
+        ignore line: [ /usr/lib/gcc/x86_64-linux-gnu/11/cc1plus -quiet -v -imultiarch x86_64-linux-gnu -D_GNU_SOURCE /usr/share/cmake-4.2/Modules/CMakeCXXCompilerABI.cpp -quiet -dumpdir CMakeFiles/cmTC_9a95b.dir/ -dumpbase CMakeCXXCompilerABI.cpp.cpp -dumpbase-ext .cpp -mtune=generic -march=x86-64 -version -fasynchronous-unwind-tables -fstack-protector-strong -Wformat -Wformat-security -fstack-clash-protection -fcf-protection -o /tmp/ccKlsDCk.s]
+        ignore line: [GNU C++17 (Ubuntu 11.4.0-1ubuntu1~22.04.2) version 11.4.0 (x86_64-linux-gnu)]
+        ignore line: [	compiled by GNU C version 11.4.0  GMP version 6.2.1  MPFR version 4.1.0  MPC version 1.2.1  isl version isl-0.24-GMP]
+        ignore line: []
+        ignore line: [GGC heuristics: --param ggc-min-expand=100 --param ggc-min-heapsize=131072]
+        ignore line: [ignoring duplicate directory "/usr/include/x86_64-linux-gnu/c++/11"]
+        ignore line: [ignoring nonexistent directory "/usr/local/include/x86_64-linux-gnu"]
+        ignore line: [ignoring nonexistent directory "/usr/lib/gcc/x86_64-linux-gnu/11/include-fixed"]
+        ignore line: [ignoring nonexistent directory "/usr/lib/gcc/x86_64-linux-gnu/11/../../../../x86_64-linux-gnu/include"]
+        ignore line: [#include "..." search starts here:]
+        ignore line: [#include <...> search starts here:]
+        ignore line: [ /usr/include/c++/11]
+        ignore line: [ /usr/include/x86_64-linux-gnu/c++/11]
+        ignore line: [ /usr/include/c++/11/backward]
+        ignore line: [ /usr/lib/gcc/x86_64-linux-gnu/11/include]
+        ignore line: [ /usr/local/include]
+        ignore line: [ /usr/include/x86_64-linux-gnu]
+        ignore line: [ /usr/include]
+        ignore line: [End of search list.]
+        ignore line: [GNU C++17 (Ubuntu 11.4.0-1ubuntu1~22.04.2) version 11.4.0 (x86_64-linux-gnu)]
+        ignore line: [	compiled by GNU C version 11.4.0  GMP version 6.2.1  MPFR version 4.1.0  MPC version 1.2.1  isl version isl-0.24-GMP]
+        ignore line: []
+        ignore line: [GGC heuristics: --param ggc-min-expand=100 --param ggc-min-heapsize=131072]
+        ignore line: [Compiler executable checksum: 6c87588fc345655b93b8c25f48f88886]
+        ignore line: [COLLECT_GCC_OPTIONS='-v' '-o' 'CMakeFiles/cmTC_9a95b.dir/CMakeCXXCompilerABI.cpp.o' '-c' '-shared-libgcc' '-mtune=generic' '-march=x86-64' '-dumpdir' 'CMakeFiles/cmTC_9a95b.dir/']
+        ignore line: [ as -v --64 -o CMakeFiles/cmTC_9a95b.dir/CMakeCXXCompilerABI.cpp.o /tmp/ccKlsDCk.s]
+        ignore line: [GNU assembler version 2.38 (x86_64-linux-gnu) using BFD version (GNU Binutils for Ubuntu) 2.38]
+        ignore line: [COMPILER_PATH=/usr/lib/gcc/x86_64-linux-gnu/11/:/usr/lib/gcc/x86_64-linux-gnu/11/:/usr/lib/gcc/x86_64-linux-gnu/:/usr/lib/gcc/x86_64-linux-gnu/11/:/usr/lib/gcc/x86_64-linux-gnu/]
+        ignore line: [LIBRARY_PATH=/usr/local/sbin/../lib/:/usr/local/bin/../lib/:/usr/sbin/../lib/:/usr/bin/../lib/:/sbin/../lib/:/bin/../lib/:/usr/games/../lib/:/usr/local/games/../lib/:/home/ubuntu/TensorRT/TensorRT-8.6.1.6/lib/../lib/:/usr/lib/gcc/x86_64-linux-gnu/11/:/usr/lib/gcc/x86_64-linux-gnu/11/../../../x86_64-linux-gnu/:/usr/lib/gcc/x86_64-linux-gnu/11/../../../../lib/:/lib/x86_64-linux-gnu/:/lib/../lib/:/usr/lib/x86_64-linux-gnu/:/usr/lib/../lib/:/usr/local/cuda-12.8/bin/:/usr/local/sbin/:/usr/local/bin/:/usr/sbin/:/usr/bin/:/sbin/:/bin/:/usr/games/:/usr/local/games/:/snap/bin/:/snap/bin/:/home/ubuntu/TensorRT/TensorRT-8.6.1.6/lib/:./:./:/usr/lib/gcc/x86_64-linux-gnu/11/../../../:/lib/:/usr/lib/]
+        ignore line: [COLLECT_GCC_OPTIONS='-v' '-o' 'CMakeFiles/cmTC_9a95b.dir/CMakeCXXCompilerABI.cpp.o' '-c' '-shared-libgcc' '-mtune=generic' '-march=x86-64' '-dumpdir' 'CMakeFiles/cmTC_9a95b.dir/CMakeCXXCompilerABI.cpp.']
+        ignore line: [Linking CXX executable cmTC_9a95b]
+        ignore line: [/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_9a95b.dir/link.txt --verbose=1]
+        ignore line: [Using built-in specs.]
+        ignore line: [COLLECT_GCC=/usr/bin/c++]
+        ignore line: [COLLECT_LTO_WRAPPER=/usr/lib/gcc/x86_64-linux-gnu/11/lto-wrapper]
+        ignore line: [OFFLOAD_TARGET_NAMES=nvptx-none:amdgcn-amdhsa]
+        ignore line: [OFFLOAD_TARGET_DEFAULT=1]
+        ignore line: [Target: x86_64-linux-gnu]
+        ignore line: [Configured with: ../src/configure -v --with-pkgversion='Ubuntu 11.4.0-1ubuntu1~22.04.2' --with-bugurl=file:///usr/share/doc/gcc-11/README.Bugs --enable-languages=c ada c++ go brig d fortran objc obj-c++ m2 --prefix=/usr --with-gcc-major-version-only --program-suffix=-11 --program-prefix=x86_64-linux-gnu- --enable-shared --enable-linker-build-id --libexecdir=/usr/lib --without-included-gettext --enable-threads=posix --libdir=/usr/lib --enable-nls --enable-bootstrap --enable-clocale=gnu --enable-libstdcxx-debug --enable-libstdcxx-time=yes --with-default-libstdcxx-abi=new --enable-gnu-unique-object --disable-vtable-verify --enable-plugin --enable-default-pie --with-system-zlib --enable-libphobos-checking=release --with-target-system-zlib=auto --enable-objc-gc=auto --enable-multiarch --disable-werror --enable-cet --with-arch-32=i686 --with-abi=m64 --with-multilib-list=m32 m64 mx32 --enable-multilib --with-tune=generic --enable-offload-targets=nvptx-none=/build/gcc-11-2Y5pKs/gcc-11-11.4.0/debian/tmp-nvptx/usr amdgcn-amdhsa=/build/gcc-11-2Y5pKs/gcc-11-11.4.0/debian/tmp-gcn/usr --without-cuda-driver --enable-checking=release --build=x86_64-linux-gnu --host=x86_64-linux-gnu --target=x86_64-linux-gnu --with-build-config=bootstrap-lto-lean --enable-link-serialization=2]
+        ignore line: [Thread model: posix]
+        ignore line: [Supported LTO compression algorithms: zlib zstd]
+        ignore line: [gcc version 11.4.0 (Ubuntu 11.4.0-1ubuntu1~22.04.2) ]
+        ignore line: [COMPILER_PATH=/usr/lib/gcc/x86_64-linux-gnu/11/:/usr/lib/gcc/x86_64-linux-gnu/11/:/usr/lib/gcc/x86_64-linux-gnu/:/usr/lib/gcc/x86_64-linux-gnu/11/:/usr/lib/gcc/x86_64-linux-gnu/]
+        ignore line: [LIBRARY_PATH=/usr/local/sbin/../lib/:/usr/local/bin/../lib/:/usr/sbin/../lib/:/usr/bin/../lib/:/sbin/../lib/:/bin/../lib/:/usr/games/../lib/:/usr/local/games/../lib/:/home/ubuntu/TensorRT/TensorRT-8.6.1.6/lib/../lib/:/usr/lib/gcc/x86_64-linux-gnu/11/:/usr/lib/gcc/x86_64-linux-gnu/11/../../../x86_64-linux-gnu/:/usr/lib/gcc/x86_64-linux-gnu/11/../../../../lib/:/lib/x86_64-linux-gnu/:/lib/../lib/:/usr/lib/x86_64-linux-gnu/:/usr/lib/../lib/:/usr/local/cuda-12.8/bin/:/usr/local/sbin/:/usr/local/bin/:/usr/sbin/:/usr/bin/:/sbin/:/bin/:/usr/games/:/usr/local/games/:/snap/bin/:/snap/bin/:/home/ubuntu/TensorRT/TensorRT-8.6.1.6/lib/:./:./:/usr/lib/gcc/x86_64-linux-gnu/11/../../../:/lib/:/usr/lib/]
+        ignore line: [COLLECT_GCC_OPTIONS='-v' '-o' 'cmTC_9a95b' '-shared-libgcc' '-mtune=generic' '-march=x86-64' '-dumpdir' 'cmTC_9a95b.']
+        link line: [ /usr/lib/gcc/x86_64-linux-gnu/11/collect2 -plugin /usr/lib/gcc/x86_64-linux-gnu/11/liblto_plugin.so -plugin-opt=/usr/lib/gcc/x86_64-linux-gnu/11/lto-wrapper -plugin-opt=-fresolution=/tmp/ccovsKD2.res -plugin-opt=-pass-through=-lgcc_s -plugin-opt=-pass-through=-lgcc -plugin-opt=-pass-through=-lc -plugin-opt=-pass-through=-lgcc_s -plugin-opt=-pass-through=-lgcc --build-id --eh-frame-hdr -m elf_x86_64 --hash-style=gnu --as-needed -dynamic-linker /lib64/ld-linux-x86-64.so.2 -pie -z now -z relro -o cmTC_9a95b /usr/lib/gcc/x86_64-linux-gnu/11/../../../x86_64-linux-gnu/Scrt1.o /usr/lib/gcc/x86_64-linux-gnu/11/../../../x86_64-linux-gnu/crti.o /usr/lib/gcc/x86_64-linux-gnu/11/crtbeginS.o -L/usr/local/sbin/../lib -L/usr/local/bin/../lib -L/usr/sbin/../lib -L/usr/bin/../lib -L/sbin/../lib -L/bin/../lib -L/usr/games/../lib -L/usr/local/games/../lib -L/home/ubuntu/TensorRT/TensorRT-8.6.1.6/lib/../lib -L/usr/lib/gcc/x86_64-linux-gnu/11 -L/usr/lib/gcc/x86_64-linux-gnu/11/../../../x86_64-linux-gnu -L/usr/lib/gcc/x86_64-linux-gnu/11/../../../../lib -L/lib/x86_64-linux-gnu -L/lib/../lib -L/usr/lib/x86_64-linux-gnu -L/usr/lib/../lib -L/usr/local/cuda-12.8/bin -L/usr/local/sbin -L/usr/local/bin -L/usr/sbin -L/usr/bin -L/sbin -L/bin -L/usr/games -L/usr/local/games -L/snap/bin -L/snap/bin -L/home/ubuntu/TensorRT/TensorRT-8.6.1.6/lib -L. -L. -L/usr/lib/gcc/x86_64-linux-gnu/11/../../.. -v CMakeFiles/cmTC_9a95b.dir/CMakeCXXCompilerABI.cpp.o -lstdc++ -lm -lgcc_s -lgcc -lc -lgcc_s -lgcc /usr/lib/gcc/x86_64-linux-gnu/11/crtendS.o /usr/lib/gcc/x86_64-linux-gnu/11/../../../x86_64-linux-gnu/crtn.o]
+          arg [/usr/lib/gcc/x86_64-linux-gnu/11/collect2] ==> ignore
+          arg [-plugin] ==> ignore
+          arg [/usr/lib/gcc/x86_64-linux-gnu/11/liblto_plugin.so] ==> ignore
+          arg [-plugin-opt=/usr/lib/gcc/x86_64-linux-gnu/11/lto-wrapper] ==> ignore
+          arg [-plugin-opt=-fresolution=/tmp/ccovsKD2.res] ==> ignore
+          arg [-plugin-opt=-pass-through=-lgcc_s] ==> ignore
+          arg [-plugin-opt=-pass-through=-lgcc] ==> ignore
+          arg [-plugin-opt=-pass-through=-lc] ==> ignore
+          arg [-plugin-opt=-pass-through=-lgcc_s] ==> ignore
+          arg [-plugin-opt=-pass-through=-lgcc] ==> ignore
+          arg [--build-id] ==> ignore
+          arg [--eh-frame-hdr] ==> ignore
+          arg [-m] ==> ignore
+          arg [elf_x86_64] ==> ignore
+          arg [--hash-style=gnu] ==> ignore
+          arg [--as-needed] ==> ignore
+          arg [-dynamic-linker] ==> ignore
+          arg [/lib64/ld-linux-x86-64.so.2] ==> ignore
+          arg [-pie] ==> ignore
+          arg [-znow] ==> ignore
+          arg [-zrelro] ==> ignore
+          arg [-o] ==> ignore
+          arg [cmTC_9a95b] ==> ignore
+          arg [/usr/lib/gcc/x86_64-linux-gnu/11/../../../x86_64-linux-gnu/Scrt1.o] ==> obj [/usr/lib/gcc/x86_64-linux-gnu/11/../../../x86_64-linux-gnu/Scrt1.o]
+          arg [/usr/lib/gcc/x86_64-linux-gnu/11/../../../x86_64-linux-gnu/crti.o] ==> obj [/usr/lib/gcc/x86_64-linux-gnu/11/../../../x86_64-linux-gnu/crti.o]
+          arg [/usr/lib/gcc/x86_64-linux-gnu/11/crtbeginS.o] ==> obj [/usr/lib/gcc/x86_64-linux-gnu/11/crtbeginS.o]
+          arg [-L/usr/local/sbin/../lib] ==> dir [/usr/local/sbin/../lib]
+          arg [-L/usr/local/bin/../lib] ==> dir [/usr/local/bin/../lib]
+          arg [-L/usr/sbin/../lib] ==> dir [/usr/sbin/../lib]
+          arg [-L/usr/bin/../lib] ==> dir [/usr/bin/../lib]
+          arg [-L/sbin/../lib] ==> dir [/sbin/../lib]
+          arg [-L/bin/../lib] ==> dir [/bin/../lib]
+          arg [-L/usr/games/../lib] ==> dir [/usr/games/../lib]
+          arg [-L/usr/local/games/../lib] ==> dir [/usr/local/games/../lib]
+          arg [-L/home/ubuntu/TensorRT/TensorRT-8.6.1.6/lib/../lib] ==> dir [/home/ubuntu/TensorRT/TensorRT-8.6.1.6/lib/../lib]
+          arg [-L/usr/lib/gcc/x86_64-linux-gnu/11] ==> dir [/usr/lib/gcc/x86_64-linux-gnu/11]
+          arg [-L/usr/lib/gcc/x86_64-linux-gnu/11/../../../x86_64-linux-gnu] ==> dir [/usr/lib/gcc/x86_64-linux-gnu/11/../../../x86_64-linux-gnu]
+          arg [-L/usr/lib/gcc/x86_64-linux-gnu/11/../../../../lib] ==> dir [/usr/lib/gcc/x86_64-linux-gnu/11/../../../../lib]
+          arg [-L/lib/x86_64-linux-gnu] ==> dir [/lib/x86_64-linux-gnu]
+          arg [-L/lib/../lib] ==> dir [/lib/../lib]
+          arg [-L/usr/lib/x86_64-linux-gnu] ==> dir [/usr/lib/x86_64-linux-gnu]
+          arg [-L/usr/lib/../lib] ==> dir [/usr/lib/../lib]
+          arg [-L/usr/local/cuda-12.8/bin] ==> dir [/usr/local/cuda-12.8/bin]
+          arg [-L/usr/local/sbin] ==> dir [/usr/local/sbin]
+          arg [-L/usr/local/bin] ==> dir [/usr/local/bin]
+          arg [-L/usr/sbin] ==> dir [/usr/sbin]
+          arg [-L/usr/bin] ==> dir [/usr/bin]
+          arg [-L/sbin] ==> dir [/sbin]
+          arg [-L/bin] ==> dir [/bin]
+          arg [-L/usr/games] ==> dir [/usr/games]
+          arg [-L/usr/local/games] ==> dir [/usr/local/games]
+          arg [-L/snap/bin] ==> dir [/snap/bin]
+          arg [-L/snap/bin] ==> dir [/snap/bin]
+          arg [-L/home/ubuntu/TensorRT/TensorRT-8.6.1.6/lib] ==> dir [/home/ubuntu/TensorRT/TensorRT-8.6.1.6/lib]
+          arg [-L.] ==> ignore
+          arg [-L.] ==> ignore
+          arg [-L/usr/lib/gcc/x86_64-linux-gnu/11/../../..] ==> dir [/usr/lib/gcc/x86_64-linux-gnu/11/../../..]
+          arg [-v] ==> ignore
+          arg [CMakeFiles/cmTC_9a95b.dir/CMakeCXXCompilerABI.cpp.o] ==> ignore
+          arg [-lstdc++] ==> lib [stdc++]
+          arg [-lm] ==> lib [m]
+          arg [-lgcc_s] ==> lib [gcc_s]
+          arg [-lgcc] ==> lib [gcc]
+          arg [-lc] ==> lib [c]
+          arg [-lgcc_s] ==> lib [gcc_s]
+          arg [-lgcc] ==> lib [gcc]
+          arg [/usr/lib/gcc/x86_64-linux-gnu/11/crtendS.o] ==> obj [/usr/lib/gcc/x86_64-linux-gnu/11/crtendS.o]
+          arg [/usr/lib/gcc/x86_64-linux-gnu/11/../../../x86_64-linux-gnu/crtn.o] ==> obj [/usr/lib/gcc/x86_64-linux-gnu/11/../../../x86_64-linux-gnu/crtn.o]
+        ignore line: [collect2 version 11.4.0]
+        ignore line: [/usr/bin/ld -plugin /usr/lib/gcc/x86_64-linux-gnu/11/liblto_plugin.so -plugin-opt=/usr/lib/gcc/x86_64-linux-gnu/11/lto-wrapper -plugin-opt=-fresolution=/tmp/ccovsKD2.res -plugin-opt=-pass-through=-lgcc_s -plugin-opt=-pass-through=-lgcc -plugin-opt=-pass-through=-lc -plugin-opt=-pass-through=-lgcc_s -plugin-opt=-pass-through=-lgcc --build-id --eh-frame-hdr -m elf_x86_64 --hash-style=gnu --as-needed -dynamic-linker /lib64/ld-linux-x86-64.so.2 -pie -z now -z relro -o cmTC_9a95b /usr/lib/gcc/x86_64-linux-gnu/11/../../../x86_64-linux-gnu/Scrt1.o /usr/lib/gcc/x86_64-linux-gnu/11/../../../x86_64-linux-gnu/crti.o /usr/lib/gcc/x86_64-linux-gnu/11/crtbeginS.o -L/usr/local/sbin/../lib -L/usr/local/bin/../lib -L/usr/sbin/../lib -L/usr/bin/../lib -L/sbin/../lib -L/bin/../lib -L/usr/games/../lib -L/usr/local/games/../lib -L/home/ubuntu/TensorRT/TensorRT-8.6.1.6/lib/../lib -L/usr/lib/gcc/x86_64-linux-gnu/11 -L/usr/lib/gcc/x86_64-linux-gnu/11/../../../x86_64-linux-gnu -L/usr/lib/gcc/x86_64-linux-gnu/11/../../../../lib -L/lib/x86_64-linux-gnu -L/lib/../lib -L/usr/lib/x86_64-linux-gnu -L/usr/lib/../lib -L/usr/local/cuda-12.8/bin -L/usr/local/sbin -L/usr/local/bin -L/usr/sbin -L/usr/bin -L/sbin -L/bin -L/usr/games -L/usr/local/games -L/snap/bin -L/snap/bin -L/home/ubuntu/TensorRT/TensorRT-8.6.1.6/lib -L. -L. -L/usr/lib/gcc/x86_64-linux-gnu/11/../../.. -v CMakeFiles/cmTC_9a95b.dir/CMakeCXXCompilerABI.cpp.o -lstdc++ -lm -lgcc_s -lgcc -lc -lgcc_s -lgcc /usr/lib/gcc/x86_64-linux-gnu/11/crtendS.o /usr/lib/gcc/x86_64-linux-gnu/11/../../../x86_64-linux-gnu/crtn.o]
+        linker tool for 'CXX': /usr/bin/ld
+        collapse obj [/usr/lib/gcc/x86_64-linux-gnu/11/../../../x86_64-linux-gnu/Scrt1.o] ==> [/usr/lib/x86_64-linux-gnu/Scrt1.o]
+        collapse obj [/usr/lib/gcc/x86_64-linux-gnu/11/../../../x86_64-linux-gnu/crti.o] ==> [/usr/lib/x86_64-linux-gnu/crti.o]
+        collapse obj [/usr/lib/gcc/x86_64-linux-gnu/11/../../../x86_64-linux-gnu/crtn.o] ==> [/usr/lib/x86_64-linux-gnu/crtn.o]
+        collapse library dir [/usr/local/sbin/../lib] ==> [/usr/local/lib]
+        collapse library dir [/usr/local/bin/../lib] ==> [/usr/local/lib]
+        collapse library dir [/usr/sbin/../lib] ==> [/usr/lib]
+        collapse library dir [/usr/bin/../lib] ==> [/usr/lib]
+        collapse library dir [/sbin/../lib] ==> [/lib]
+        collapse library dir [/bin/../lib] ==> [/lib]
+        collapse library dir [/usr/games/../lib] ==> [/usr/lib]
+        collapse library dir [/usr/local/games/../lib] ==> [/usr/local/lib]
+        collapse library dir [/home/ubuntu/TensorRT/TensorRT-8.6.1.6/lib/../lib] ==> [/home/ubuntu/TensorRT/TensorRT-8.6.1.6/lib]
+        collapse library dir [/usr/lib/gcc/x86_64-linux-gnu/11] ==> [/usr/lib/gcc/x86_64-linux-gnu/11]
+        collapse library dir [/usr/lib/gcc/x86_64-linux-gnu/11/../../../x86_64-linux-gnu] ==> [/usr/lib/x86_64-linux-gnu]
+        collapse library dir [/usr/lib/gcc/x86_64-linux-gnu/11/../../../../lib] ==> [/usr/lib]
+        collapse library dir [/lib/x86_64-linux-gnu] ==> [/lib/x86_64-linux-gnu]
+        collapse library dir [/lib/../lib] ==> [/lib]
+        collapse library dir [/usr/lib/x86_64-linux-gnu] ==> [/usr/lib/x86_64-linux-gnu]
+        collapse library dir [/usr/lib/../lib] ==> [/usr/lib]
+        collapse library dir [/usr/local/cuda-12.8/bin] ==> [/usr/local/cuda-12.8/bin]
+        collapse library dir [/usr/local/sbin] ==> [/usr/local/sbin]
+        collapse library dir [/usr/local/bin] ==> [/usr/local/bin]
+        collapse library dir [/usr/sbin] ==> [/usr/sbin]
+        collapse library dir [/usr/bin] ==> [/usr/bin]
+        collapse library dir [/sbin] ==> [/sbin]
+        collapse library dir [/bin] ==> [/bin]
+        collapse library dir [/usr/games] ==> [/usr/games]
+        collapse library dir [/usr/local/games] ==> [/usr/local/games]
+        collapse library dir [/snap/bin] ==> [/snap/bin]
+        collapse library dir [/snap/bin] ==> [/snap/bin]
+        collapse library dir [/home/ubuntu/TensorRT/TensorRT-8.6.1.6/lib] ==> [/home/ubuntu/TensorRT/TensorRT-8.6.1.6/lib]
+        collapse library dir [/usr/lib/gcc/x86_64-linux-gnu/11/../../..] ==> [/usr/lib]
+        implicit libs: [stdc++;m;gcc_s;gcc;c;gcc_s;gcc]
+        implicit objs: [/usr/lib/x86_64-linux-gnu/Scrt1.o;/usr/lib/x86_64-linux-gnu/crti.o;/usr/lib/gcc/x86_64-linux-gnu/11/crtbeginS.o;/usr/lib/gcc/x86_64-linux-gnu/11/crtendS.o;/usr/lib/x86_64-linux-gnu/crtn.o]
+        implicit dirs: [/usr/local/lib;/usr/lib;/lib;/home/ubuntu/TensorRT/TensorRT-8.6.1.6/lib;/usr/lib/gcc/x86_64-linux-gnu/11;/usr/lib/x86_64-linux-gnu;/lib/x86_64-linux-gnu;/usr/local/cuda-12.8/bin;/usr/local/sbin;/usr/local/bin;/usr/sbin;/usr/bin;/sbin;/bin;/usr/games;/usr/local/games;/snap/bin]
+        implicit fwks: []
+      
+      
+  -
+    kind: "message-v1"
+    backtrace:
+      - "/usr/share/cmake-4.2/Modules/Internal/CMakeDetermineLinkerId.cmake:38 (message)"
+      - "/usr/share/cmake-4.2/Modules/CMakeDetermineCompilerABI.cmake:299 (cmake_determine_linker_id)"
+      - "/usr/share/cmake-4.2/Modules/CMakeTestCXXCompiler.cmake:26 (CMAKE_DETERMINE_COMPILER_ABI)"
+      - "CMakeLists.txt:2 (project)"
+    message: |
+      Running the CXX compiler's linker: "/usr/bin/ld" "-v"
+      GNU ld (GNU Binutils for Ubuntu) 2.38
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "/usr/share/cmake-4.2/Modules/CheckIPOSupported.cmake:197 (try_compile)"
+      - "/usr/share/cmake-4.2/Modules/CheckIPOSupported.cmake:320 (_ipo_run_language_check)"
+      - "CMakeLists.txt:16 (check_ipo_supported)"
+    directories:
+      source: "/home/ubuntu/\u684c\u9762/test/2027rm_ws/build-perf/CMakeFiles/_CMakeLTOTest-CXX/src"
+      binary: "/home/ubuntu/\u684c\u9762/test/2027rm_ws/build-perf/CMakeFiles/_CMakeLTOTest-CXX/bin"
+    buildResult:
+      variable: "_IPO_LANGUAGE_CHECK_RESULT"
+      cached: true
+      stdout: |
+        Change Dir: '/home/ubuntu/桌面/test/2027rm_ws/build-perf/CMakeFiles/_CMakeLTOTest-CXX/bin'
+        
+        Run Build Command(s): /usr/bin/cmake -E env VERBOSE=1 /usr/bin/gmake -f Makefile
+        /usr/bin/cmake -S/home/ubuntu/桌面/test/2027rm_ws/build-perf/CMakeFiles/_CMakeLTOTest-CXX/src -B/home/ubuntu/桌面/test/2027rm_ws/build-perf/CMakeFiles/_CMakeLTOTest-CXX/bin --check-build-system CMakeFiles/Makefile.cmake 0
+        /usr/bin/cmake -E cmake_progress_start /home/ubuntu/桌面/test/2027rm_ws/build-perf/CMakeFiles/_CMakeLTOTest-CXX/bin/CMakeFiles /home/ubuntu/桌面/test/2027rm_ws/build-perf/CMakeFiles/_CMakeLTOTest-CXX/bin//CMakeFiles/progress.marks
+        /usr/bin/gmake  -f CMakeFiles/Makefile2 all
+        gmake[1]: 进入目录“/home/ubuntu/桌面/test/2027rm_ws/build-perf/CMakeFiles/_CMakeLTOTest-CXX/bin”
+        /usr/bin/gmake  -f CMakeFiles/foo.dir/build.make CMakeFiles/foo.dir/depend
+        gmake[2]: 进入目录“/home/ubuntu/桌面/test/2027rm_ws/build-perf/CMakeFiles/_CMakeLTOTest-CXX/bin”
+        cd /home/ubuntu/桌面/test/2027rm_ws/build-perf/CMakeFiles/_CMakeLTOTest-CXX/bin && /usr/bin/cmake -E cmake_depends "Unix Makefiles" /home/ubuntu/桌面/test/2027rm_ws/build-perf/CMakeFiles/_CMakeLTOTest-CXX/src /home/ubuntu/桌面/test/2027rm_ws/build-perf/CMakeFiles/_CMakeLTOTest-CXX/src /home/ubuntu/桌面/test/2027rm_ws/build-perf/CMakeFiles/_CMakeLTOTest-CXX/bin /home/ubuntu/桌面/test/2027rm_ws/build-perf/CMakeFiles/_CMakeLTOTest-CXX/bin /home/ubuntu/桌面/test/2027rm_ws/build-perf/CMakeFiles/_CMakeLTOTest-CXX/bin/CMakeFiles/foo.dir/DependInfo.cmake foo
+        Dependee "/home/ubuntu/桌面/test/2027rm_ws/build-perf/CMakeFiles/_CMakeLTOTest-CXX/bin/CMakeFiles/foo.dir/DependInfo.cmake" is newer than depender "/home/ubuntu/桌面/test/2027rm_ws/build-perf/CMakeFiles/_CMakeLTOTest-CXX/bin/CMakeFiles/foo.dir/depend.internal".
+        Dependee "/home/ubuntu/桌面/test/2027rm_ws/build-perf/CMakeFiles/_CMakeLTOTest-CXX/bin/CMakeFiles/CMakeDirectoryInformation.cmake" is newer than depender "/home/ubuntu/桌面/test/2027rm_ws/build-perf/CMakeFiles/_CMakeLTOTest-CXX/bin/CMakeFiles/foo.dir/depend.internal".
+        Scanning dependencies of target foo
+        gmake[2]: 离开目录“/home/ubuntu/桌面/test/2027rm_ws/build-perf/CMakeFiles/_CMakeLTOTest-CXX/bin”
+        /usr/bin/gmake  -f CMakeFiles/foo.dir/build.make CMakeFiles/foo.dir/build
+        gmake[2]: 进入目录“/home/ubuntu/桌面/test/2027rm_ws/build-perf/CMakeFiles/_CMakeLTOTest-CXX/bin”
+        [ 25%] Building CXX object CMakeFiles/foo.dir/foo.cpp.o
+        /usr/bin/c++   -flto=auto -fno-fat-lto-objects -o CMakeFiles/foo.dir/foo.cpp.o -c /home/ubuntu/桌面/test/2027rm_ws/build-perf/CMakeFiles/_CMakeLTOTest-CXX/src/foo.cpp
+        [ 50%] Linking CXX static library libfoo.a
+        /usr/bin/cmake -P CMakeFiles/foo.dir/cmake_clean_target.cmake
+        /usr/bin/cmake -E cmake_link_script CMakeFiles/foo.dir/link.txt --verbose=1
+        "/usr/bin/gcc-ar-11" qc libfoo.a CMakeFiles/foo.dir/foo.cpp.o
+        "/usr/bin/gcc-ranlib-11" libfoo.a
+        gmake[2]: 离开目录“/home/ubuntu/桌面/test/2027rm_ws/build-perf/CMakeFiles/_CMakeLTOTest-CXX/bin”
+        [ 50%] Built target foo
+        /usr/bin/gmake  -f CMakeFiles/boo.dir/build.make CMakeFiles/boo.dir/depend
+        gmake[2]: 进入目录“/home/ubuntu/桌面/test/2027rm_ws/build-perf/CMakeFiles/_CMakeLTOTest-CXX/bin”
+        cd /home/ubuntu/桌面/test/2027rm_ws/build-perf/CMakeFiles/_CMakeLTOTest-CXX/bin && /usr/bin/cmake -E cmake_depends "Unix Makefiles" /home/ubuntu/桌面/test/2027rm_ws/build-perf/CMakeFiles/_CMakeLTOTest-CXX/src /home/ubuntu/桌面/test/2027rm_ws/build-perf/CMakeFiles/_CMakeLTOTest-CXX/src /home/ubuntu/桌面/test/2027rm_ws/build-perf/CMakeFiles/_CMakeLTOTest-CXX/bin /home/ubuntu/桌面/test/2027rm_ws/build-perf/CMakeFiles/_CMakeLTOTest-CXX/bin /home/ubuntu/桌面/test/2027rm_ws/build-perf/CMakeFiles/_CMakeLTOTest-CXX/bin/CMakeFiles/boo.dir/DependInfo.cmake boo
+        Dependee "/home/ubuntu/桌面/test/2027rm_ws/build-perf/CMakeFiles/_CMakeLTOTest-CXX/bin/CMakeFiles/boo.dir/DependInfo.cmake" is newer than depender "/home/ubuntu/桌面/test/2027rm_ws/build-perf/CMakeFiles/_CMakeLTOTest-CXX/bin/CMakeFiles/boo.dir/depend.internal".
+        Dependee "/home/ubuntu/桌面/test/2027rm_ws/build-perf/CMakeFiles/_CMakeLTOTest-CXX/bin/CMakeFiles/CMakeDirectoryInformation.cmake" is newer than depender "/home/ubuntu/桌面/test/2027rm_ws/build-perf/CMakeFiles/_CMakeLTOTest-CXX/bin/CMakeFiles/boo.dir/depend.internal".
+        Scanning dependencies of target boo
+        gmake[2]: 离开目录“/home/ubuntu/桌面/test/2027rm_ws/build-perf/CMakeFiles/_CMakeLTOTest-CXX/bin”
+        /usr/bin/gmake  -f CMakeFiles/boo.dir/build.make CMakeFiles/boo.dir/build
+        gmake[2]: 进入目录“/home/ubuntu/桌面/test/2027rm_ws/build-perf/CMakeFiles/_CMakeLTOTest-CXX/bin”
+        [ 75%] Building CXX object CMakeFiles/boo.dir/main.cpp.o
+        /usr/bin/c++   -flto=auto -fno-fat-lto-objects -o CMakeFiles/boo.dir/main.cpp.o -c /home/ubuntu/桌面/test/2027rm_ws/build-perf/CMakeFiles/_CMakeLTOTest-CXX/src/main.cpp
+        [100%] Linking CXX executable boo
+        /usr/bin/cmake -E cmake_link_script CMakeFiles/boo.dir/link.txt --verbose=1
+        /usr/bin/c++ -flto=auto -fno-fat-lto-objects CMakeFiles/boo.dir/main.cpp.o -o boo  libfoo.a
+        gmake[2]: 离开目录“/home/ubuntu/桌面/test/2027rm_ws/build-perf/CMakeFiles/_CMakeLTOTest-CXX/bin”
+        [100%] Built target boo
+        gmake[1]: 离开目录“/home/ubuntu/桌面/test/2027rm_ws/build-perf/CMakeFiles/_CMakeLTOTest-CXX/bin”
+        /usr/bin/cmake -E cmake_progress_start /home/ubuntu/桌面/test/2027rm_ws/build-perf/CMakeFiles/_CMakeLTOTest-CXX/bin/CMakeFiles 0
+        
+      exitCode: 0
+  -
+    kind: "find_package-v1"
+    backtrace:
+      - "CMakeLists.txt:49 (find_package)"
+    name: "OpenCV"
+    configs:
+      -
+        filename: "OpenCVConfig.cmake"
+        kind: "cmake"
+      -
+        filename: "opencv-config.cmake"
+        kind: "cmake"
+    version_request:
+      exact: false
+    settings:
+      required: "required_explicit"
+      quiet: false
+      global: false
+      policy_scope: true
+      bypass_provider: false
+      names:
+        - "OpenCV"
+      path_suffixes:
+        - ""
+      paths:
+        CMAKE_FIND_USE_CMAKE_PATH: true
+        CMAKE_FIND_USE_CMAKE_ENVIRONMENT_PATH: true
+        CMAKE_FIND_USE_SYSTEM_ENVIRONMENT_PATH: true
+        CMAKE_FIND_USE_CMAKE_SYSTEM_PATH: true
+        CMAKE_FIND_USE_INSTALL_PREFIX: true
+        CMAKE_FIND_USE_PACKAGE_ROOT_PATH: true
+        CMAKE_FIND_USE_CMAKE_PACKAGE_REGISTRY: true
+        CMAKE_FIND_USE_SYSTEM_PACKAGE_REGISTRY: true
+        CMAKE_FIND_ROOT_PATH_MODE: "BOTH"
+    candidates:
+      -
+        path: "/home/ubuntu/\u684c\u9762/test/2027rm_ws/build-perf/CMakeFiles/pkgRedirects/OpenCVConfig.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "/home/ubuntu/\u684c\u9762/test/2027rm_ws/build-perf/CMakeFiles/pkgRedirects/opencv-config.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "/home/ubuntu/.config/Code/User/globalStorage/github.copilot-chat/debugCommand/OpenCVConfig.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "/home/ubuntu/.config/Code/User/globalStorage/github.copilot-chat/debugCommand/opencv-config.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "/home/ubuntu/.config/Code/User/globalStorage/github.copilot-chat/copilotCli/OpenCVConfig.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "/home/ubuntu/.config/Code/User/globalStorage/github.copilot-chat/copilotCli/opencv-config.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "/opt/ros/humble/OpenCVConfig.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "/opt/ros/humble/opencv-config.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "/opt/ros/humble/cmake/OpenCVConfig.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "/opt/ros/humble/cmake/opencv-config.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "/opt/anaconda3/condabin/OpenCVConfig.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "/opt/anaconda3/condabin/opencv-config.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "/home/ubuntu/.cargo/OpenCVConfig.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "/home/ubuntu/.cargo/opencv-config.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "/home/ubuntu/.local/OpenCVConfig.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "/home/ubuntu/.local/opencv-config.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "/usr/OpenCVConfig.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "/usr/opencv-config.cmake"
+        mode: "config"
+        reason: "no_exist"
+    found:
+      path: "/usr/lib/x86_64-linux-gnu/cmake/opencv4/OpenCVConfig.cmake"
+      mode: "config"
+      version: "4.5.4"
+    search_context:
+      ENV{PATH}:
+        - "/home/ubuntu/.config/Code/User/globalStorage/github.copilot-chat/debugCommand"
+        - "/home/ubuntu/.config/Code/User/globalStorage/github.copilot-chat/copilotCli"
+        - "/opt/ros/humble/bin"
+        - "/opt/anaconda3/condabin"
+        - "/home/ubuntu/.cargo/bin"
+        - "/home/ubuntu/.local/bin"
+        - "/usr/bin"
+        - "/usr/local/cuda-12.8/bin"
+        - "/usr/local/sbin"
+        - "/usr/local/bin"
+        - "/usr/sbin"
+        - "/usr/bin"
+        - "/sbin"
+        - "/bin"
+        - "/usr/games"
+        - "/usr/local/games"
+        - "/snap/bin"
+        - "/snap/bin"
+        - "/home/ubuntu/.vscode/extensions/ms-python.debugpy-2025.18.0-linux-x64/bundled/scripts/noConfigScripts"
+      CMAKE_INSTALL_PREFIX: "/usr/local"
+      CMAKE_SYSTEM_PREFIX_PATH:
+        - "/usr/local"
+        - "/usr"
+        - "/"
+        - "/usr"
+        - "/usr/local"
+        - "/usr/X11R6"
+        - "/usr/pkg"
+        - "/opt"
+  -
+    kind: "find_package-v1"
+    backtrace:
+      - "CMakeLists.txt:50 (find_package)"
+    name: "yaml-cpp"
+    configs:
+      -
+        filename: "yaml-cppConfig.cmake"
+        kind: "cmake"
+      -
+        filename: "yaml-cpp-config.cmake"
+        kind: "cmake"
+    version_request:
+      exact: false
+    settings:
+      required: "required_explicit"
+      quiet: false
+      global: false
+      policy_scope: true
+      bypass_provider: false
+      names:
+        - "yaml-cpp"
+      path_suffixes:
+        - ""
+      paths:
+        CMAKE_FIND_USE_CMAKE_PATH: true
+        CMAKE_FIND_USE_CMAKE_ENVIRONMENT_PATH: true
+        CMAKE_FIND_USE_SYSTEM_ENVIRONMENT_PATH: true
+        CMAKE_FIND_USE_CMAKE_SYSTEM_PATH: true
+        CMAKE_FIND_USE_INSTALL_PREFIX: true
+        CMAKE_FIND_USE_PACKAGE_ROOT_PATH: true
+        CMAKE_FIND_USE_CMAKE_PACKAGE_REGISTRY: true
+        CMAKE_FIND_USE_SYSTEM_PACKAGE_REGISTRY: true
+        CMAKE_FIND_ROOT_PATH_MODE: "BOTH"
+    candidates:
+      -
+        path: "/home/ubuntu/\u684c\u9762/test/2027rm_ws/build-perf/CMakeFiles/pkgRedirects/yaml-cppConfig.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "/home/ubuntu/\u684c\u9762/test/2027rm_ws/build-perf/CMakeFiles/pkgRedirects/yaml-cpp-config.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "/home/ubuntu/.config/Code/User/globalStorage/github.copilot-chat/debugCommand/yaml-cppConfig.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "/home/ubuntu/.config/Code/User/globalStorage/github.copilot-chat/debugCommand/yaml-cpp-config.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "/home/ubuntu/.config/Code/User/globalStorage/github.copilot-chat/copilotCli/yaml-cppConfig.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "/home/ubuntu/.config/Code/User/globalStorage/github.copilot-chat/copilotCli/yaml-cpp-config.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "/opt/ros/humble/yaml-cppConfig.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "/opt/ros/humble/yaml-cpp-config.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "/opt/ros/humble/cmake/yaml-cppConfig.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "/opt/ros/humble/cmake/yaml-cpp-config.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "/opt/anaconda3/condabin/yaml-cppConfig.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "/opt/anaconda3/condabin/yaml-cpp-config.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "/home/ubuntu/.cargo/yaml-cppConfig.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "/home/ubuntu/.cargo/yaml-cpp-config.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "/home/ubuntu/.local/yaml-cppConfig.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "/home/ubuntu/.local/yaml-cpp-config.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "/usr/yaml-cppConfig.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "/usr/yaml-cpp-config.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "/usr/lib/x86_64-linux-gnu/cmake/yaml-cpp/yaml-cppConfig.cmake"
+        mode: "config"
+        reason: "no_exist"
+    found:
+      path: "/usr/lib/x86_64-linux-gnu/cmake/yaml-cpp/yaml-cpp-config.cmake"
+      mode: "config"
+      version: "0.7.0"
+    search_context:
+      ENV{PATH}:
+        - "/home/ubuntu/.config/Code/User/globalStorage/github.copilot-chat/debugCommand"
+        - "/home/ubuntu/.config/Code/User/globalStorage/github.copilot-chat/copilotCli"
+        - "/opt/ros/humble/bin"
+        - "/opt/anaconda3/condabin"
+        - "/home/ubuntu/.cargo/bin"
+        - "/home/ubuntu/.local/bin"
+        - "/usr/bin"
+        - "/usr/local/cuda-12.8/bin"
+        - "/usr/local/sbin"
+        - "/usr/local/bin"
+        - "/usr/sbin"
+        - "/usr/bin"
+        - "/sbin"
+        - "/bin"
+        - "/usr/games"
+        - "/usr/local/games"
+        - "/snap/bin"
+        - "/snap/bin"
+        - "/home/ubuntu/.vscode/extensions/ms-python.debugpy-2025.18.0-linux-x64/bundled/scripts/noConfigScripts"
+      CMAKE_INSTALL_PREFIX: "/usr/local"
+      CMAKE_SYSTEM_PREFIX_PATH:
+        - "/usr/local"
+        - "/usr"
+        - "/"
+        - "/usr"
+        - "/usr/local"
+        - "/usr/X11R6"
+        - "/usr/pkg"
+        - "/opt"
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "/usr/share/cmake-4.2/Modules/Internal/CheckSourceCompiles.cmake:104 (try_compile)"
+      - "/usr/share/cmake-4.2/Modules/CheckCXXSourceCompiles.cmake:103 (cmake_check_source_compiles)"
+      - "/usr/share/cmake-4.2/Modules/FindThreads.cmake:162 (check_cxx_source_compiles)"
+      - "/usr/share/cmake-4.2/Modules/FindThreads.cmake:226 (_threads_check_libc)"
+      - "/usr/lib/cmake/openvino2025.4.0/OpenVINOConfig.cmake:170 (find_package)"
+      - "/usr/lib/cmake/openvino2025.4.0/OpenVINOConfig.cmake:574 (_ov_find_dependency)"
+      - "CMakeLists.txt:51 (find_package)"
+    checks:
+      - "Performing Test CMAKE_HAVE_LIBC_PTHREAD"
+    directories:
+      source: "/home/ubuntu/\u684c\u9762/test/2027rm_ws/build-perf/CMakeFiles/CMakeScratch/TryCompile-dvKNKT"
+      binary: "/home/ubuntu/\u684c\u9762/test/2027rm_ws/build-perf/CMakeFiles/CMakeScratch/TryCompile-dvKNKT"
+    cmakeVariables:
+      CMAKE_CXX_FLAGS: ""
+      CMAKE_CXX_FLAGS_DEBUG: "-g"
+      CMAKE_EXE_LINKER_FLAGS: ""
+    buildResult:
+      variable: "CMAKE_HAVE_LIBC_PTHREAD"
+      cached: true
+      stdout: |
+        Change Dir: '/home/ubuntu/桌面/test/2027rm_ws/build-perf/CMakeFiles/CMakeScratch/TryCompile-dvKNKT'
+        
+        Run Build Command(s): /usr/bin/cmake -E env VERBOSE=1 /usr/bin/gmake -f Makefile cmTC_b6ba6/fast
+        /usr/bin/gmake  -f CMakeFiles/cmTC_b6ba6.dir/build.make CMakeFiles/cmTC_b6ba6.dir/build
+        gmake[1]: 进入目录“/home/ubuntu/桌面/test/2027rm_ws/build-perf/CMakeFiles/CMakeScratch/TryCompile-dvKNKT”
+        Building CXX object CMakeFiles/cmTC_b6ba6.dir/src.cxx.o
+        /usr/bin/c++ -DCMAKE_HAVE_LIBC_PTHREAD  -std=c++17 -o CMakeFiles/cmTC_b6ba6.dir/src.cxx.o -c /home/ubuntu/桌面/test/2027rm_ws/build-perf/CMakeFiles/CMakeScratch/TryCompile-dvKNKT/src.cxx
+        Linking CXX executable cmTC_b6ba6
+        /usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_b6ba6.dir/link.txt --verbose=1
+        /usr/bin/c++ CMakeFiles/cmTC_b6ba6.dir/src.cxx.o -o cmTC_b6ba6
+        gmake[1]: 离开目录“/home/ubuntu/桌面/test/2027rm_ws/build-perf/CMakeFiles/CMakeScratch/TryCompile-dvKNKT”
+        
+      exitCode: 0
+  -
+    kind: "find_package-v1"
+    backtrace:
+      - "CMakeLists.txt:51 (find_package)"
+    name: "OpenVINO"
+    components:
+      -
+        name: "Runtime"
+        required: true
+        found: true
+    configs:
+      -
+        filename: "OpenVINOConfig.cmake"
+        kind: "cmake"
+      -
+        filename: "openvino-config.cmake"
+        kind: "cmake"
+    version_request:
+      exact: false
+    settings:
+      required: "required_explicit"
+      quiet: false
+      global: false
+      policy_scope: true
+      bypass_provider: false
+      names:
+        - "OpenVINO"
+      path_suffixes:
+        - ""
+      paths:
+        CMAKE_FIND_USE_CMAKE_PATH: true
+        CMAKE_FIND_USE_CMAKE_ENVIRONMENT_PATH: true
+        CMAKE_FIND_USE_SYSTEM_ENVIRONMENT_PATH: true
+        CMAKE_FIND_USE_CMAKE_SYSTEM_PATH: true
+        CMAKE_FIND_USE_INSTALL_PREFIX: true
+        CMAKE_FIND_USE_PACKAGE_ROOT_PATH: true
+        CMAKE_FIND_USE_CMAKE_PACKAGE_REGISTRY: true
+        CMAKE_FIND_USE_SYSTEM_PACKAGE_REGISTRY: true
+        CMAKE_FIND_ROOT_PATH_MODE: "BOTH"
+    candidates:
+      -
+        path: "/home/ubuntu/\u684c\u9762/test/2027rm_ws/build-perf/CMakeFiles/pkgRedirects/OpenVINOConfig.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "/home/ubuntu/\u684c\u9762/test/2027rm_ws/build-perf/CMakeFiles/pkgRedirects/openvino-config.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "/home/ubuntu/.config/Code/User/globalStorage/github.copilot-chat/debugCommand/OpenVINOConfig.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "/home/ubuntu/.config/Code/User/globalStorage/github.copilot-chat/debugCommand/openvino-config.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "/home/ubuntu/.config/Code/User/globalStorage/github.copilot-chat/copilotCli/OpenVINOConfig.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "/home/ubuntu/.config/Code/User/globalStorage/github.copilot-chat/copilotCli/openvino-config.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "/opt/ros/humble/OpenVINOConfig.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "/opt/ros/humble/openvino-config.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "/opt/ros/humble/cmake/OpenVINOConfig.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "/opt/ros/humble/cmake/openvino-config.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "/opt/anaconda3/condabin/OpenVINOConfig.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "/opt/anaconda3/condabin/openvino-config.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "/home/ubuntu/.cargo/OpenVINOConfig.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "/home/ubuntu/.cargo/openvino-config.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "/home/ubuntu/.local/OpenVINOConfig.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "/home/ubuntu/.local/openvino-config.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "/usr/OpenVINOConfig.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "/usr/openvino-config.cmake"
+        mode: "config"
+        reason: "no_exist"
+    found:
+      path: "/usr/lib/cmake/openvino2025.4.0/OpenVINOConfig.cmake"
+      mode: "config"
+      version: "2025.4.0"
+    search_context:
+      ENV{PATH}:
+        - "/home/ubuntu/.config/Code/User/globalStorage/github.copilot-chat/debugCommand"
+        - "/home/ubuntu/.config/Code/User/globalStorage/github.copilot-chat/copilotCli"
+        - "/opt/ros/humble/bin"
+        - "/opt/anaconda3/condabin"
+        - "/home/ubuntu/.cargo/bin"
+        - "/home/ubuntu/.local/bin"
+        - "/usr/bin"
+        - "/usr/local/cuda-12.8/bin"
+        - "/usr/local/sbin"
+        - "/usr/local/bin"
+        - "/usr/sbin"
+        - "/usr/bin"
+        - "/sbin"
+        - "/bin"
+        - "/usr/games"
+        - "/usr/local/games"
+        - "/snap/bin"
+        - "/snap/bin"
+        - "/home/ubuntu/.vscode/extensions/ms-python.debugpy-2025.18.0-linux-x64/bundled/scripts/noConfigScripts"
+      CMAKE_INSTALL_PREFIX: "/usr/local"
+      CMAKE_SYSTEM_PREFIX_PATH:
+        - "/usr/local"
+        - "/usr"
+        - "/"
+        - "/usr"
+        - "/usr/local"
+        - "/usr/X11R6"
+        - "/usr/pkg"
+        - "/opt"
+  -
+    kind: "find_package-v1"
+    backtrace:
+      - "/usr/share/cmake-4.2/Modules/CMakeFindDependencyMacro.cmake:93 (find_package)"
+      - "/usr/share/cmake-4.2/Modules/CMakeFindDependencyMacro.cmake:125 (__find_dependency_common)"
+      - "/usr/lib/x86_64-linux-gnu/cmake/spdlog/spdlogConfig.cmake:47 (find_dependency)"
+      - "CMakeLists.txt:52 (find_package)"
+    name: "fmt"
+    configs:
+      -
+        filename: "fmtConfig.cmake"
+        kind: "cmake"
+      -
+        filename: "fmt-config.cmake"
+        kind: "cmake"
+    version_request:
+      exact: false
+    settings:
+      required: "required_explicit"
+      quiet: false
+      global: false
+      policy_scope: true
+      bypass_provider: false
+      names:
+        - "fmt"
+      path_suffixes:
+        - ""
+      paths:
+        CMAKE_FIND_USE_CMAKE_PATH: true
+        CMAKE_FIND_USE_CMAKE_ENVIRONMENT_PATH: true
+        CMAKE_FIND_USE_SYSTEM_ENVIRONMENT_PATH: true
+        CMAKE_FIND_USE_CMAKE_SYSTEM_PATH: true
+        CMAKE_FIND_USE_INSTALL_PREFIX: true
+        CMAKE_FIND_USE_PACKAGE_ROOT_PATH: true
+        CMAKE_FIND_USE_CMAKE_PACKAGE_REGISTRY: true
+        CMAKE_FIND_USE_SYSTEM_PACKAGE_REGISTRY: true
+        CMAKE_FIND_ROOT_PATH_MODE: "BOTH"
+    candidates:
+      -
+        path: "/home/ubuntu/\u684c\u9762/test/2027rm_ws/build-perf/CMakeFiles/pkgRedirects/fmtConfig.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "/home/ubuntu/\u684c\u9762/test/2027rm_ws/build-perf/CMakeFiles/pkgRedirects/fmt-config.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "/home/ubuntu/.config/Code/User/globalStorage/github.copilot-chat/debugCommand/fmtConfig.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "/home/ubuntu/.config/Code/User/globalStorage/github.copilot-chat/debugCommand/fmt-config.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "/home/ubuntu/.config/Code/User/globalStorage/github.copilot-chat/copilotCli/fmtConfig.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "/home/ubuntu/.config/Code/User/globalStorage/github.copilot-chat/copilotCli/fmt-config.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "/opt/ros/humble/fmtConfig.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "/opt/ros/humble/fmt-config.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "/opt/ros/humble/cmake/fmtConfig.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "/opt/ros/humble/cmake/fmt-config.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "/opt/anaconda3/condabin/fmtConfig.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "/opt/anaconda3/condabin/fmt-config.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "/home/ubuntu/.cargo/fmtConfig.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "/home/ubuntu/.cargo/fmt-config.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "/home/ubuntu/.local/fmtConfig.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "/home/ubuntu/.local/fmt-config.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "/usr/fmtConfig.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "/usr/fmt-config.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "/usr/lib/x86_64-linux-gnu/cmake/fmt/fmtConfig.cmake"
+        mode: "config"
+        reason: "no_exist"
+    found:
+      path: "/usr/lib/x86_64-linux-gnu/cmake/fmt/fmt-config.cmake"
+      mode: "config"
+      version: "8.1.1"
+    search_context:
+      ENV{PATH}:
+        - "/home/ubuntu/.config/Code/User/globalStorage/github.copilot-chat/debugCommand"
+        - "/home/ubuntu/.config/Code/User/globalStorage/github.copilot-chat/copilotCli"
+        - "/opt/ros/humble/bin"
+        - "/opt/anaconda3/condabin"
+        - "/home/ubuntu/.cargo/bin"
+        - "/home/ubuntu/.local/bin"
+        - "/usr/bin"
+        - "/usr/local/cuda-12.8/bin"
+        - "/usr/local/sbin"
+        - "/usr/local/bin"
+        - "/usr/sbin"
+        - "/usr/bin"
+        - "/sbin"
+        - "/bin"
+        - "/usr/games"
+        - "/usr/local/games"
+        - "/snap/bin"
+        - "/snap/bin"
+        - "/home/ubuntu/.vscode/extensions/ms-python.debugpy-2025.18.0-linux-x64/bundled/scripts/noConfigScripts"
+      CMAKE_INSTALL_PREFIX: "/usr/local"
+      CMAKE_SYSTEM_PREFIX_PATH:
+        - "/usr/local"
+        - "/usr"
+        - "/"
+        - "/usr"
+        - "/usr/local"
+        - "/usr/X11R6"
+        - "/usr/pkg"
+        - "/opt"
+  -
+    kind: "find_package-v1"
+    backtrace:
+      - "CMakeLists.txt:52 (find_package)"
+    name: "spdlog"
+    configs:
+      -
+        filename: "spdlogConfig.cmake"
+        kind: "cmake"
+      -
+        filename: "spdlog-config.cmake"
+        kind: "cmake"
+    version_request:
+      exact: false
+    settings:
+      required: "required_explicit"
+      quiet: false
+      global: false
+      policy_scope: true
+      bypass_provider: false
+      names:
+        - "spdlog"
+      path_suffixes:
+        - ""
+      paths:
+        CMAKE_FIND_USE_CMAKE_PATH: true
+        CMAKE_FIND_USE_CMAKE_ENVIRONMENT_PATH: true
+        CMAKE_FIND_USE_SYSTEM_ENVIRONMENT_PATH: true
+        CMAKE_FIND_USE_CMAKE_SYSTEM_PATH: true
+        CMAKE_FIND_USE_INSTALL_PREFIX: true
+        CMAKE_FIND_USE_PACKAGE_ROOT_PATH: true
+        CMAKE_FIND_USE_CMAKE_PACKAGE_REGISTRY: true
+        CMAKE_FIND_USE_SYSTEM_PACKAGE_REGISTRY: true
+        CMAKE_FIND_ROOT_PATH_MODE: "BOTH"
+    candidates:
+      -
+        path: "/home/ubuntu/\u684c\u9762/test/2027rm_ws/build-perf/CMakeFiles/pkgRedirects/spdlogConfig.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "/home/ubuntu/\u684c\u9762/test/2027rm_ws/build-perf/CMakeFiles/pkgRedirects/spdlog-config.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "/home/ubuntu/.config/Code/User/globalStorage/github.copilot-chat/debugCommand/spdlogConfig.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "/home/ubuntu/.config/Code/User/globalStorage/github.copilot-chat/debugCommand/spdlog-config.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "/home/ubuntu/.config/Code/User/globalStorage/github.copilot-chat/copilotCli/spdlogConfig.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "/home/ubuntu/.config/Code/User/globalStorage/github.copilot-chat/copilotCli/spdlog-config.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "/opt/ros/humble/spdlogConfig.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "/opt/ros/humble/spdlog-config.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "/opt/ros/humble/cmake/spdlogConfig.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "/opt/ros/humble/cmake/spdlog-config.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "/opt/ros/humble/share/spdlog_vendor/spdlogConfig.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "/opt/ros/humble/share/spdlog_vendor/spdlog-config.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "/opt/ros/humble/share/spdlog_vendor/cmake/spdlogConfig.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "/opt/ros/humble/share/spdlog_vendor/cmake/spdlog-config.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "/opt/anaconda3/condabin/spdlogConfig.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "/opt/anaconda3/condabin/spdlog-config.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "/home/ubuntu/.cargo/spdlogConfig.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "/home/ubuntu/.cargo/spdlog-config.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "/home/ubuntu/.local/spdlogConfig.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "/home/ubuntu/.local/spdlog-config.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "/usr/spdlogConfig.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "/usr/spdlog-config.cmake"
+        mode: "config"
+        reason: "no_exist"
+    found:
+      path: "/usr/lib/x86_64-linux-gnu/cmake/spdlog/spdlogConfig.cmake"
+      mode: "config"
+      version: "1.9.2"
+    search_context:
+      ENV{PATH}:
+        - "/home/ubuntu/.config/Code/User/globalStorage/github.copilot-chat/debugCommand"
+        - "/home/ubuntu/.config/Code/User/globalStorage/github.copilot-chat/copilotCli"
+        - "/opt/ros/humble/bin"
+        - "/opt/anaconda3/condabin"
+        - "/home/ubuntu/.cargo/bin"
+        - "/home/ubuntu/.local/bin"
+        - "/usr/bin"
+        - "/usr/local/cuda-12.8/bin"
+        - "/usr/local/sbin"
+        - "/usr/local/bin"
+        - "/usr/sbin"
+        - "/usr/bin"
+        - "/sbin"
+        - "/bin"
+        - "/usr/games"
+        - "/usr/local/games"
+        - "/snap/bin"
+        - "/snap/bin"
+        - "/home/ubuntu/.vscode/extensions/ms-python.debugpy-2025.18.0-linux-x64/bundled/scripts/noConfigScripts"
+      CMAKE_INSTALL_PREFIX: "/usr/local"
+      CMAKE_SYSTEM_PREFIX_PATH:
+        - "/usr/local"
+        - "/usr"
+        - "/"
+        - "/usr"
+        - "/usr/local"
+        - "/usr/X11R6"
+        - "/usr/pkg"
+        - "/opt"
+...
+
+---
+events:
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "/usr/share/cmake-4.2/Modules/CheckIPOSupported.cmake:197 (try_compile)"
+      - "/usr/share/cmake-4.2/Modules/CheckIPOSupported.cmake:320 (_ipo_run_language_check)"
+      - "CMakeLists.txt:16 (check_ipo_supported)"
+    directories:
+      source: "/home/ubuntu/\u684c\u9762/test/2027rm_ws/build-perf/CMakeFiles/_CMakeLTOTest-CXX/src"
+      binary: "/home/ubuntu/\u684c\u9762/test/2027rm_ws/build-perf/CMakeFiles/_CMakeLTOTest-CXX/bin"
+    buildResult:
+      variable: "_IPO_LANGUAGE_CHECK_RESULT"
+      cached: true
+      stdout: |
+        Change Dir: '/home/ubuntu/桌面/test/2027rm_ws/build-perf/CMakeFiles/_CMakeLTOTest-CXX/bin'
+        
+        Run Build Command(s): /usr/bin/cmake -E env VERBOSE=1 /usr/bin/gmake -f Makefile
+        /usr/bin/cmake -S/home/ubuntu/桌面/test/2027rm_ws/build-perf/CMakeFiles/_CMakeLTOTest-CXX/src -B/home/ubuntu/桌面/test/2027rm_ws/build-perf/CMakeFiles/_CMakeLTOTest-CXX/bin --check-build-system CMakeFiles/Makefile.cmake 0
+        /usr/bin/cmake -E cmake_progress_start /home/ubuntu/桌面/test/2027rm_ws/build-perf/CMakeFiles/_CMakeLTOTest-CXX/bin/CMakeFiles /home/ubuntu/桌面/test/2027rm_ws/build-perf/CMakeFiles/_CMakeLTOTest-CXX/bin//CMakeFiles/progress.marks
+        /usr/bin/gmake  -f CMakeFiles/Makefile2 all
+        gmake[1]: 进入目录“/home/ubuntu/桌面/test/2027rm_ws/build-perf/CMakeFiles/_CMakeLTOTest-CXX/bin”
+        /usr/bin/gmake  -f CMakeFiles/foo.dir/build.make CMakeFiles/foo.dir/depend
+        gmake[2]: 进入目录“/home/ubuntu/桌面/test/2027rm_ws/build-perf/CMakeFiles/_CMakeLTOTest-CXX/bin”
+        cd /home/ubuntu/桌面/test/2027rm_ws/build-perf/CMakeFiles/_CMakeLTOTest-CXX/bin && /usr/bin/cmake -E cmake_depends "Unix Makefiles" /home/ubuntu/桌面/test/2027rm_ws/build-perf/CMakeFiles/_CMakeLTOTest-CXX/src /home/ubuntu/桌面/test/2027rm_ws/build-perf/CMakeFiles/_CMakeLTOTest-CXX/src /home/ubuntu/桌面/test/2027rm_ws/build-perf/CMakeFiles/_CMakeLTOTest-CXX/bin /home/ubuntu/桌面/test/2027rm_ws/build-perf/CMakeFiles/_CMakeLTOTest-CXX/bin /home/ubuntu/桌面/test/2027rm_ws/build-perf/CMakeFiles/_CMakeLTOTest-CXX/bin/CMakeFiles/foo.dir/DependInfo.cmake foo
+        Dependee "/home/ubuntu/桌面/test/2027rm_ws/build-perf/CMakeFiles/_CMakeLTOTest-CXX/bin/CMakeFiles/foo.dir/DependInfo.cmake" is newer than depender "/home/ubuntu/桌面/test/2027rm_ws/build-perf/CMakeFiles/_CMakeLTOTest-CXX/bin/CMakeFiles/foo.dir/depend.internal".
+        Dependee "/home/ubuntu/桌面/test/2027rm_ws/build-perf/CMakeFiles/_CMakeLTOTest-CXX/bin/CMakeFiles/CMakeDirectoryInformation.cmake" is newer than depender "/home/ubuntu/桌面/test/2027rm_ws/build-perf/CMakeFiles/_CMakeLTOTest-CXX/bin/CMakeFiles/foo.dir/depend.internal".
+        Scanning dependencies of target foo
+        gmake[2]: 离开目录“/home/ubuntu/桌面/test/2027rm_ws/build-perf/CMakeFiles/_CMakeLTOTest-CXX/bin”
+        /usr/bin/gmake  -f CMakeFiles/foo.dir/build.make CMakeFiles/foo.dir/build
+        gmake[2]: 进入目录“/home/ubuntu/桌面/test/2027rm_ws/build-perf/CMakeFiles/_CMakeLTOTest-CXX/bin”
+        [ 25%] Building CXX object CMakeFiles/foo.dir/foo.cpp.o
+        /usr/bin/c++   -flto=auto -fno-fat-lto-objects -o CMakeFiles/foo.dir/foo.cpp.o -c /home/ubuntu/桌面/test/2027rm_ws/build-perf/CMakeFiles/_CMakeLTOTest-CXX/src/foo.cpp
+        [ 50%] Linking CXX static library libfoo.a
+        /usr/bin/cmake -P CMakeFiles/foo.dir/cmake_clean_target.cmake
+        /usr/bin/cmake -E cmake_link_script CMakeFiles/foo.dir/link.txt --verbose=1
+        "/usr/bin/gcc-ar-11" qc libfoo.a CMakeFiles/foo.dir/foo.cpp.o
+        "/usr/bin/gcc-ranlib-11" libfoo.a
+        gmake[2]: 离开目录“/home/ubuntu/桌面/test/2027rm_ws/build-perf/CMakeFiles/_CMakeLTOTest-CXX/bin”
+        [ 50%] Built target foo
+        /usr/bin/gmake  -f CMakeFiles/boo.dir/build.make CMakeFiles/boo.dir/depend
+        gmake[2]: 进入目录“/home/ubuntu/桌面/test/2027rm_ws/build-perf/CMakeFiles/_CMakeLTOTest-CXX/bin”
+        cd /home/ubuntu/桌面/test/2027rm_ws/build-perf/CMakeFiles/_CMakeLTOTest-CXX/bin && /usr/bin/cmake -E cmake_depends "Unix Makefiles" /home/ubuntu/桌面/test/2027rm_ws/build-perf/CMakeFiles/_CMakeLTOTest-CXX/src /home/ubuntu/桌面/test/2027rm_ws/build-perf/CMakeFiles/_CMakeLTOTest-CXX/src /home/ubuntu/桌面/test/2027rm_ws/build-perf/CMakeFiles/_CMakeLTOTest-CXX/bin /home/ubuntu/桌面/test/2027rm_ws/build-perf/CMakeFiles/_CMakeLTOTest-CXX/bin /home/ubuntu/桌面/test/2027rm_ws/build-perf/CMakeFiles/_CMakeLTOTest-CXX/bin/CMakeFiles/boo.dir/DependInfo.cmake boo
+        Dependee "/home/ubuntu/桌面/test/2027rm_ws/build-perf/CMakeFiles/_CMakeLTOTest-CXX/bin/CMakeFiles/boo.dir/DependInfo.cmake" is newer than depender "/home/ubuntu/桌面/test/2027rm_ws/build-perf/CMakeFiles/_CMakeLTOTest-CXX/bin/CMakeFiles/boo.dir/depend.internal".
+        Dependee "/home/ubuntu/桌面/test/2027rm_ws/build-perf/CMakeFiles/_CMakeLTOTest-CXX/bin/CMakeFiles/CMakeDirectoryInformation.cmake" is newer than depender "/home/ubuntu/桌面/test/2027rm_ws/build-perf/CMakeFiles/_CMakeLTOTest-CXX/bin/CMakeFiles/boo.dir/depend.internal".
+        Scanning dependencies of target boo
+        gmake[2]: 离开目录“/home/ubuntu/桌面/test/2027rm_ws/build-perf/CMakeFiles/_CMakeLTOTest-CXX/bin”
+        /usr/bin/gmake  -f CMakeFiles/boo.dir/build.make CMakeFiles/boo.dir/build
+        gmake[2]: 进入目录“/home/ubuntu/桌面/test/2027rm_ws/build-perf/CMakeFiles/_CMakeLTOTest-CXX/bin”
+        [ 75%] Building CXX object CMakeFiles/boo.dir/main.cpp.o
+        /usr/bin/c++   -flto=auto -fno-fat-lto-objects -o CMakeFiles/boo.dir/main.cpp.o -c /home/ubuntu/桌面/test/2027rm_ws/build-perf/CMakeFiles/_CMakeLTOTest-CXX/src/main.cpp
+        [100%] Linking CXX executable boo
+        /usr/bin/cmake -E cmake_link_script CMakeFiles/boo.dir/link.txt --verbose=1
+        /usr/bin/c++ -flto=auto -fno-fat-lto-objects CMakeFiles/boo.dir/main.cpp.o -o boo  libfoo.a
+        gmake[2]: 离开目录“/home/ubuntu/桌面/test/2027rm_ws/build-perf/CMakeFiles/_CMakeLTOTest-CXX/bin”
+        [100%] Built target boo
+        gmake[1]: 离开目录“/home/ubuntu/桌面/test/2027rm_ws/build-perf/CMakeFiles/_CMakeLTOTest-CXX/bin”
+        /usr/bin/cmake -E cmake_progress_start /home/ubuntu/桌面/test/2027rm_ws/build-perf/CMakeFiles/_CMakeLTOTest-CXX/bin/CMakeFiles 0
+        
+      exitCode: 0
+...
+
+---
+events:
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "/usr/share/cmake-4.2/Modules/CheckIPOSupported.cmake:197 (try_compile)"
+      - "/usr/share/cmake-4.2/Modules/CheckIPOSupported.cmake:320 (_ipo_run_language_check)"
+      - "CMakeLists.txt:16 (check_ipo_supported)"
+    directories:
+      source: "/home/ubuntu/\u684c\u9762/test/2027rm_ws/build-perf/CMakeFiles/_CMakeLTOTest-CXX/src"
+      binary: "/home/ubuntu/\u684c\u9762/test/2027rm_ws/build-perf/CMakeFiles/_CMakeLTOTest-CXX/bin"
+    buildResult:
+      variable: "_IPO_LANGUAGE_CHECK_RESULT"
+      cached: true
+      stdout: |
+        Change Dir: '/home/ubuntu/桌面/test/2027rm_ws/build-perf/CMakeFiles/_CMakeLTOTest-CXX/bin'
+        
+        Run Build Command(s): /usr/bin/cmake -E env VERBOSE=1 /usr/bin/gmake -f Makefile
+        /usr/bin/cmake -S/home/ubuntu/桌面/test/2027rm_ws/build-perf/CMakeFiles/_CMakeLTOTest-CXX/src -B/home/ubuntu/桌面/test/2027rm_ws/build-perf/CMakeFiles/_CMakeLTOTest-CXX/bin --check-build-system CMakeFiles/Makefile.cmake 0
+        /usr/bin/cmake -E cmake_progress_start /home/ubuntu/桌面/test/2027rm_ws/build-perf/CMakeFiles/_CMakeLTOTest-CXX/bin/CMakeFiles /home/ubuntu/桌面/test/2027rm_ws/build-perf/CMakeFiles/_CMakeLTOTest-CXX/bin//CMakeFiles/progress.marks
+        /usr/bin/gmake  -f CMakeFiles/Makefile2 all
+        gmake[1]: 进入目录“/home/ubuntu/桌面/test/2027rm_ws/build-perf/CMakeFiles/_CMakeLTOTest-CXX/bin”
+        /usr/bin/gmake  -f CMakeFiles/foo.dir/build.make CMakeFiles/foo.dir/depend
+        gmake[2]: 进入目录“/home/ubuntu/桌面/test/2027rm_ws/build-perf/CMakeFiles/_CMakeLTOTest-CXX/bin”
+        cd /home/ubuntu/桌面/test/2027rm_ws/build-perf/CMakeFiles/_CMakeLTOTest-CXX/bin && /usr/bin/cmake -E cmake_depends "Unix Makefiles" /home/ubuntu/桌面/test/2027rm_ws/build-perf/CMakeFiles/_CMakeLTOTest-CXX/src /home/ubuntu/桌面/test/2027rm_ws/build-perf/CMakeFiles/_CMakeLTOTest-CXX/src /home/ubuntu/桌面/test/2027rm_ws/build-perf/CMakeFiles/_CMakeLTOTest-CXX/bin /home/ubuntu/桌面/test/2027rm_ws/build-perf/CMakeFiles/_CMakeLTOTest-CXX/bin /home/ubuntu/桌面/test/2027rm_ws/build-perf/CMakeFiles/_CMakeLTOTest-CXX/bin/CMakeFiles/foo.dir/DependInfo.cmake foo
+        Dependee "/home/ubuntu/桌面/test/2027rm_ws/build-perf/CMakeFiles/_CMakeLTOTest-CXX/bin/CMakeFiles/foo.dir/DependInfo.cmake" is newer than depender "/home/ubuntu/桌面/test/2027rm_ws/build-perf/CMakeFiles/_CMakeLTOTest-CXX/bin/CMakeFiles/foo.dir/depend.internal".
+        Dependee "/home/ubuntu/桌面/test/2027rm_ws/build-perf/CMakeFiles/_CMakeLTOTest-CXX/bin/CMakeFiles/CMakeDirectoryInformation.cmake" is newer than depender "/home/ubuntu/桌面/test/2027rm_ws/build-perf/CMakeFiles/_CMakeLTOTest-CXX/bin/CMakeFiles/foo.dir/depend.internal".
+        Scanning dependencies of target foo
+        gmake[2]: 离开目录“/home/ubuntu/桌面/test/2027rm_ws/build-perf/CMakeFiles/_CMakeLTOTest-CXX/bin”
+        /usr/bin/gmake  -f CMakeFiles/foo.dir/build.make CMakeFiles/foo.dir/build
+        gmake[2]: 进入目录“/home/ubuntu/桌面/test/2027rm_ws/build-perf/CMakeFiles/_CMakeLTOTest-CXX/bin”
+        [ 25%] Building CXX object CMakeFiles/foo.dir/foo.cpp.o
+        /usr/bin/c++   -flto=auto -fno-fat-lto-objects -o CMakeFiles/foo.dir/foo.cpp.o -c /home/ubuntu/桌面/test/2027rm_ws/build-perf/CMakeFiles/_CMakeLTOTest-CXX/src/foo.cpp
+        [ 50%] Linking CXX static library libfoo.a
+        /usr/bin/cmake -P CMakeFiles/foo.dir/cmake_clean_target.cmake
+        /usr/bin/cmake -E cmake_link_script CMakeFiles/foo.dir/link.txt --verbose=1
+        "/usr/bin/gcc-ar-11" qc libfoo.a CMakeFiles/foo.dir/foo.cpp.o
+        "/usr/bin/gcc-ranlib-11" libfoo.a
+        gmake[2]: 离开目录“/home/ubuntu/桌面/test/2027rm_ws/build-perf/CMakeFiles/_CMakeLTOTest-CXX/bin”
+        [ 50%] Built target foo
+        /usr/bin/gmake  -f CMakeFiles/boo.dir/build.make CMakeFiles/boo.dir/depend
+        gmake[2]: 进入目录“/home/ubuntu/桌面/test/2027rm_ws/build-perf/CMakeFiles/_CMakeLTOTest-CXX/bin”
+        cd /home/ubuntu/桌面/test/2027rm_ws/build-perf/CMakeFiles/_CMakeLTOTest-CXX/bin && /usr/bin/cmake -E cmake_depends "Unix Makefiles" /home/ubuntu/桌面/test/2027rm_ws/build-perf/CMakeFiles/_CMakeLTOTest-CXX/src /home/ubuntu/桌面/test/2027rm_ws/build-perf/CMakeFiles/_CMakeLTOTest-CXX/src /home/ubuntu/桌面/test/2027rm_ws/build-perf/CMakeFiles/_CMakeLTOTest-CXX/bin /home/ubuntu/桌面/test/2027rm_ws/build-perf/CMakeFiles/_CMakeLTOTest-CXX/bin /home/ubuntu/桌面/test/2027rm_ws/build-perf/CMakeFiles/_CMakeLTOTest-CXX/bin/CMakeFiles/boo.dir/DependInfo.cmake boo
+        Dependee "/home/ubuntu/桌面/test/2027rm_ws/build-perf/CMakeFiles/_CMakeLTOTest-CXX/bin/CMakeFiles/boo.dir/DependInfo.cmake" is newer than depender "/home/ubuntu/桌面/test/2027rm_ws/build-perf/CMakeFiles/_CMakeLTOTest-CXX/bin/CMakeFiles/boo.dir/depend.internal".
+        Dependee "/home/ubuntu/桌面/test/2027rm_ws/build-perf/CMakeFiles/_CMakeLTOTest-CXX/bin/CMakeFiles/CMakeDirectoryInformation.cmake" is newer than depender "/home/ubuntu/桌面/test/2027rm_ws/build-perf/CMakeFiles/_CMakeLTOTest-CXX/bin/CMakeFiles/boo.dir/depend.internal".
+        Scanning dependencies of target boo
+        gmake[2]: 离开目录“/home/ubuntu/桌面/test/2027rm_ws/build-perf/CMakeFiles/_CMakeLTOTest-CXX/bin”
+        /usr/bin/gmake  -f CMakeFiles/boo.dir/build.make CMakeFiles/boo.dir/build
+        gmake[2]: 进入目录“/home/ubuntu/桌面/test/2027rm_ws/build-perf/CMakeFiles/_CMakeLTOTest-CXX/bin”
+        [ 75%] Building CXX object CMakeFiles/boo.dir/main.cpp.o
+        /usr/bin/c++   -flto=auto -fno-fat-lto-objects -o CMakeFiles/boo.dir/main.cpp.o -c /home/ubuntu/桌面/test/2027rm_ws/build-perf/CMakeFiles/_CMakeLTOTest-CXX/src/main.cpp
+        [100%] Linking CXX executable boo
+        /usr/bin/cmake -E cmake_link_script CMakeFiles/boo.dir/link.txt --verbose=1
+        /usr/bin/c++ -flto=auto -fno-fat-lto-objects CMakeFiles/boo.dir/main.cpp.o -o boo  libfoo.a
+        gmake[2]: 离开目录“/home/ubuntu/桌面/test/2027rm_ws/build-perf/CMakeFiles/_CMakeLTOTest-CXX/bin”
+        [100%] Built target boo
+        gmake[1]: 离开目录“/home/ubuntu/桌面/test/2027rm_ws/build-perf/CMakeFiles/_CMakeLTOTest-CXX/bin”
+        /usr/bin/cmake -E cmake_progress_start /home/ubuntu/桌面/test/2027rm_ws/build-perf/CMakeFiles/_CMakeLTOTest-CXX/bin/CMakeFiles 0
+        
+      exitCode: 0
+...
+
+---
+events:
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "/usr/share/cmake-4.2/Modules/CheckIPOSupported.cmake:197 (try_compile)"
+      - "/usr/share/cmake-4.2/Modules/CheckIPOSupported.cmake:320 (_ipo_run_language_check)"
+      - "CMakeLists.txt:16 (check_ipo_supported)"
+    directories:
+      source: "/home/ubuntu/\u684c\u9762/test/2027rm_ws/build-perf/CMakeFiles/_CMakeLTOTest-CXX/src"
+      binary: "/home/ubuntu/\u684c\u9762/test/2027rm_ws/build-perf/CMakeFiles/_CMakeLTOTest-CXX/bin"
+    buildResult:
+      variable: "_IPO_LANGUAGE_CHECK_RESULT"
+      cached: true
+      stdout: |
+        Change Dir: '/home/ubuntu/桌面/test/2027rm_ws/build-perf/CMakeFiles/_CMakeLTOTest-CXX/bin'
+        
+        Run Build Command(s): /usr/bin/cmake -E env VERBOSE=1 /usr/bin/gmake -f Makefile
+        /usr/bin/cmake -S/home/ubuntu/桌面/test/2027rm_ws/build-perf/CMakeFiles/_CMakeLTOTest-CXX/src -B/home/ubuntu/桌面/test/2027rm_ws/build-perf/CMakeFiles/_CMakeLTOTest-CXX/bin --check-build-system CMakeFiles/Makefile.cmake 0
+        /usr/bin/cmake -E cmake_progress_start /home/ubuntu/桌面/test/2027rm_ws/build-perf/CMakeFiles/_CMakeLTOTest-CXX/bin/CMakeFiles /home/ubuntu/桌面/test/2027rm_ws/build-perf/CMakeFiles/_CMakeLTOTest-CXX/bin//CMakeFiles/progress.marks
+        /usr/bin/gmake  -f CMakeFiles/Makefile2 all
+        gmake[1]: 进入目录“/home/ubuntu/桌面/test/2027rm_ws/build-perf/CMakeFiles/_CMakeLTOTest-CXX/bin”
+        /usr/bin/gmake  -f CMakeFiles/foo.dir/build.make CMakeFiles/foo.dir/depend
+        gmake[2]: 进入目录“/home/ubuntu/桌面/test/2027rm_ws/build-perf/CMakeFiles/_CMakeLTOTest-CXX/bin”
+        cd /home/ubuntu/桌面/test/2027rm_ws/build-perf/CMakeFiles/_CMakeLTOTest-CXX/bin && /usr/bin/cmake -E cmake_depends "Unix Makefiles" /home/ubuntu/桌面/test/2027rm_ws/build-perf/CMakeFiles/_CMakeLTOTest-CXX/src /home/ubuntu/桌面/test/2027rm_ws/build-perf/CMakeFiles/_CMakeLTOTest-CXX/src /home/ubuntu/桌面/test/2027rm_ws/build-perf/CMakeFiles/_CMakeLTOTest-CXX/bin /home/ubuntu/桌面/test/2027rm_ws/build-perf/CMakeFiles/_CMakeLTOTest-CXX/bin /home/ubuntu/桌面/test/2027rm_ws/build-perf/CMakeFiles/_CMakeLTOTest-CXX/bin/CMakeFiles/foo.dir/DependInfo.cmake foo
+        Dependee "/home/ubuntu/桌面/test/2027rm_ws/build-perf/CMakeFiles/_CMakeLTOTest-CXX/bin/CMakeFiles/foo.dir/DependInfo.cmake" is newer than depender "/home/ubuntu/桌面/test/2027rm_ws/build-perf/CMakeFiles/_CMakeLTOTest-CXX/bin/CMakeFiles/foo.dir/depend.internal".
+        Dependee "/home/ubuntu/桌面/test/2027rm_ws/build-perf/CMakeFiles/_CMakeLTOTest-CXX/bin/CMakeFiles/CMakeDirectoryInformation.cmake" is newer than depender "/home/ubuntu/桌面/test/2027rm_ws/build-perf/CMakeFiles/_CMakeLTOTest-CXX/bin/CMakeFiles/foo.dir/depend.internal".
+        Scanning dependencies of target foo
+        gmake[2]: 离开目录“/home/ubuntu/桌面/test/2027rm_ws/build-perf/CMakeFiles/_CMakeLTOTest-CXX/bin”
+        /usr/bin/gmake  -f CMakeFiles/foo.dir/build.make CMakeFiles/foo.dir/build
+        gmake[2]: 进入目录“/home/ubuntu/桌面/test/2027rm_ws/build-perf/CMakeFiles/_CMakeLTOTest-CXX/bin”
+        [ 25%] Building CXX object CMakeFiles/foo.dir/foo.cpp.o
+        /usr/bin/c++   -flto=auto -fno-fat-lto-objects -o CMakeFiles/foo.dir/foo.cpp.o -c /home/ubuntu/桌面/test/2027rm_ws/build-perf/CMakeFiles/_CMakeLTOTest-CXX/src/foo.cpp
+        [ 50%] Linking CXX static library libfoo.a
+        /usr/bin/cmake -P CMakeFiles/foo.dir/cmake_clean_target.cmake
+        /usr/bin/cmake -E cmake_link_script CMakeFiles/foo.dir/link.txt --verbose=1
+        "/usr/bin/gcc-ar-11" qc libfoo.a CMakeFiles/foo.dir/foo.cpp.o
+        "/usr/bin/gcc-ranlib-11" libfoo.a
+        gmake[2]: 离开目录“/home/ubuntu/桌面/test/2027rm_ws/build-perf/CMakeFiles/_CMakeLTOTest-CXX/bin”
+        [ 50%] Built target foo
+        /usr/bin/gmake  -f CMakeFiles/boo.dir/build.make CMakeFiles/boo.dir/depend
+        gmake[2]: 进入目录“/home/ubuntu/桌面/test/2027rm_ws/build-perf/CMakeFiles/_CMakeLTOTest-CXX/bin”
+        cd /home/ubuntu/桌面/test/2027rm_ws/build-perf/CMakeFiles/_CMakeLTOTest-CXX/bin && /usr/bin/cmake -E cmake_depends "Unix Makefiles" /home/ubuntu/桌面/test/2027rm_ws/build-perf/CMakeFiles/_CMakeLTOTest-CXX/src /home/ubuntu/桌面/test/2027rm_ws/build-perf/CMakeFiles/_CMakeLTOTest-CXX/src /home/ubuntu/桌面/test/2027rm_ws/build-perf/CMakeFiles/_CMakeLTOTest-CXX/bin /home/ubuntu/桌面/test/2027rm_ws/build-perf/CMakeFiles/_CMakeLTOTest-CXX/bin /home/ubuntu/桌面/test/2027rm_ws/build-perf/CMakeFiles/_CMakeLTOTest-CXX/bin/CMakeFiles/boo.dir/DependInfo.cmake boo
+        Dependee "/home/ubuntu/桌面/test/2027rm_ws/build-perf/CMakeFiles/_CMakeLTOTest-CXX/bin/CMakeFiles/boo.dir/DependInfo.cmake" is newer than depender "/home/ubuntu/桌面/test/2027rm_ws/build-perf/CMakeFiles/_CMakeLTOTest-CXX/bin/CMakeFiles/boo.dir/depend.internal".
+        Dependee "/home/ubuntu/桌面/test/2027rm_ws/build-perf/CMakeFiles/_CMakeLTOTest-CXX/bin/CMakeFiles/CMakeDirectoryInformation.cmake" is newer than depender "/home/ubuntu/桌面/test/2027rm_ws/build-perf/CMakeFiles/_CMakeLTOTest-CXX/bin/CMakeFiles/boo.dir/depend.internal".
+        Scanning dependencies of target boo
+        gmake[2]: 离开目录“/home/ubuntu/桌面/test/2027rm_ws/build-perf/CMakeFiles/_CMakeLTOTest-CXX/bin”
+        /usr/bin/gmake  -f CMakeFiles/boo.dir/build.make CMakeFiles/boo.dir/build
+        gmake[2]: 进入目录“/home/ubuntu/桌面/test/2027rm_ws/build-perf/CMakeFiles/_CMakeLTOTest-CXX/bin”
+        [ 75%] Building CXX object CMakeFiles/boo.dir/main.cpp.o
+        /usr/bin/c++   -flto=auto -fno-fat-lto-objects -o CMakeFiles/boo.dir/main.cpp.o -c /home/ubuntu/桌面/test/2027rm_ws/build-perf/CMakeFiles/_CMakeLTOTest-CXX/src/main.cpp
+        [100%] Linking CXX executable boo
+        /usr/bin/cmake -E cmake_link_script CMakeFiles/boo.dir/link.txt --verbose=1
+        /usr/bin/c++ -flto=auto -fno-fat-lto-objects CMakeFiles/boo.dir/main.cpp.o -o boo  libfoo.a
+        gmake[2]: 离开目录“/home/ubuntu/桌面/test/2027rm_ws/build-perf/CMakeFiles/_CMakeLTOTest-CXX/bin”
+        [100%] Built target boo
+        gmake[1]: 离开目录“/home/ubuntu/桌面/test/2027rm_ws/build-perf/CMakeFiles/_CMakeLTOTest-CXX/bin”
+        /usr/bin/cmake -E cmake_progress_start /home/ubuntu/桌面/test/2027rm_ws/build-perf/CMakeFiles/_CMakeLTOTest-CXX/bin/CMakeFiles 0
+        
+      exitCode: 0
+...
+
+---
+events:
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "/usr/share/cmake-4.2/Modules/CheckIPOSupported.cmake:197 (try_compile)"
+      - "/usr/share/cmake-4.2/Modules/CheckIPOSupported.cmake:320 (_ipo_run_language_check)"
+      - "CMakeLists.txt:16 (check_ipo_supported)"
+    directories:
+      source: "/home/ubuntu/\u684c\u9762/test/2027rm_ws/build-perf/CMakeFiles/_CMakeLTOTest-CXX/src"
+      binary: "/home/ubuntu/\u684c\u9762/test/2027rm_ws/build-perf/CMakeFiles/_CMakeLTOTest-CXX/bin"
+    buildResult:
+      variable: "_IPO_LANGUAGE_CHECK_RESULT"
+      cached: true
+      stdout: |
+        Change Dir: '/home/ubuntu/桌面/test/2027rm_ws/build-perf/CMakeFiles/_CMakeLTOTest-CXX/bin'
+        
+        Run Build Command(s): /usr/bin/cmake -E env VERBOSE=1 /usr/bin/gmake -f Makefile
+        gmake[1]: 进入目录“/home/ubuntu/桌面/test/2027rm_ws/build-perf/CMakeFiles/_CMakeLTOTest-CXX/bin”
+        /usr/bin/cmake -S/home/ubuntu/桌面/test/2027rm_ws/build-perf/CMakeFiles/_CMakeLTOTest-CXX/src -B/home/ubuntu/桌面/test/2027rm_ws/build-perf/CMakeFiles/_CMakeLTOTest-CXX/bin --check-build-system CMakeFiles/Makefile.cmake 0
+        /usr/bin/cmake -E cmake_progress_start /home/ubuntu/桌面/test/2027rm_ws/build-perf/CMakeFiles/_CMakeLTOTest-CXX/bin/CMakeFiles /home/ubuntu/桌面/test/2027rm_ws/build-perf/CMakeFiles/_CMakeLTOTest-CXX/bin//CMakeFiles/progress.marks
+        /usr/bin/gmake  -f CMakeFiles/Makefile2 all
+        gmake[2]: 进入目录“/home/ubuntu/桌面/test/2027rm_ws/build-perf/CMakeFiles/_CMakeLTOTest-CXX/bin”
+        /usr/bin/gmake  -f CMakeFiles/foo.dir/build.make CMakeFiles/foo.dir/depend
+        gmake[3]: 进入目录“/home/ubuntu/桌面/test/2027rm_ws/build-perf/CMakeFiles/_CMakeLTOTest-CXX/bin”
+        cd /home/ubuntu/桌面/test/2027rm_ws/build-perf/CMakeFiles/_CMakeLTOTest-CXX/bin && /usr/bin/cmake -E cmake_depends "Unix Makefiles" /home/ubuntu/桌面/test/2027rm_ws/build-perf/CMakeFiles/_CMakeLTOTest-CXX/src /home/ubuntu/桌面/test/2027rm_ws/build-perf/CMakeFiles/_CMakeLTOTest-CXX/src /home/ubuntu/桌面/test/2027rm_ws/build-perf/CMakeFiles/_CMakeLTOTest-CXX/bin /home/ubuntu/桌面/test/2027rm_ws/build-perf/CMakeFiles/_CMakeLTOTest-CXX/bin /home/ubuntu/桌面/test/2027rm_ws/build-perf/CMakeFiles/_CMakeLTOTest-CXX/bin/CMakeFiles/foo.dir/DependInfo.cmake foo
+        Dependee "/home/ubuntu/桌面/test/2027rm_ws/build-perf/CMakeFiles/_CMakeLTOTest-CXX/bin/CMakeFiles/foo.dir/DependInfo.cmake" is newer than depender "/home/ubuntu/桌面/test/2027rm_ws/build-perf/CMakeFiles/_CMakeLTOTest-CXX/bin/CMakeFiles/foo.dir/depend.internal".
+        Dependee "/home/ubuntu/桌面/test/2027rm_ws/build-perf/CMakeFiles/_CMakeLTOTest-CXX/bin/CMakeFiles/CMakeDirectoryInformation.cmake" is newer than depender "/home/ubuntu/桌面/test/2027rm_ws/build-perf/CMakeFiles/_CMakeLTOTest-CXX/bin/CMakeFiles/foo.dir/depend.internal".
+        Scanning dependencies of target foo
+        gmake[3]: 离开目录“/home/ubuntu/桌面/test/2027rm_ws/build-perf/CMakeFiles/_CMakeLTOTest-CXX/bin”
+        /usr/bin/gmake  -f CMakeFiles/foo.dir/build.make CMakeFiles/foo.dir/build
+        gmake[3]: 进入目录“/home/ubuntu/桌面/test/2027rm_ws/build-perf/CMakeFiles/_CMakeLTOTest-CXX/bin”
+        [ 25%] Building CXX object CMakeFiles/foo.dir/foo.cpp.o
+        /usr/bin/c++   -flto=auto -fno-fat-lto-objects -o CMakeFiles/foo.dir/foo.cpp.o -c /home/ubuntu/桌面/test/2027rm_ws/build-perf/CMakeFiles/_CMakeLTOTest-CXX/src/foo.cpp
+        [ 50%] Linking CXX static library libfoo.a
+        /usr/bin/cmake -P CMakeFiles/foo.dir/cmake_clean_target.cmake
+        /usr/bin/cmake -E cmake_link_script CMakeFiles/foo.dir/link.txt --verbose=1
+        "/usr/bin/gcc-ar-11" qc libfoo.a CMakeFiles/foo.dir/foo.cpp.o
+        "/usr/bin/gcc-ranlib-11" libfoo.a
+        gmake[3]: 离开目录“/home/ubuntu/桌面/test/2027rm_ws/build-perf/CMakeFiles/_CMakeLTOTest-CXX/bin”
+        [ 50%] Built target foo
+        /usr/bin/gmake  -f CMakeFiles/boo.dir/build.make CMakeFiles/boo.dir/depend
+        gmake[3]: 进入目录“/home/ubuntu/桌面/test/2027rm_ws/build-perf/CMakeFiles/_CMakeLTOTest-CXX/bin”
+        cd /home/ubuntu/桌面/test/2027rm_ws/build-perf/CMakeFiles/_CMakeLTOTest-CXX/bin && /usr/bin/cmake -E cmake_depends "Unix Makefiles" /home/ubuntu/桌面/test/2027rm_ws/build-perf/CMakeFiles/_CMakeLTOTest-CXX/src /home/ubuntu/桌面/test/2027rm_ws/build-perf/CMakeFiles/_CMakeLTOTest-CXX/src /home/ubuntu/桌面/test/2027rm_ws/build-perf/CMakeFiles/_CMakeLTOTest-CXX/bin /home/ubuntu/桌面/test/2027rm_ws/build-perf/CMakeFiles/_CMakeLTOTest-CXX/bin /home/ubuntu/桌面/test/2027rm_ws/build-perf/CMakeFiles/_CMakeLTOTest-CXX/bin/CMakeFiles/boo.dir/DependInfo.cmake boo
+        Dependee "/home/ubuntu/桌面/test/2027rm_ws/build-perf/CMakeFiles/_CMakeLTOTest-CXX/bin/CMakeFiles/boo.dir/DependInfo.cmake" is newer than depender "/home/ubuntu/桌面/test/2027rm_ws/build-perf/CMakeFiles/_CMakeLTOTest-CXX/bin/CMakeFiles/boo.dir/depend.internal".
+        Dependee "/home/ubuntu/桌面/test/2027rm_ws/build-perf/CMakeFiles/_CMakeLTOTest-CXX/bin/CMakeFiles/CMakeDirectoryInformation.cmake" is newer than depender "/home/ubuntu/桌面/test/2027rm_ws/build-perf/CMakeFiles/_CMakeLTOTest-CXX/bin/CMakeFiles/boo.dir/depend.internal".
+        Scanning dependencies of target boo
+        gmake[3]: 离开目录“/home/ubuntu/桌面/test/2027rm_ws/build-perf/CMakeFiles/_CMakeLTOTest-CXX/bin”
+        /usr/bin/gmake  -f CMakeFiles/boo.dir/build.make CMakeFiles/boo.dir/build
+        gmake[3]: 进入目录“/home/ubuntu/桌面/test/2027rm_ws/build-perf/CMakeFiles/_CMakeLTOTest-CXX/bin”
+        [ 75%] Building CXX object CMakeFiles/boo.dir/main.cpp.o
+        /usr/bin/c++   -flto=auto -fno-fat-lto-objects -o CMakeFiles/boo.dir/main.cpp.o -c /home/ubuntu/桌面/test/2027rm_ws/build-perf/CMakeFiles/_CMakeLTOTest-CXX/src/main.cpp
+        [100%] Linking CXX executable boo
+        /usr/bin/cmake -E cmake_link_script CMakeFiles/boo.dir/link.txt --verbose=1
+        /usr/bin/c++ -flto=auto -fno-fat-lto-objects CMakeFiles/boo.dir/main.cpp.o -o boo  libfoo.a
+        gmake[3]: 离开目录“/home/ubuntu/桌面/test/2027rm_ws/build-perf/CMakeFiles/_CMakeLTOTest-CXX/bin”
+        [100%] Built target boo
+        gmake[2]: 离开目录“/home/ubuntu/桌面/test/2027rm_ws/build-perf/CMakeFiles/_CMakeLTOTest-CXX/bin”
+        /usr/bin/cmake -E cmake_progress_start /home/ubuntu/桌面/test/2027rm_ws/build-perf/CMakeFiles/_CMakeLTOTest-CXX/bin/CMakeFiles 0
+        gmake[1]: 离开目录“/home/ubuntu/桌面/test/2027rm_ws/build-perf/CMakeFiles/_CMakeLTOTest-CXX/bin”
+        
+      exitCode: 0
+...

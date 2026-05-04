@@ -47,9 +47,18 @@ static std::string ToLower(std::string value)
 static unsigned int GetPixelFormatEnum(const std::string &fmt) 
 {
     const std::string f = ToLower(fmt);
+    if (f == "bgr8" || f == "bgr8_packed") return PixelType_Gvsp_BGR8_Packed;
+    if (f == "rgb8" || f == "rgb8_packed") return PixelType_Gvsp_RGB8_Packed;
+    if (f == "mono8") return PixelType_Gvsp_Mono8;
     if (f == "bayerbg8") return PixelType_Gvsp_BayerBG8;
     if (f == "bayergb8") return PixelType_Gvsp_BayerGB8;
     if (f == "bayergr8") return PixelType_Gvsp_BayerGR8;
+    if (f == "bayerrg8") return PixelType_Gvsp_BayerRG8;
+    if (f == "hb_bgr8" || f == "hb_bgr8_packed") return PixelType_Gvsp_HB_BGR8_Packed;
+    if (f == "hb_bayerbg8") return PixelType_Gvsp_HB_BayerBG8;
+    if (f == "hb_bayergb8") return PixelType_Gvsp_HB_BayerGB8;
+    if (f == "hb_bayergr8") return PixelType_Gvsp_HB_BayerGR8;
+    if (f == "hb_bayerrg8") return PixelType_Gvsp_HB_BayerRG8;
     return PixelType_Gvsp_BayerRG8;
 }
 

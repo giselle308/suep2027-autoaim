@@ -1,0 +1,226 @@
+<?xml version="1.0" standalone="no"?>
+<svg version="1.1" width="1400" height="264" onload="init(evt)" viewBox="0 0 1400 264" xmlns="http://www.w3.org/2000/svg">
+<style>
+text { font-family: monospace; font-size: 12px; }
+.frame:hover { stroke: #111; stroke-width: 1; }
+</style>
+<script type="text/ecmascript"><![CDATA[
+function init(evt) {}
+function s(info) { document.getElementById("details").firstChild.nodeValue = info; }
+function c() { document.getElementById("details").firstChild.nodeValue = " "; }
+]]></script>
+<text x="10" y="22" font-size="17">perf flamegraph: perf.data</text>
+<text id="details" x="10" y="258"> </text>
+<g class="frame" onmouseover="s('all (100.00%, 391382469774 samples)')" onmouseout="c()">
+<title>all (100.00%, 391382469774 samples)</title>
+<rect x="10.000" y="222" width="1380.000" height="17" fill="rgb(253,138,65)"/>
+<text x="13.000" y="235">all</text>
+</g>
+<g class="frame" onmouseover="s('tbb::detail::r1::rml::private_worker::thread_routine(void*) (51.04%, 199750844636 samples)')" onmouseout="c()">
+<title>tbb::detail::r1::rml::private_worker::thread_routine(void*) (51.04%, 199750844636 samples)</title>
+<rect x="10.000" y="204" width="704.314" height="17" fill="rgb(235,165,65)"/>
+<text x="13.000" y="217">tbb::detail::r1::rml::private_worker::thread_routine(void*)</text>
+</g>
+<g class="frame" onmouseover="s('tbb::detail::r1::thread_dispatcher::process(rml::job&amp;) (51.01%, 199648407950 samples)')" onmouseout="c()">
+<title>tbb::detail::r1::thread_dispatcher::process(rml::job&amp;) (51.01%, 199648407950 samples)</title>
+<rect x="10.000" y="186" width="703.953" height="17" fill="rgb(221,88,56)"/>
+<text x="13.000" y="199">tbb::detail::r1::thread_dispatcher::process(rml::job&amp;)</text>
+</g>
+<g class="frame" onmouseover="s('tbb::detail::d1::task* tbb::detail::r1::task_dispatcher::receive_or_steal_task&lt;false, tbb::detail::r1::outermost_worker_waiter&gt;(tbb::detail::r1::thread_data&amp;, tbb::detail::r1::execution_data_ext&amp;, tbb::detail::r1::outermost_worker_waiter&amp;, long, bool, bool) (21.42%, 83838465581 samples)')" onmouseout="c()">
+<title>tbb::detail::d1::task* tbb::detail::r1::task_dispatcher::receive_or_steal_task&lt;false, tbb::detail::r1::outermost_worker_waiter&gt;(tbb::detail::r1::thread_data&amp;, tbb::detail::r1::execution_data_ext&amp;, tbb::detail::r1::outermost_worker_waiter&amp;, long, bool, bool) (21.42%, 83838465581 samples)</title>
+<rect x="714.314" y="204" width="295.611" height="17" fill="rgb(254,143,41)"/>
+<text x="717.314" y="217">tbb::detail::d1::task* tbb::detail::r1::..</text>
+</g>
+<g class="frame" onmouseover="s('tbb::detail::r1::execute_and_wait(tbb::detail::d1::task&amp;, tbb::detail::d1::task_group_context&amp;, tbb::detail::d1::wait_context&amp;, tbb::detail::d1::task_group_context&amp;) (10.84%, 42418211228 samples)')" onmouseout="c()">
+<title>tbb::detail::r1::execute_and_wait(tbb::detail::d1::task&amp;, tbb::detail::d1::task_group_context&amp;, tbb::detail::d1::wait_context&amp;, tbb::detail::d1::task_group_context&amp;) (10.84%, 42418211228 samples)</title>
+<rect x="1009.925" y="204" width="149.565" height="17" fill="rgb(213,162,80)"/>
+<text x="1012.925" y="217">tbb::detail::r1::ex..</text>
+</g>
+<g class="frame" onmouseover="s('tbb::detail::d1::task* tbb::detail::r1::task_dispatcher::local_wait_for_all&lt;false, tbb::detail::r1::external_waiter&gt;(tbb::detail::d1::task*, tbb::detail::r1::external_waiter&amp;) [clone .constprop.0] [clone .isra.0] (10.80%, 42259112452 samples)')" onmouseout="c()">
+<title>tbb::detail::d1::task* tbb::detail::r1::task_dispatcher::local_wait_for_all&lt;false, tbb::detail::r1::external_waiter&gt;(tbb::detail::d1::task*, tbb::detail::r1::external_waiter&amp;) [clone .constprop.0] [clone .isra.0] (10.80%, 42259112452 samples)</title>
+<rect x="1009.925" y="186" width="149.004" height="17" fill="rgb(241,84,91)"/>
+<text x="1012.925" y="199">tbb::detail::d1::ta..</text>
+</g>
+<g class="frame" onmouseover="s('__sched_yield (2.68%, 10495990653 samples)')" onmouseout="c()">
+<title>__sched_yield (2.68%, 10495990653 samples)</title>
+<rect x="1159.490" y="204" width="37.008" height="17" fill="rgb(201,114,95)"/>
+<text x="1162.490" y="217">__s..</text>
+</g>
+<g class="frame" onmouseover="s('std::thread::_State_impl&lt;std::thread::_Invoker&lt;std::tuple&lt;CGraph::internal::CSTATUS (2.67%, 10463252071 samples)')" onmouseout="c()">
+<title>std::thread::_State_impl&lt;std::thread::_Invoker&lt;std::tuple&lt;CGraph::internal::CSTATUS (2.67%, 10463252071 samples)</title>
+<rect x="1196.499" y="204" width="36.893" height="17" fill="rgb(250,168,64)"/>
+<text x="1199.499" y="217">std..</text>
+</g>
+<g class="frame" onmouseover="s('CGraph::UThreadPrimary::run() (2.67%, 10463252071 samples)')" onmouseout="c()">
+<title>CGraph::UThreadPrimary::run() (2.67%, 10463252071 samples)</title>
+<rect x="1196.499" y="186" width="36.893" height="17" fill="rgb(230,108,92)"/>
+<text x="1199.499" y="199">CGr..</text>
+</g>
+<g class="frame" onmouseover="s('CGraph::UThreadPrimary::processTask() (2.67%, 10463252071 samples)')" onmouseout="c()">
+<title>CGraph::UThreadPrimary::processTask() (2.67%, 10463252071 samples)</title>
+<rect x="1196.499" y="168" width="36.893" height="17" fill="rgb(239,151,92)"/>
+<text x="1199.499" y="181">CGr..</text>
+</g>
+<g class="frame" onmouseover="s('CGraph::UTask::TaskDerided&lt;CGraph::GDynamicEngine::parallelRunAll()::{lambda()#2}, CGraph::GDynamicEngine::parallelRunAll()::{lambda()#2}&gt;::call() (2.67%, 10463252071 samples)')" onmouseout="c()">
+<title>CGraph::UTask::TaskDerided&lt;CGraph::GDynamicEngine::parallelRunAll()::{lambda()#2}, CGraph::GDynamicEngine::parallelRunAll()::{lambda()#2}&gt;::call() (2.67%, 10463252071 samples)</title>
+<rect x="1196.499" y="150" width="36.893" height="17" fill="rgb(235,171,41)"/>
+<text x="1199.499" y="163">CGr..</text>
+</g>
+<g class="frame" onmouseover="s('CGraph::GElement::fatProcessor(CGraph::CFunctionType const&amp;) (2.67%, 10463252071 samples)')" onmouseout="c()">
+<title>CGraph::GElement::fatProcessor(CGraph::CFunctionType const&amp;) (2.67%, 10463252071 samples)</title>
+<rect x="1196.499" y="132" width="36.893" height="17" fill="rgb(205,159,97)"/>
+<text x="1199.499" y="145">CGr..</text>
+</g>
+<g class="frame" onmouseover="s('YoloInferNode::run() (2.26%, 8836119243 samples)')" onmouseout="c()">
+<title>YoloInferNode::run() (2.26%, 8836119243 samples)</title>
+<rect x="1196.499" y="114" width="31.156" height="17" fill="rgb(204,190,86)"/>
+</g>
+<g class="frame" onmouseover="s('YoloOpenvino::submit(FrameMParam const&amp;, std::__cxx11::basic_string&lt;char, std::char_traits&lt;char&gt;, std::allocator&lt;char&gt; &gt;*) (2.04%, 7971639246 samples)')" onmouseout="c()">
+<title>YoloOpenvino::submit(FrameMParam const&amp;, std::__cxx11::basic_string&lt;char, std::char_traits&lt;char&gt;, std::allocator&lt;char&gt; &gt;*) (2.04%, 7971639246 samples)</title>
+<rect x="1196.499" y="96" width="28.108" height="17" fill="rgb(222,190,40)"/>
+</g>
+<g class="frame" onmouseover="s('YoloOpenvino::preprocess(cv::Mat const&amp;, cv::Mat&amp;, cv::Mat&amp;, LetterBoxInfo&amp;) const (2.04%, 7971639246 samples)')" onmouseout="c()">
+<title>YoloOpenvino::preprocess(cv::Mat const&amp;, cv::Mat&amp;, cv::Mat&amp;, LetterBoxInfo&amp;) const (2.04%, 7971639246 samples)</title>
+<rect x="1196.499" y="78" width="28.108" height="17" fill="rgb(217,182,46)"/>
+</g>
+<g class="frame" onmouseover="s('YoloOpenvino::collectCompleted(std::vector&lt;std::shared_ptr&lt;ResultMParam&gt;, std::allocator&lt;std::shared_ptr&lt;ResultMParam&gt; &gt; &gt;&amp;, std::__cxx11::basic_string&lt;char, std::char_traits&lt;char&gt;, std::allocator&lt;char&gt; &gt;*) (0.17%, 655505895 samples)')" onmouseout="c()">
+<title>YoloOpenvino::collectCompleted(std::vector&lt;std::shared_ptr&lt;ResultMParam&gt;, std::allocator&lt;std::shared_ptr&lt;ResultMParam&gt; &gt; &gt;&amp;, std::__cxx11::basic_string&lt;char, std::char_traits&lt;char&gt;, std::allocator&lt;char&gt; &gt;*) (0.17%, 655505895 samples)</title>
+<rect x="1224.607" y="96" width="2.311" height="17" fill="rgb(229,129,63)"/>
+</g>
+<g class="frame" onmouseover="s('YoloOpenvino::finishSlot(YoloOpenvino::AsyncSlot&amp;, std::shared_ptr&lt;ResultMParam&gt;&amp;, std::__cxx11::basic_string&lt;char, std::char_traits&lt;char&gt;, std::allocator&lt;char&gt; &gt;*) (0.16%, 638275243 samples)')" onmouseout="c()">
+<title>YoloOpenvino::finishSlot(YoloOpenvino::AsyncSlot&amp;, std::shared_ptr&lt;ResultMParam&gt;&amp;, std::__cxx11::basic_string&lt;char, std::char_traits&lt;char&gt;, std::allocator&lt;char&gt; &gt;*) (0.16%, 638275243 samples)</title>
+<rect x="1224.607" y="78" width="2.251" height="17" fill="rgb(251,131,40)"/>
+</g>
+<g class="frame" onmouseover="s('YoloPostprocessor::run(cv::Mat const&amp;, ov::Tensor&amp;, LetterBoxInfo const&amp;, AppConfig const&amp;, std::function&lt;bool (0.15%, 600884626 samples)')" onmouseout="c()">
+<title>YoloPostprocessor::run(cv::Mat const&amp;, ov::Tensor&amp;, LetterBoxInfo const&amp;, AppConfig const&amp;, std::function&lt;bool (0.15%, 600884626 samples)</title>
+<rect x="1224.607" y="60" width="2.119" height="17" fill="rgb(236,190,89)"/>
+</g>
+<g class="frame" onmouseover="s('(anonymous namespace)::PnpSolveNode::run() (0.38%, 1468743371 samples)')" onmouseout="c()">
+<title>(anonymous namespace)::PnpSolveNode::run() (0.38%, 1468743371 samples)</title>
+<rect x="1227.655" y="114" width="5.179" height="17" fill="rgb(254,167,94)"/>
+</g>
+<g class="frame" onmouseover="s('rename (0.23%, 914117240 samples)')" onmouseout="c()">
+<title>rename (0.23%, 914117240 samples)</title>
+<rect x="1227.655" y="96" width="3.223" height="17" fill="rgb(237,142,41)"/>
+</g>
+<g class="frame" onmouseover="s('cv::solvePnPGeneric(cv::_InputArray const&amp;, cv::_InputArray const&amp;, cv::_InputArray const&amp;, cv::_InputArray const&amp;, cv::_OutputArray const&amp;, cv::_OutputArray const&amp;, bool, cv::SolvePnPMethod, cv::_InputArray const&amp;, cv::_InputArray const&amp;, cv::_OutputArray const&amp;) (0.09%, 342533411 samples)')" onmouseout="c()">
+<title>cv::solvePnPGeneric(cv::_InputArray const&amp;, cv::_InputArray const&amp;, cv::_InputArray const&amp;, cv::_InputArray const&amp;, cv::_OutputArray const&amp;, cv::_OutputArray const&amp;, bool, cv::SolvePnPMethod, cv::_InputArray const&amp;, cv::_InputArray const&amp;, cv::_OutputArray const&amp;) (0.09%, 342533411 samples)</title>
+<rect x="1230.878" y="96" width="1.208" height="17" fill="rgb(235,142,64)"/>
+</g>
+<g class="frame" onmouseover="s('__GI___ioctl (2.17%, 8474483016 samples)')" onmouseout="c()">
+<title>__GI___ioctl (2.17%, 8474483016 samples)</title>
+<rect x="1233.392" y="204" width="29.881" height="17" fill="rgb(231,146,58)"/>
+</g>
+<g class="frame" onmouseover="s('__memmove_avx_unaligned_erms (1.72%, 6731472731 samples)')" onmouseout="c()">
+<title>__memmove_avx_unaligned_erms (1.72%, 6731472731 samples)</title>
+<rect x="1263.273" y="204" width="23.735" height="17" fill="rgb(206,141,97)"/>
+</g>
+<g class="frame" onmouseover="s('__GI___futex_abstimed_wait_cancelable64 (1.44%, 5620732894 samples)')" onmouseout="c()">
+<title>__GI___futex_abstimed_wait_cancelable64 (1.44%, 5620732894 samples)</title>
+<rect x="1287.008" y="204" width="19.818" height="17" fill="rgb(224,97,74)"/>
+</g>
+<g class="frame" onmouseover="s('tbb::detail::d1::task* tbb::detail::r1::task_dispatcher::receive_or_steal_task&lt;false, tbb::detail::r1::external_waiter&gt;(tbb::detail::r1::thread_data&amp;, tbb::detail::r1::execution_data_ext&amp;, tbb::detail::r1::external_waiter&amp;, long, bool, bool) (1.06%, 4161826904 samples)')" onmouseout="c()">
+<title>tbb::detail::d1::task* tbb::detail::r1::task_dispatcher::receive_or_steal_task&lt;false, tbb::detail::r1::external_waiter&gt;(tbb::detail::r1::thread_data&amp;, tbb::detail::r1::execution_data_ext&amp;, tbb::detail::r1::external_waiter&amp;, long, bool, bool) (1.06%, 4161826904 samples)</title>
+<rect x="1306.826" y="204" width="14.674" height="17" fill="rgb(203,173,98)"/>
+</g>
+<g class="frame" onmouseover="s('syscall (0.79%, 3099015520 samples)')" onmouseout="c()">
+<title>syscall (0.79%, 3099015520 samples)</title>
+<rect x="1321.500" y="204" width="10.927" height="17" fill="rgb(203,151,90)"/>
+</g>
+<g class="frame" onmouseover="s('pthread_cond_broadcast@@GLIBC_2.3.2 (0.27%, 1061188980 samples)')" onmouseout="c()">
+<title>pthread_cond_broadcast@@GLIBC_2.3.2 (0.27%, 1061188980 samples)</title>
+<rect x="1332.427" y="204" width="3.742" height="17" fill="rgb(201,143,79)"/>
+</g>
+<g class="frame" onmouseover="s('tbb::detail::r1::arena_slot::get_task(tbb::detail::r1::execution_data_ext&amp;, long) (0.27%, 1037569750 samples)')" onmouseout="c()">
+<title>tbb::detail::r1::arena_slot::get_task(tbb::detail::r1::execution_data_ext&amp;, long) (0.27%, 1037569750 samples)</title>
+<rect x="1336.169" y="204" width="3.658" height="17" fill="rgb(207,158,61)"/>
+</g>
+<g class="frame" onmouseover="s('tbb::detail::r1::deallocate(tbb::detail::d1::small_object_pool&amp;, void*, unsigned long, tbb::detail::d1::execution_data const&amp;) (0.25%, 969080724 samples)')" onmouseout="c()">
+<title>tbb::detail::r1::deallocate(tbb::detail::d1::small_object_pool&amp;, void*, unsigned long, tbb::detail::d1::execution_data const&amp;) (0.25%, 969080724 samples)</title>
+<rect x="1339.828" y="204" width="3.417" height="17" fill="rgb(226,134,69)"/>
+</g>
+<g class="frame" onmouseover="s('tbb::detail::r1::task_dispatcher::get_stream_or_critical_task(tbb::detail::r1::execution_data_ext&amp;, tbb::detail::r1::arena&amp;, tbb::detail::r1::task_stream&lt;(tbb::detail::r1::task_stream_accessor_type)0&gt;&amp;, unsigned int&amp;, long, bool) [clone .isra.0] (0.21%, 803039200 samples)')" onmouseout="c()">
+<title>tbb::detail::r1::task_dispatcher::get_stream_or_critical_task(tbb::detail::r1::execution_data_ext&amp;, tbb::detail::r1::arena&amp;, tbb::detail::r1::task_stream&lt;(tbb::detail::r1::task_stream_accessor_type)0&gt;&amp;, unsigned int&amp;, long, bool) [clone .isra.0] (0.21%, 803039200 samples)</title>
+<rect x="1343.245" y="204" width="2.831" height="17" fill="rgb(238,128,87)"/>
+</g>
+<g class="frame" onmouseover="s('tbb::detail::r1::spawn(tbb::detail::d1::task&amp;, tbb::detail::d1::task_group_context&amp;, unsigned short) (0.19%, 736059939 samples)')" onmouseout="c()">
+<title>tbb::detail::r1::spawn(tbb::detail::d1::task&amp;, tbb::detail::d1::task_group_context&amp;, unsigned short) (0.19%, 736059939 samples)</title>
+<rect x="1346.076" y="204" width="2.595" height="17" fill="rgb(204,161,70)"/>
+</g>
+<g class="frame" onmouseover="s('pthread_cond_signal@@GLIBC_2.3.2 (0.18%, 713503046 samples)')" onmouseout="c()">
+<title>pthread_cond_signal@@GLIBC_2.3.2 (0.18%, 713503046 samples)</title>
+<rect x="1348.671" y="204" width="2.516" height="17" fill="rgb(252,99,79)"/>
+</g>
+<g class="frame" onmouseover="s('tbb::detail::r1::task_dispatcher::get_critical_task(tbb::detail::d1::task*, tbb::detail::r1::execution_data_ext&amp;, long, bool) [clone .part.0] [clone .lto_priv.1] [clone .lto_priv.0] (0.18%, 695053072 samples)')" onmouseout="c()">
+<title>tbb::detail::r1::task_dispatcher::get_critical_task(tbb::detail::d1::task*, tbb::detail::r1::execution_data_ext&amp;, long, bool) [clone .part.0] [clone .lto_priv.1] [clone .lto_priv.0] (0.18%, 695053072 samples)</title>
+<rect x="1351.187" y="204" width="2.451" height="17" fill="rgb(203,81,70)"/>
+</g>
+<g class="frame" onmouseover="s('__GI___lll_lock_wake (0.16%, 631453645 samples)')" onmouseout="c()">
+<title>__GI___lll_lock_wake (0.16%, 631453645 samples)</title>
+<rect x="1353.638" y="204" width="2.226" height="17" fill="rgb(217,165,90)"/>
+</g>
+<g class="frame" onmouseover="s('__GI___libc_open (0.15%, 593399429 samples)')" onmouseout="c()">
+<title>__GI___libc_open (0.15%, 593399429 samples)</title>
+<rect x="1355.864" y="204" width="2.092" height="17" fill="rgb(220,153,83)"/>
+</g>
+<g class="frame" onmouseover="s('malloc (0.13%, 507695332 samples)')" onmouseout="c()">
+<title>malloc (0.13%, 507695332 samples)</title>
+<rect x="1357.957" y="204" width="1.790" height="17" fill="rgb(207,119,99)"/>
+</g>
+<g class="frame" onmouseover="s('tbb::detail::r1::allocate(tbb::detail::d1::small_object_pool*&amp;, unsigned long, tbb::detail::d1::execution_data const&amp;) (0.11%, 439869230 samples)')" onmouseout="c()">
+<title>tbb::detail::r1::allocate(tbb::detail::d1::small_object_pool*&amp;, unsigned long, tbb::detail::d1::execution_data const&amp;) (0.11%, 439869230 samples)</title>
+<rect x="1359.747" y="204" width="1.551" height="17" fill="rgb(242,166,57)"/>
+</g>
+<g class="frame" onmouseover="s('pthread_cond_wait@@GLIBC_2.3.2 (0.10%, 398679640 samples)')" onmouseout="c()">
+<title>pthread_cond_wait@@GLIBC_2.3.2 (0.10%, 398679640 samples)</title>
+<rect x="1361.298" y="204" width="1.406" height="17" fill="rgb(250,143,90)"/>
+</g>
+<g class="frame" onmouseover="s('__GI___libc_write (0.10%, 389451451 samples)')" onmouseout="c()">
+<title>__GI___libc_write (0.10%, 389451451 samples)</title>
+<rect x="1362.703" y="204" width="1.373" height="17" fill="rgb(247,88,72)"/>
+</g>
+<g class="frame" onmouseover="s('pthread_mutex_lock@@GLIBC_2.2.5 (0.10%, 380622118 samples)')" onmouseout="c()">
+<title>pthread_mutex_lock@@GLIBC_2.2.5 (0.10%, 380622118 samples)</title>
+<rect x="1364.077" y="204" width="1.342" height="17" fill="rgb(227,98,75)"/>
+</g>
+<g class="frame" onmouseover="s('tbb::detail::d0::atomic_backoff::pause() (0.09%, 362518580 samples)')" onmouseout="c()">
+<title>tbb::detail::d0::atomic_backoff::pause() (0.09%, 362518580 samples)</title>
+<rect x="1365.419" y="204" width="1.278" height="17" fill="rgb(233,116,79)"/>
+</g>
+<g class="frame" onmouseover="s('_int_free (0.09%, 348569573 samples)')" onmouseout="c()">
+<title>_int_free (0.09%, 348569573 samples)</title>
+<rect x="1366.697" y="204" width="1.229" height="17" fill="rgb(225,124,89)"/>
+</g>
+<g class="frame" onmouseover="s('sched_setaffinity@@GLIBC_2.3.4 (0.09%, 342803077 samples)')" onmouseout="c()">
+<title>sched_setaffinity@@GLIBC_2.3.4 (0.09%, 342803077 samples)</title>
+<rect x="1367.926" y="204" width="1.209" height="17" fill="rgb(200,173,54)"/>
+</g>
+<g class="frame" onmouseover="s('_int_malloc (0.08%, 313929724 samples)')" onmouseout="c()">
+<title>_int_malloc (0.08%, 313929724 samples)</title>
+<rect x="1369.135" y="204" width="1.107" height="17" fill="rgb(223,112,53)"/>
+</g>
+<g class="frame" onmouseover="s('__memset_avx2_unaligned_erms (0.06%, 244264057 samples)')" onmouseout="c()">
+<title>__memset_avx2_unaligned_erms (0.06%, 244264057 samples)</title>
+<rect x="1370.242" y="204" width="0.861" height="17" fill="rgb(249,165,99)"/>
+</g>
+<g class="frame" onmouseover="s('_dl_update_slotinfo (0.06%, 230918717 samples)')" onmouseout="c()">
+<title>_dl_update_slotinfo (0.06%, 230918717 samples)</title>
+<rect x="1371.103" y="204" width="0.814" height="17" fill="rgb(205,106,60)"/>
+</g>
+<g class="frame" onmouseover="s('pthread_mutex_unlock@@GLIBC_2.2.5 (0.06%, 230383501 samples)')" onmouseout="c()">
+<title>pthread_mutex_unlock@@GLIBC_2.2.5 (0.06%, 230383501 samples)</title>
+<rect x="1371.917" y="204" width="0.812" height="17" fill="rgb(210,91,77)"/>
+</g>
+<g class="frame" onmouseover="s('__GI___lll_lock_wait (0.05%, 196341360 samples)')" onmouseout="c()">
+<title>__GI___lll_lock_wait (0.05%, 196341360 samples)</title>
+<rect x="1372.729" y="204" width="0.692" height="17" fill="rgb(245,164,90)"/>
+</g>
+<g class="frame" onmouseover="s('memcpy@plt (0.05%, 191699695 samples)')" onmouseout="c()">
+<title>memcpy@plt (0.05%, 191699695 samples)</title>
+<rect x="1373.422" y="204" width="0.676" height="17" fill="rgb(247,126,61)"/>
+</g>
+<g class="frame" onmouseover="s('tbb::detail::r1::arena_slot::spawn(tbb::detail::d1::task&amp;) (0.04%, 174055608 samples)')" onmouseout="c()">
+<title>tbb::detail::r1::arena_slot::spawn(tbb::detail::d1::task&amp;) (0.04%, 174055608 samples)</title>
+<rect x="1374.098" y="204" width="0.614" height="17" fill="rgb(224,99,46)"/>
+</g>
+</svg>

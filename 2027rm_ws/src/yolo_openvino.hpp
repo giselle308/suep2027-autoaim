@@ -1,7 +1,10 @@
 #pragma once
 
 #include <chrono>
+#include <condition_variable>
+#include <exception>
 #include <memory>
+#include <mutex>
 #include <optional>
 #include <string>
 #include <vector>
@@ -9,6 +12,7 @@
 #include <opencv2/opencv.hpp>
 #include <openvino/openvino.hpp>
 
+#include "message_pool.hpp"
 #include "postprocess.hpp"
 #include "yolo_app.hpp"
 
@@ -22,11 +26,16 @@ private:
         int infer_id = 0;
         cv::Mat frame;
         cv::Mat resized_img;
+        cv::Mat letterbox_img;
         cv::Mat blob;
         uint64_t frame_id = 0;
         std::chrono::steady_clock::time_point capture_tp;
         std::chrono::steady_clock::time_point submit_tp;
         LetterBoxInfo lb;
+        cv::Size cached_src_size;
+        int cached_resize_w = 0;
+        int cached_resize_h = 0;
+        bool letterbox_cache_valid = false;
     };
 
 public:
@@ -35,11 +44,14 @@ public:
     bool submit(const FrameMParam &frame_msg, std::string *error);
     bool collectCompleted(std::vector<std::shared_ptr<ResultMParam>> &results, std::string *error);
     bool waitAll(std::vector<std::shared_ptr<ResultMParam>> &results, std::string *error);
+    void waitForCompletionSignal(std::chrono::milliseconds timeout);
 
 private:
     bool finishSlot(AsyncSlot &slot, std::shared_ptr<ResultMParam> &result, std::string *error);
     bool MatchTargetColorByClass(int class_id, TargetColor target) const;
-    void preprocess(const cv::Mat &bgr, cv::Mat &resized_img, cv::Mat &blob, LetterBoxInfo &lb) const;
+    void preprocess(AsyncSlot &slot) const;
+    void notifyRequestCompleted(std::exception_ptr exception);
+    bool consumeCallbackException(std::string *error);
 
     ov::Core core_;
     ov::CompiledModel compiled;
@@ -54,6 +66,11 @@ private:
     float nms_thres_ = 0.45f;
     std::vector<std::string> class_labels_;
     std::optional<YoloPostprocessor> postprocessor_;
+    SharedParamPool<ResultMParam> result_pool_;
+    std::mutex completion_mutex_;
+    std::condition_variable completion_cv_;
+    bool completion_notified_ = false;
+    std::exception_ptr callback_exception_;
 };
 
 class YoloResultFilter

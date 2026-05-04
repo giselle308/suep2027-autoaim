@@ -1,3 +1,4 @@
+#include <algorithm>
 #include <memory>
 #include <string>
 #include <thread>
@@ -7,18 +8,30 @@
 
 #include "camera_node.hpp"
 #include "display_node.hpp"
-#include "profiling.hpp"
+#include "message_pool.hpp"
 #include "yolo_app.hpp"
 #include "yolo_common.hpp"
 #include "yolo_openvino.hpp"
 
 using namespace CGraph;
 
+namespace {
+
+bool IsReusableMatBuffer(const cv::Mat &mat)
+{
+    return mat.empty() || mat.u == nullptr || mat.u->refcount == 1;
+}
+
+}  // namespace
+
 class CameraPubNode : public GNode
 {
 private:
     HikCameraNode camera_;
     uint64_t frame_id_ = 0;
+    std::vector<cv::Mat> frame_pool_;
+    std::size_t next_frame_slot_ = 0;
+    SharedParamPool<FrameMParam> frame_msg_pool_;
 
 public:
     CStatus init() override
@@ -29,6 +42,8 @@ public:
             return CStatus(err);
         }
         frame_id_ = 0;
+        frame_pool_.resize(static_cast<std::size_t>(std::max(4, GetAppConfig().infer_workers + 3)));
+        next_frame_slot_ = 0;
         return CStatus();
     }
 
@@ -36,15 +51,15 @@ public:
     {
         while (!IsYoloStopRequested())
         {
-            cv::Mat frame;
+            cv::Mat &frame = acquireFrameBuffer();
             std::chrono::steady_clock::time_point capture_tp;
             std::string err;
             if (!camera_.grab(frame, &capture_tp, &err))
             {
                 return CStatus(err);
             }
-            std::shared_ptr<FrameMParam> msg(new FrameMParam());
-            msg->frame = std::move(frame);
+            std::shared_ptr<FrameMParam> msg = frame_msg_pool_.acquire();
+            msg->frame = frame;
             msg->frame_id = ++frame_id_;
             msg->capture_tp = capture_tp;
             CStatus st = CGRAPH_SEND_MPARAM(FrameMParam, FRAME_TOPIC, msg, GMessagePushStrategy::REPLACE);
@@ -60,7 +75,26 @@ public:
     CStatus destroy() override
     {
         camera_.shutdown();
+        frame_pool_.clear();
         return CStatus();
+    }
+
+private:
+    cv::Mat &acquireFrameBuffer()
+    {
+        for (std::size_t i = 0; i < frame_pool_.size(); ++i)
+        {
+            const std::size_t idx = (next_frame_slot_ + i) % frame_pool_.size();
+            if (IsReusableMatBuffer(frame_pool_[idx]))
+            {
+                next_frame_slot_ = (idx + 1) % frame_pool_.size();
+                return frame_pool_[idx];
+            }
+        }
+
+        frame_pool_.emplace_back();
+        next_frame_slot_ = 0;
+        return frame_pool_.back();
     }
 };
 
@@ -69,6 +103,8 @@ class YoloInferNode : public GNode
 private:
     YoloOpenvino yolo_;
     YoloResultFilter result_filter_;
+    std::vector<std::shared_ptr<ResultMParam>> ready_results_;
+    std::vector<std::shared_ptr<ResultMParam>> tail_results_;
 
     CStatus publishResults(const std::vector<std::shared_ptr<ResultMParam>> &results)
     {
@@ -102,6 +138,8 @@ public:
         {
             return CStatus(err);
         }
+        ready_results_.reserve(static_cast<std::size_t>(std::max(1, GetAppConfig().infer_workers)));
+        tail_results_.reserve(static_cast<std::size_t>(std::max(1, GetAppConfig().infer_workers)));
         return CStatus();
     }
 
@@ -109,13 +147,13 @@ public:
     {
         while (!IsYoloStopRequested())
         {
-            std::vector<std::shared_ptr<ResultMParam>> ready_results;
+            ready_results_.clear();
             std::string err;
-            if (!yolo_.collectCompleted(ready_results, &err))
+            if (!yolo_.collectCompleted(ready_results_, &err))
             {
                 return CStatus(err);
             }
-            CStatus st = publishResults(ready_results);
+            CStatus st = publishResults(ready_results_);
             if (st.isErr())
             {
                 return st;
@@ -123,7 +161,7 @@ public:
 
             if (!yolo_.hasIdleRequest())
             {
-                std::this_thread::sleep_for(std::chrono::milliseconds(1));
+                yolo_.waitForCompletionSignal(std::chrono::milliseconds(1));
                 continue;
             }
 
@@ -144,13 +182,13 @@ public:
             app::profiling::LogIfDue();
         }
 
-        std::vector<std::shared_ptr<ResultMParam>> tail_results;
+        tail_results_.clear();
         std::string err;
-        if (!yolo_.waitAll(tail_results, &err))
+        if (!yolo_.waitAll(tail_results_, &err))
         {
             return CStatus(err);
         }
-        CStatus st = publishResults(tail_results);
+        CStatus st = publishResults(tail_results_);
         if (st.isErr())
         {
             return st;

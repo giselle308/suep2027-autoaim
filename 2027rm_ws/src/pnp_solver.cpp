@@ -13,7 +13,7 @@
 #include <spdlog/spdlog.h>
 #include <yaml-cpp/yaml.h>
 
-#include "profiling.hpp"
+#include "message_pool.hpp"
 #include "yolo_app.hpp"
 
 using namespace CGraph;
@@ -297,10 +297,8 @@ cv::Vec3d RotationMatrixToEulerZyxDeg(const cv::Mat &rotation_matrix)
     return cv::Vec3d(yaw * kRadToDeg, pitch * kRadToDeg, roll * kRadToDeg);
 }
 
-double ArmorNormalForwardScore(const cv::Mat &rvec)
+double ArmorNormalForwardScore(const cv::Mat &rotation_matrix)
 {
-    cv::Mat rotation_matrix;
-    cv::Rodrigues(rvec, rotation_matrix);
     const double normal_x = rotation_matrix.at<double>(0, 0);
     const double normal_z = rotation_matrix.at<double>(2, 0);
     return std::abs(std::atan2(normal_x, normal_z));
@@ -312,7 +310,7 @@ struct ReprojectionStats
     double max_error_px = std::numeric_limits<double>::max();
 };
 
-ReprojectionStats ComputeReprojectionStats(const std::vector<cv::Point3f> &object_corners,
+ReprojectionStats ComputeReprojectionStats(const cv::InputArray &object_corners,
                                            const std::vector<cv::Point2f> &image_corners,
                                            const CameraCalibration &calibration,
                                            const cv::Mat &rvec,
@@ -343,17 +341,20 @@ ReprojectionStats ComputeReprojectionStats(const std::vector<cv::Point3f> &objec
 }
 
 bool HasValidRigidDepth(const std::vector<cv::Point3f> &object_corners,
-                        const cv::Mat &rvec,
+                        const cv::Mat &rotation_matrix,
                         const cv::Mat &tvec,
                         const RigidPnpConstraint &constraint)
 {
-    cv::Mat rotation_matrix;
-    cv::Rodrigues(rvec, rotation_matrix);
+    const double r20 = rotation_matrix.at<double>(2, 0);
+    const double r21 = rotation_matrix.at<double>(2, 1);
+    const double r22 = rotation_matrix.at<double>(2, 2);
+    const double tz = tvec.at<double>(2, 0);
     for (const auto &corner : object_corners)
     {
-        cv::Mat object_point = (cv::Mat_<double>(3, 1) << corner.x, corner.y, corner.z);
-        cv::Mat camera_point = rotation_matrix * object_point + tvec;
-        const double depth_m = camera_point.at<double>(2, 0);
+        const double depth_m = r20 * static_cast<double>(corner.x) +
+                               r21 * static_cast<double>(corner.y) +
+                               r22 * static_cast<double>(corner.z) +
+                               tz;
         if (depth_m < constraint.min_depth_m || depth_m > constraint.max_depth_m)
         {
             return false;
@@ -369,6 +370,7 @@ std::string FormatReprojectionStatus(const std::string &prefix, const Reprojecti
 }
 
 bool SatisfiesRigidConstraint(const std::vector<cv::Point3f> &object_corners,
+                              const cv::InputArray &object_corners_input,
                               const std::vector<cv::Point2f> &image_corners,
                               const CameraCalibration &calibration,
                               const cv::Mat &rvec,
@@ -376,7 +378,7 @@ bool SatisfiesRigidConstraint(const std::vector<cv::Point3f> &object_corners,
                               const RigidPnpConstraint &constraint,
                               ReprojectionStats *stats_out = nullptr)
 {
-    const ReprojectionStats stats = ComputeReprojectionStats(object_corners,
+    const ReprojectionStats stats = ComputeReprojectionStats(object_corners_input,
                                                              image_corners,
                                                              calibration,
                                                              rvec,
@@ -389,7 +391,9 @@ bool SatisfiesRigidConstraint(const std::vector<cv::Point3f> &object_corners,
     {
         return true;
     }
-    if (!HasValidRigidDepth(object_corners, rvec, tvec, constraint))
+    cv::Mat rotation_matrix;
+    cv::Rodrigues(rvec, rotation_matrix);
+    if (!HasValidRigidDepth(object_corners, rotation_matrix, tvec, constraint))
     {
         return false;
     }
@@ -398,6 +402,7 @@ bool SatisfiesRigidConstraint(const std::vector<cv::Point3f> &object_corners,
 }
 
 bool SolveArmorPnpIppe(const std::vector<cv::Point3f> &object_corners,
+                       const cv::InputArray &object_corners_input,
                        const std::vector<cv::Point2f> &image_corners,
                        const CameraCalibration &calibration,
                        const RigidPnpConstraint &constraint,
@@ -407,7 +412,7 @@ bool SolveArmorPnpIppe(const std::vector<cv::Point3f> &object_corners,
     std::vector<cv::Mat> rvecs;
     std::vector<cv::Mat> tvecs;
     std::vector<double> reprojection_errors;
-    const int solution_count = cv::solvePnPGeneric(object_corners,
+    const int solution_count = cv::solvePnPGeneric(object_corners_input,
                                                    image_corners,
                                                    calibration.camera_matrix,
                                                    calibration.distortion_coeffs,
@@ -427,18 +432,20 @@ bool SolveArmorPnpIppe(const std::vector<cv::Point3f> &object_corners,
     double best_score = std::numeric_limits<double>::max();
     for (std::size_t i = 0; i < rvecs.size(); ++i)
     {
-        if (constraint.enable && !HasValidRigidDepth(object_corners, rvecs[i], tvecs[i], constraint))
+        cv::Mat rotation_matrix;
+        cv::Rodrigues(rvecs[i], rotation_matrix);
+        if (constraint.enable && !HasValidRigidDepth(object_corners, rotation_matrix, tvecs[i], constraint))
         {
             continue;
         }
-        const ReprojectionStats stats = ComputeReprojectionStats(object_corners,
+        const ReprojectionStats stats = ComputeReprojectionStats(object_corners_input,
                                                                  image_corners,
                                                                  calibration,
                                                                  rvecs[i],
                                                                  tvecs[i]);
         const double reprojection_score =
             (i < reprojection_errors.size()) ? reprojection_errors[i] : stats.mean_error_px;
-        const double forward_score = ArmorNormalForwardScore(rvecs[i]);
+        const double forward_score = ArmorNormalForwardScore(rotation_matrix);
         const double score = reprojection_score + forward_score * 10.0;
         if (score < best_score)
         {
@@ -477,6 +484,9 @@ public:
             constraint_ = LoadRigidPnpConstraint();
             big_armor_points_ = BuildArmorPoints(geometry_.big_width_m, geometry_.lightbar_length_m);
             small_armor_points_ = BuildArmorPoints(geometry_.small_width_m, geometry_.lightbar_length_m);
+            big_armor_points_mat_ = cv::Mat(big_armor_points_).clone();
+            small_armor_points_mat_ = cv::Mat(small_armor_points_).clone();
+            image_corners_.reserve(4);
             enabled_ = true;
             spdlog::info("PnP armor size loaded: small={:.1f}x{:.1f}mm big={:.1f}x{:.1f}mm lightbar={:.1f}mm rigid_constraint={} reproj_mean<={:.1f}px reproj_corner<={:.1f}px depth=[{:.2f},{:.2f}]m",
                          geometry_.small_width_m * 1000.0,
@@ -562,53 +572,55 @@ public:
             }
             last_processed_frame_id_ = result->frame_id;
 
-            app::profiling::ScopedTimer pnp_total_timer(app::profiling::Stage::PnpTotal);
-            const std::vector<cv::Point2f> image_corners(result->corners.begin(), result->corners.end());
+            image_corners_.assign(result->corners.begin(), result->corners.end());
             const ArmorType armor_type = InferArmorType(result->corners, geometry_);
             const std::vector<cv::Point3f> &object_corners =
                 (armor_type == ArmorType::Large)
                     ? big_armor_points_
                     : small_armor_points_;
+            const cv::Mat &object_corners_mat =
+                (armor_type == ArmorType::Large)
+                    ? big_armor_points_mat_
+                    : small_armor_points_mat_;
             const cv::Point2f center_pt = ComputeCenterPoint(result->corners);
             const cv::Vec2d armor_size_m = ArmorSizeMeters(armor_type, geometry_);
             cv::Mat rvec;
             cv::Mat tvec;
 
+            bool ok = SolveArmorPnpIppe(object_corners,
+                                        object_corners_mat,
+                                        image_corners_,
+                                        calibration_,
+                                        constraint_,
+                                        rvec,
+                                        tvec);
+            if (!ok)
+            {
+                ok = cv::solvePnP(object_corners_mat,
+                                  image_corners_,
+                                  calibration_.camera_matrix,
+                                  calibration_.distortion_coeffs,
+                                  rvec,
+                                  tvec,
+                                  false,
+                                  cv::SOLVEPNP_ITERATIVE);
+            }
             ReprojectionStats reprojection_stats;
             bool valid_depth = false;
             bool valid_reprojection = false;
-            bool ok = false;
+            cv::Mat rotation_matrix;
+            if (ok)
             {
-                app::profiling::ScopedTimer pnp_solve_timer(app::profiling::Stage::PnpSolve);
-                ok = SolveArmorPnpIppe(object_corners,
-                                       image_corners,
-                                       calibration_,
-                                       constraint_,
-                                       rvec,
-                                       tvec);
-                if (!ok)
-                {
-                    ok = cv::solvePnP(object_corners,
-                                      image_corners,
-                                      calibration_.camera_matrix,
-                                      calibration_.distortion_coeffs,
-                                      rvec,
-                                      tvec,
-                                      false,
-                                      cv::SOLVEPNP_ITERATIVE);
-                }
-                if (ok)
-                {
-                    reprojection_stats = ComputeReprojectionStats(object_corners,
-                                                                  image_corners,
-                                                                  calibration_,
-                                                                  rvec,
-                                                                  tvec);
-                    valid_depth = HasValidRigidDepth(object_corners, rvec, tvec, constraint_);
-                    valid_reprojection =
-                        reprojection_stats.mean_error_px <= constraint_.max_mean_reprojection_error_px &&
-                        reprojection_stats.max_error_px <= constraint_.max_corner_reprojection_error_px;
-                }
+                cv::Rodrigues(rvec, rotation_matrix);
+                reprojection_stats = ComputeReprojectionStats(object_corners_mat,
+                                                              image_corners_,
+                                                              calibration_,
+                                                              rvec,
+                                                              tvec);
+                valid_depth = HasValidRigidDepth(object_corners, rotation_matrix, tvec, constraint_);
+                valid_reprojection =
+                    reprojection_stats.mean_error_px <= constraint_.max_mean_reprojection_error_px &&
+                    reprojection_stats.max_error_px <= constraint_.max_corner_reprojection_error_px;
             }
             if (ok && constraint_.enable && !valid_depth)
             {
@@ -633,11 +645,9 @@ public:
                 continue;
             }
 
-            cv::Mat rotation_matrix;
-            cv::Rodrigues(rvec, rotation_matrix);
             const cv::Vec3d euler_deg = RotationMatrixToEulerZyxDeg(rotation_matrix);
 
-            std::shared_ptr<PnpResultMParam> pnp_result(new PnpResultMParam());
+            std::shared_ptr<PnpResultMParam> pnp_result = pnp_result_pool_.acquire();
             pnp_result->frame_id = result->frame_id;
             pnp_result->infer_id = result->infer_id;
             pnp_result->has_pose = true;
@@ -675,7 +685,7 @@ public:
 private:
     void PublishNoPose(uint64_t frame_id, int infer_id, const std::string &status)
     {
-        std::shared_ptr<PnpResultMParam> pnp_result(new PnpResultMParam());
+        std::shared_ptr<PnpResultMParam> pnp_result = pnp_result_pool_.acquire();
         pnp_result->frame_id = frame_id;
         pnp_result->infer_id = infer_id;
         pnp_result->has_pose = false;
@@ -700,6 +710,10 @@ private:
     RigidPnpConstraint constraint_{};
     std::vector<cv::Point3f> big_armor_points_;
     std::vector<cv::Point3f> small_armor_points_;
+    cv::Mat big_armor_points_mat_;
+    cv::Mat small_armor_points_mat_;
+    std::vector<cv::Point2f> image_corners_;
+    SharedParamPool<PnpResultMParam> pnp_result_pool_;
 };
 
 }  // namespace

@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <cmath>
 
+#include <opencv2/dnn.hpp>
 #include <spdlog/spdlog.h>
 
 #include "yolo_common.hpp"
@@ -57,6 +58,9 @@ bool YoloOpenvino::init(const AppConfig &cfg, std::string *error)
         {
             AsyncSlot slot;
             slot.request = compiled.create_infer_request();
+            slot.request.set_callback([this](std::exception_ptr exception) {
+                notifyRequestCompleted(exception);
+            });
             slot.infer_id = i + 1;
             slot.blob.create(1, 3 * input_h_ * input_w_, CV_32F);
             slots_.push_back(std::move(slot));
@@ -106,10 +110,7 @@ bool YoloOpenvino::submit(const FrameMParam &frame_msg, std::string *error)
     slot.frame = frame_msg.frame;
     slot.frame_id = frame_msg.frame_id;
     slot.capture_tp = frame_msg.capture_tp;
-    {
-        app::profiling::ScopedTimer timer(app::profiling::Stage::Preprocess);
-        preprocess(slot.frame, slot.resized_img, slot.blob, slot.lb);
-    }
+    preprocess(slot);
     ov::Tensor in_tensor(ov::element::f32,
                          ov::Shape{1, 3, static_cast<size_t>(input_h_), static_cast<size_t>(input_w_)},
                          slot.blob.ptr<float>());
@@ -122,6 +123,11 @@ bool YoloOpenvino::submit(const FrameMParam &frame_msg, std::string *error)
 
 bool YoloOpenvino::collectCompleted(std::vector<std::shared_ptr<ResultMParam>> &results, std::string *error)
 {
+    if (!consumeCallbackException(error))
+    {
+        return false;
+    }
+
     for (AsyncSlot &slot : slots_)
     {
         if (!slot.busy)
@@ -186,6 +192,65 @@ bool YoloOpenvino::waitAll(std::vector<std::shared_ptr<ResultMParam>> &results, 
         results.push_back(result);
     }
     return true;
+}
+
+void YoloOpenvino::waitForCompletionSignal(std::chrono::milliseconds timeout)
+{
+    std::unique_lock<std::mutex> lock(completion_mutex_);
+    if (!completion_notified_)
+    {
+        completion_cv_.wait_for(lock, timeout, [this]() {
+            return completion_notified_ || IsYoloStopRequested();
+        });
+    }
+    completion_notified_ = false;
+}
+
+void YoloOpenvino::notifyRequestCompleted(std::exception_ptr exception)
+{
+    {
+        std::lock_guard<std::mutex> lock(completion_mutex_);
+        if (exception && !callback_exception_)
+        {
+            callback_exception_ = exception;
+        }
+        completion_notified_ = true;
+    }
+    completion_cv_.notify_one();
+}
+
+bool YoloOpenvino::consumeCallbackException(std::string *error)
+{
+    std::exception_ptr exception;
+    {
+        std::lock_guard<std::mutex> lock(completion_mutex_);
+        exception = callback_exception_;
+        callback_exception_ = nullptr;
+    }
+    if (!exception)
+    {
+        return true;
+    }
+
+    try
+    {
+        std::rethrow_exception(exception);
+    }
+    catch (const std::exception &e)
+    {
+        if (error)
+        {
+            *error = e.what();
+        }
+    }
+    catch (...)
+    {
+        if (error)
+        {
+            *error = "OpenVINO async inference failed";
+        }
+    }
+    return false;
 }
 
 bool YoloOpenvino::finishSlot(AsyncSlot &slot, std::shared_ptr<ResultMParam> &result, std::string *error)
@@ -258,7 +323,7 @@ bool YoloOpenvino::finishSlot(AsyncSlot &slot, std::shared_ptr<ResultMParam> &re
             cv::putText(vis, text, cv::Point(d.box.x, ty), cv::FONT_HERSHEY_SIMPLEX, 0.5, box_color, 2, cv::LINE_AA);
             DrawArmorFrame(vis, corner_pts, box_color);
         }
-        result.reset(new ResultMParam());
+        result = result_pool_.acquire();
         result->vis = std::move(vis);
         result->frame_id = slot.frame_id;
         result->infer_id = slot.infer_id;
@@ -307,41 +372,52 @@ bool YoloOpenvino::MatchTargetColorByClass(int class_id, TargetColor target) con
     return true;
 }
 
-void YoloOpenvino::preprocess(const cv::Mat &bgr, cv::Mat &resized_img, cv::Mat &blob, LetterBoxInfo &lb) const
+void YoloOpenvino::preprocess(AsyncSlot &slot) const
 {
+    const cv::Mat &bgr = slot.frame;
     const int src_w = bgr.cols;
     const int src_h = bgr.rows;
-    lb.scale = std::min(static_cast<float>(input_w_) / static_cast<float>(src_w),
-                        static_cast<float>(input_h_) / static_cast<float>(src_h));
-    const int nw = static_cast<int>(std::round(src_w * lb.scale));
-    const int nh = static_cast<int>(std::round(src_h * lb.scale));
-    lb.pad_w = (input_w_ - nw) / 2;
-    lb.pad_h = (input_h_ - nh) / 2;
-
-    cv::resize(bgr, resized_img, cv::Size(nw, nh), 0.0, 0.0, cv::INTER_LINEAR);
-
-    const int plane_size = input_h_ * input_w_;
-    blob.create(1, 3 * plane_size, CV_32F);
-    float *blob_ptr = blob.ptr<float>();
-    std::fill(blob_ptr, blob_ptr + (3 * plane_size), 114.0f / 255.0f);
-
-    float *dst_r = blob_ptr;
-    float *dst_g = blob_ptr + plane_size;
-    float *dst_b = blob_ptr + 2 * plane_size;
-    for (int y = 0; y < nh; ++y)
+    const cv::Size src_size(src_w, src_h);
+    if (!slot.letterbox_cache_valid || slot.cached_src_size != src_size)
     {
-        const cv::Vec3b *src_row = resized_img.ptr<cv::Vec3b>(y);
-        const int dst_y = y + lb.pad_h;
-        const int dst_offset = dst_y * input_w_ + lb.pad_w;
-        for (int x = 0; x < nw; ++x)
-        {
-            const cv::Vec3b &pixel = src_row[x];
-            const int idx = dst_offset + x;
-            dst_r[idx] = static_cast<float>(pixel[2]) / 255.0f;
-            dst_g[idx] = static_cast<float>(pixel[1]) / 255.0f;
-            dst_b[idx] = static_cast<float>(pixel[0]) / 255.0f;
-        }
+        slot.lb.scale = std::min(static_cast<float>(input_w_) / static_cast<float>(src_w),
+                                 static_cast<float>(input_h_) / static_cast<float>(src_h));
+        slot.cached_resize_w = static_cast<int>(std::round(src_w * slot.lb.scale));
+        slot.cached_resize_h = static_cast<int>(std::round(src_h * slot.lb.scale));
+        slot.lb.pad_w = (input_w_ - slot.cached_resize_w) / 2;
+        slot.lb.pad_h = (input_h_ - slot.cached_resize_h) / 2;
+        slot.cached_src_size = src_size;
+        slot.letterbox_cache_valid = true;
     }
+
+    const int nw = slot.cached_resize_w;
+    const int nh = slot.cached_resize_h;
+    const int pad_w = slot.lb.pad_w;
+    const int pad_h = slot.lb.pad_h;
+    slot.letterbox_img.create(input_h_, input_w_, CV_8UC3);
+    if (pad_h > 0)
+    {
+        slot.letterbox_img(cv::Rect(0, 0, input_w_, pad_h)).setTo(cv::Scalar(114, 114, 114));
+        slot.letterbox_img(cv::Rect(0, pad_h + nh, input_w_, input_h_ - pad_h - nh)).setTo(cv::Scalar(114, 114, 114));
+    }
+    if (pad_w > 0)
+    {
+        slot.letterbox_img(cv::Rect(0, pad_h, pad_w, nh)).setTo(cv::Scalar(114, 114, 114));
+        slot.letterbox_img(cv::Rect(pad_w + nw, pad_h, input_w_ - pad_w - nw, nh)).setTo(cv::Scalar(114, 114, 114));
+    }
+
+    cv::Mat roi = slot.letterbox_img(cv::Rect(pad_w, pad_h, nw, nh));
+    cv::resize(bgr, roi, cv::Size(nw, nh), 0.0, 0.0, cv::INTER_LINEAR);
+    slot.resized_img = roi;
+
+    cv::dnn::blobFromImage(slot.letterbox_img,
+                           slot.blob,
+                           1.0 / 255.0,
+                           cv::Size(input_w_, input_h_),
+                           cv::Scalar(),
+                           true,
+                           false,
+                           CV_32F);
 }
 
 void YoloResultFilter::EmaScalar::reset()
