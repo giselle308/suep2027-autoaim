@@ -21,6 +21,18 @@ bool YoloOpenvino::init(const AppConfig &cfg, std::string *error)
         const std::string resolved_model_path = ResolveModelPath(cfg.model_path);
         class_labels_ = LoadModelLabels(resolved_model_path);
         auto model = core_.read_model(resolved_model_path);
+        const auto model_input_shape = model->input().get_shape();
+        if (model_input_shape.size() != 4 || model_input_shape[1] != 3)
+        {
+            if (error)
+            {
+                *error = "Unsupported model input shape, expected [N,3,H,W]";
+            }
+            return false;
+        }
+        input_h_ = static_cast<int>(model_input_shape[2]);
+        input_w_ = static_cast<int>(model_input_shape[3]);
+
         ov::preprocess::PrePostProcessor ppp(model);
         ppp.input().tensor()
             .set_element_type(ov::element::u8)
@@ -52,17 +64,6 @@ bool YoloOpenvino::init(const AppConfig &cfg, std::string *error)
             }
             spdlog::info("Model labels: {}", labels_desc);
         }
-        auto in_shape = input_port_.get_shape();
-        if (in_shape.size() != 4 || in_shape[1] != 3)
-        {
-            if (error)
-            {
-                *error = "Unsupported input shape, expected [N,3,H,W]";
-            }
-            return false;
-        }
-        input_h_ = static_cast<int>(in_shape[2]);
-        input_w_ = static_cast<int>(in_shape[3]);
         postprocessor_.emplace(input_w_, input_h_, num_classes_, conf_thres_, nms_thres_);
         async_request_count_ = std::max(1, cfg.infer_workers);
         slots_.clear();
