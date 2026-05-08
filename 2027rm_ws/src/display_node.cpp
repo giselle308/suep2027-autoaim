@@ -22,6 +22,8 @@ CStatus DisplayNode::init()
     fps_ = 0.0;
     latency_sum_ms_ = 0.0;
     latency_max_ms_ = 0.0;
+    detect_latency_sum_ms_ = 0.0;
+    detect_latency_max_ms_ = 0.0;
     dropped_result_count_ = 0;
     return CStatus();
 }
@@ -59,9 +61,12 @@ CStatus DisplayNode::run()
         ++count_;
         ++log_count_;
         det_sum_ += r->det_count;
-        latency_sum_ms_ += r->latency_ms;
-        latency_max_ms_ = std::max(latency_max_ms_, r->latency_ms);
         auto now = std::chrono::steady_clock::now();
+        const double full_latency_ms = ElapsedMsSince(r->pipeline_start_tp);
+        latency_sum_ms_ += full_latency_ms;
+        latency_max_ms_ = std::max(latency_max_ms_, full_latency_ms);
+        detect_latency_sum_ms_ += r->detect_latency_ms;
+        detect_latency_max_ms_ = std::max(detect_latency_max_ms_, r->detect_latency_ms);
         auto dt_ms = std::chrono::duration_cast<std::chrono::milliseconds>(now - fps_start_).count();
         if (dt_ms >= 1000)
         {
@@ -75,17 +80,22 @@ CStatus DisplayNode::run()
         {
             double real_fps = log_count_ * 1000.0 / static_cast<double>(log_dt_ms);
             const double latency_avg_ms = (log_count_ > 0) ? (latency_sum_ms_ / static_cast<double>(log_count_)) : 0.0;
+            const double detect_latency_avg_ms = (log_count_ > 0) ? (detect_latency_sum_ms_ / static_cast<double>(log_count_)) : 0.0;
             const double det_avg = (log_count_ > 0) ? (static_cast<double>(det_sum_) / static_cast<double>(log_count_)) : 0.0;
-            spdlog::info("[E2E] fps={} latency_ms_avg={} latency_ms_max={} det={} dropped_stale={}",
+            spdlog::info("[E2E] fps={} latency_ms_avg={} latency_ms_max={} detect_latency_ms_avg={} detect_latency_ms_max={} det={} dropped_stale={}",
                          static_cast<int>(real_fps + 0.5),
                          static_cast<int>(latency_avg_ms + 0.5),
                          static_cast<int>(latency_max_ms_ + 0.5),
+                         static_cast<int>(detect_latency_avg_ms + 0.5),
+                         static_cast<int>(detect_latency_max_ms_ + 0.5),
                          cv::format("%.1f", det_avg),
                          dropped_result_count_);
             log_count_ = 0;
             det_sum_ = 0;
             latency_sum_ms_ = 0.0;
             latency_max_ms_ = 0.0;
+            detect_latency_sum_ms_ = 0.0;
+            detect_latency_max_ms_ = 0.0;
             dropped_result_count_ = 0;
             log_start_ = now;
         }
@@ -104,7 +114,8 @@ CStatus DisplayNode::run()
         cv::Mat &show = r->vis;
         std::string t1 = "frame=" + std::to_string(r->frame_id) + " infer=" + std::to_string(r->infer_id) + " det=" + std::to_string(r->det_count);
         std::string t2 = "fps=" + std::to_string(static_cast<int>(fps_ + 0.5));
-        std::string t3 = "latency=" + std::to_string(static_cast<int>(r->latency_ms + 0.5)) + "ms";
+        std::string t3 = "latency=" + std::to_string(static_cast<int>(full_latency_ms + 0.5)) +
+                         "ms detect=" + std::to_string(static_cast<int>(r->detect_latency_ms + 0.5)) + "ms";
         std::string t4 = "corners=none";
         std::string t5 = "pnp=none";
         std::string t6;
@@ -139,7 +150,8 @@ CStatus DisplayNode::run()
                 }
                 t5 += " center=(" + std::to_string(static_cast<int>(std::round(p->center_px.x))) +
                       "," + std::to_string(static_cast<int>(std::round(p->center_px.y))) + ")" +
-                      " z=" + cv::format("%.2f", p->tvec_m[2]) + "m";
+                      " z=" + cv::format("%.2f", p->tvec_m[2]) + "m" +
+                      " latency=" + std::to_string(static_cast<int>(p->latency_ms + 0.5)) + "ms";
                 t6 = "xyz=(" + cv::format("%.2f", p->tvec_m[0]) + "," +
                      cv::format("%.2f", p->tvec_m[1]) + "," +
                      cv::format("%.2f", p->tvec_m[2]) + ") ypr=(" +

@@ -53,6 +53,7 @@ public:
         while (!IsYoloStopRequested())
         {
             cv::Mat &frame = acquireFrameBuffer();
+            const auto pipeline_start_tp = std::chrono::steady_clock::now();
             std::chrono::steady_clock::time_point capture_tp;
             std::string err;
             if (!camera_.grab(frame, &capture_tp, &err))
@@ -62,6 +63,7 @@ public:
             std::shared_ptr<FrameMParam> msg = frame_msg_pool_.acquire();
             msg->frame = frame;
             msg->frame_id = ++frame_id_;
+            msg->pipeline_start_tp = pipeline_start_tp;
             msg->capture_tp = capture_tp;
             CStatus st = CGRAPH_SEND_MPARAM(FrameMParam, FRAME_TOPIC, msg, GMessagePushStrategy::REPLACE);
             if (st.isErr())

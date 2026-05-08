@@ -275,6 +275,8 @@ void DumpPnpForFoxglove(const PnpResultMParam &result)
     fout << "  \"frame_id\": " << result.frame_id << ",\n";
     fout << "  \"infer_id\": " << result.infer_id << ",\n";
     fout << "  \"has_pose\": " << (result.has_pose ? "true" : "false") << ",\n";
+    fout << "  \"latency_ms\": " << result.latency_ms << ",\n";
+    fout << "  \"detect_latency_ms\": " << result.detect_latency_ms << ",\n";
     fout << "  \"status\": \"" << result.status << "\",\n";
     fout << "  \"armor_type\": \"" << result.armor_type << "\",\n";
     fout << "  \"center_px\": [" << result.center_px.x << ", " << result.center_px.y << "],\n";
@@ -477,6 +479,10 @@ public:
     CStatus init() override
     {
         result_conn_id_ = CGRAPH_BIND_MESSAGE_TOPIC(ResultMParam, RESULT_TOPIC, 2);
+        e2e_fps_start_ = std::chrono::steady_clock::now();
+        e2e_output_count_ = 0;
+        e2e_latency_sum_ms_ = 0.0;
+        e2e_latency_max_ms_ = 0.0;
         if (!GetAppConfig().pnp_enable)
         {
             enabled_ = false;
@@ -563,7 +569,7 @@ public:
                 ++no_corner_count;
                 if (result)
                 {
-                    PublishNoPose(result->frame_id, result->infer_id, "no_corners");
+                    PublishNoPose(*result, "no_corners");
                 }
                 maybe_log_stats();
                 continue;
@@ -647,7 +653,7 @@ public:
                              constraint_.min_depth_m,
                              constraint_.max_depth_m);
                 ++reject_count;
-                PublishNoPose(result->frame_id, result->infer_id, FormatReprojectionStatus("depth_rejected", reprojection_stats));
+                PublishNoPose(*result, FormatReprojectionStatus("depth_rejected", reprojection_stats));
                 record_pnp_total();
                 maybe_log_stats();
                 continue;
@@ -656,7 +662,7 @@ public:
             {
                 spdlog::warn("[PNP] solve failed frame={} infer={}", result->frame_id, result->infer_id);
                 ++fail_count;
-                PublishNoPose(result->frame_id, result->infer_id, "failed");
+                PublishNoPose(*result, "failed");
                 record_pnp_total();
                 maybe_log_stats();
                 continue;
@@ -668,6 +674,8 @@ public:
             pnp_result->frame_id = result->frame_id;
             pnp_result->infer_id = result->infer_id;
             pnp_result->has_pose = true;
+            pnp_result->latency_ms = ElapsedMsSince(result->pipeline_start_tp);
+            pnp_result->detect_latency_ms = result->detect_latency_ms;
             pnp_result->status = FormatReprojectionStatus(valid_reprojection ? "solved" : "loose", reprojection_stats);
             pnp_result->armor_type = ArmorTypeName(armor_type);
             pnp_result->center_px = center_pt;
@@ -690,6 +698,10 @@ public:
                              result->infer_id,
                              pub_st.getInfo());
             }
+            else
+            {
+                RecordPnpE2eOutput(*pnp_result);
+            }
             DumpPnpForFoxglove(*pnp_result);
             ++solved_count;
             record_pnp_total();
@@ -701,23 +713,54 @@ public:
     }
 
 private:
-    void PublishNoPose(uint64_t frame_id, int infer_id, const std::string &status)
+    void PublishNoPose(const ResultMParam &result, const std::string &status)
     {
         std::shared_ptr<PnpResultMParam> pnp_result = pnp_result_pool_.acquire();
-        pnp_result->frame_id = frame_id;
-        pnp_result->infer_id = infer_id;
+        pnp_result->frame_id = result.frame_id;
+        pnp_result->infer_id = result.infer_id;
         pnp_result->has_pose = false;
+        pnp_result->latency_ms = ElapsedMsSince(result.pipeline_start_tp);
+        pnp_result->detect_latency_ms = result.detect_latency_ms;
         pnp_result->status = status;
         const CStatus pub_st = CGRAPH_PUB_MPARAM(PnpResultMParam, PNP_TOPIC, pnp_result, GMessagePushStrategy::REPLACE);
         if (pub_st.isErr())
         {
             spdlog::warn("[PNP] publish no-pose failed frame={} infer={} status={} error={}",
-                         frame_id,
-                         infer_id,
+                         result.frame_id,
+                         result.infer_id,
                          status,
                          pub_st.getInfo());
         }
+        else
+        {
+            RecordPnpE2eOutput(*pnp_result);
+        }
         DumpPnpForFoxglove(*pnp_result);
+    }
+
+    void RecordPnpE2eOutput(const PnpResultMParam &result)
+    {
+        ++e2e_output_count_;
+        e2e_latency_sum_ms_ += result.latency_ms;
+        e2e_latency_max_ms_ = std::max(e2e_latency_max_ms_, result.latency_ms);
+
+        const auto now = std::chrono::steady_clock::now();
+        const auto dt_ms = std::chrono::duration_cast<std::chrono::milliseconds>(now - e2e_fps_start_).count();
+        if (!IsE2eLogEnabled() || dt_ms < 1000)
+        {
+            return;
+        }
+
+        const double fps = e2e_output_count_ * 1000.0 / static_cast<double>(dt_ms);
+        const double latency_avg_ms = e2e_latency_sum_ms_ / static_cast<double>(e2e_output_count_);
+        spdlog::info("[E2E_PNP] fps={} latency_ms_avg={} latency_ms_max={}",
+                     static_cast<int>(fps + 0.5),
+                     static_cast<int>(latency_avg_ms + 0.5),
+                     static_cast<int>(e2e_latency_max_ms_ + 0.5));
+        e2e_output_count_ = 0;
+        e2e_latency_sum_ms_ = 0.0;
+        e2e_latency_max_ms_ = 0.0;
+        e2e_fps_start_ = now;
     }
 
     int result_conn_id_ = -1;
@@ -732,6 +775,10 @@ private:
     cv::Mat small_armor_points_mat_;
     std::vector<cv::Point2f> image_corners_;
     SharedParamPool<PnpResultMParam> pnp_result_pool_;
+    std::chrono::steady_clock::time_point e2e_fps_start_;
+    int e2e_output_count_ = 0;
+    double e2e_latency_sum_ms_ = 0.0;
+    double e2e_latency_max_ms_ = 0.0;
 };
 
 }  // namespace

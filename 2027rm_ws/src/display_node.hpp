@@ -30,4 +30,6 @@ private:
     double fps_ = 0.0;
     double latency_sum_ms_ = 0.0;
     double latency_max_ms_ = 0.0;
+    double detect_latency_sum_ms_ = 0.0;
+    double detect_latency_max_ms_ = 0.0;
 };

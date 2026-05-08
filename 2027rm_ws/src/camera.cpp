@@ -2,6 +2,7 @@
 #include <cctype>
 #include <cstring>
 #include <fstream>
+#include <sstream>
 #include <spdlog/spdlog.h>
 #include <string>
 #include <vector>
@@ -23,6 +24,7 @@ struct CameraConfig {
     int width = 1440;
     int height = 1080;
     std::string pixel_format = "BayerRG8";
+    int bayer_cvt_quality = 0;
     int frame_rate = 0;
     bool frame_rate_enable = false;
     std::string trigger_mode = "off";
@@ -47,7 +49,7 @@ static std::string ToLower(std::string value)
 static unsigned int GetPixelFormatEnum(const std::string &fmt) 
 {
     const std::string f = ToLower(fmt);
-    if (f == "bgr8" || f == "bgr8_packed") return PixelType_Gvsp_BGR8_Packed;
+    if (f == "bgr8" || f == "bgr8_packed" || f == "bgr 8" || f == "brg8") return PixelType_Gvsp_BGR8_Packed;
     if (f == "rgb8" || f == "rgb8_packed") return PixelType_Gvsp_RGB8_Packed;
     if (f == "mono8") return PixelType_Gvsp_Mono8;
     if (f == "bayerbg8") return PixelType_Gvsp_BayerBG8;
@@ -81,6 +83,32 @@ static const char *PixelFormatName(unsigned int fmt)
     }
 }
 
+static std::string HexRet(int ret)
+{
+    std::ostringstream oss;
+    oss << "0x" << std::hex << std::uppercase << ret;
+    return oss.str();
+}
+
+static std::vector<std::string> PixelFormatStringCandidates(const std::string &fmt)
+{
+    const std::string f = ToLower(fmt);
+    if (f == "bgr8" || f == "bgr8_packed" || f == "bgr 8" || f == "brg8") {
+        return {"BGR8Packed", "BGR8", "BGR8_Packed", "BGR 8"};
+    }
+    if (f == "rgb8" || f == "rgb8_packed" || f == "rgb 8") {
+        return {"RGB8Packed", "RGB8", "RGB8_Packed", "RGB 8"};
+    }
+    if (f == "mono8" || f == "mono 8") {
+        return {"Mono8", "Mono 8"};
+    }
+    if (f == "bayerrg8") return {"BayerRG8"};
+    if (f == "bayerbg8") return {"BayerBG8"};
+    if (f == "bayergb8") return {"BayerGB8"};
+    if (f == "bayergr8") return {"BayerGR8"};
+    return {fmt};
+}
+
 static std::string DescribePixelFormatSupport(void *handle)
 {
     MVCC_ENUMVALUE enum_value{};
@@ -106,6 +134,37 @@ static std::string DescribePixelFormatSupport(void *handle)
         }
     }
     return desc;
+}
+
+static bool SetPixelFormatWithFallbacks(void *handle, const std::string &fmt)
+{
+    const unsigned int requested = GetPixelFormatEnum(fmt);
+    int ret = MV_CC_SetEnumValue(handle, "PixelFormat", requested);
+    if (ret == MV_OK) {
+        return true;
+    }
+
+    spdlog::warn("Set PixelFormat={} by enum {} failed ret={}. {}",
+                 fmt,
+                 requested,
+                 HexRet(ret),
+                 DescribePixelFormatSupport(handle));
+
+    for (const std::string &candidate : PixelFormatStringCandidates(fmt)) {
+        ret = MV_CC_SetEnumValueByString(handle, "PixelFormat", candidate.c_str());
+        if (ret == MV_OK) {
+            spdlog::info("Set PixelFormat={} by string '{}' succeeded. {}",
+                         fmt,
+                         candidate,
+                         DescribePixelFormatSupport(handle));
+            return true;
+        }
+        spdlog::warn("Set PixelFormat={} by string '{}' failed ret={}.",
+                     fmt,
+                     candidate,
+                     HexRet(ret));
+    }
+    return false;
 }
 
 static YAML::Node LoadConfigWithFallback(std::string &usedPath) {
@@ -136,6 +195,11 @@ static bool LoadCameraConfig(CameraConfig &cfg, std::string &usedPath, std::stri
         cfg.height = camera["image"]["height"].as<int>();
         if (camera["image"]["pixel_format"]) {
             cfg.pixel_format = camera["image"]["pixel_format"].as<std::string>();
+        }
+        if (camera["image"]["bayer_cvt_quality"]) {
+            cfg.bayer_cvt_quality = camera["image"]["bayer_cvt_quality"].as<int>();
+            if (cfg.bayer_cvt_quality < 0) cfg.bayer_cvt_quality = 0;
+            if (cfg.bayer_cvt_quality > 3) cfg.bayer_cvt_quality = 3;
         }
         cfg.frame_rate = camera["image"]["frame_rate"].as<int>();
         cfg.frame_rate_enable = camera["image"]["frame_rate_enable"].as<bool>();
@@ -201,6 +265,13 @@ bool HikCameraNode::init(std::string *error) {
         return false;
     }
 
+    spdlog::info("Initial PixelFormat support: {}", DescribePixelFormatSupport(handle_));
+    if (!SetPixelFormatWithFallbacks(handle_, cfg.pixel_format)) {
+        spdlog::warn("Set PixelFormat={} failed with all methods, fallback to camera current format. {}",
+                     cfg.pixel_format,
+                     DescribePixelFormatSupport(handle_));
+    }
+
     nRet = MV_CC_SetIntValue(handle_, "Width", cfg.width);
     if (nRet != MV_OK) {
         if (error) *error = "设置宽度失败";
@@ -212,12 +283,6 @@ bool HikCameraNode::init(std::string *error) {
         if (error) *error = "设置高度失败";
         shutdown();
         return false;
-    }
-    nRet = MV_CC_SetEnumValue(handle_, "PixelFormat", GetPixelFormatEnum(cfg.pixel_format));
-    if (nRet != MV_OK) {
-        spdlog::warn("Set PixelFormat={} failed, fallback to camera current format. {}",
-                     cfg.pixel_format,
-                     DescribePixelFormatSupport(handle_));
     }
 
     if (cfg.trigger_mode == "off") {
@@ -269,7 +334,13 @@ bool HikCameraNode::init(std::string *error) {
         return false;
     }
 
-    (void)MV_CC_SetBayerCvtQuality(handle_, 1);
+    nRet = MV_CC_SetBayerCvtQuality(handle_, static_cast<unsigned int>(cfg.bayer_cvt_quality));
+    if (nRet != MV_OK) {
+        spdlog::warn("Set BayerCvtQuality={} failed ret={}.", cfg.bayer_cvt_quality, HexRet(nRet));
+    } else {
+        spdlog::info("BayerCvtQuality={} configured. 0=fast 1=balanced 2=optimal 3=optimal+",
+                     cfg.bayer_cvt_quality);
+    }
 
     nRet = MV_CC_StartGrabbing(handle_);
     if (nRet != MV_OK) {

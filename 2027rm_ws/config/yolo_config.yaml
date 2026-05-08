@@ -45,7 +45,7 @@ pnp:
 debug:
   # true: generate and send visualization frames for foxglove
   # false: normal run without visualization rendering
-  foxglove_enable: true
+  foxglove_enable: false
 
 profiling:
   # true: print per-stage timing logs for performance tuning

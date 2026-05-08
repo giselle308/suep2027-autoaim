@@ -28,6 +28,7 @@ private:
         cv::Mat resized_img;
         cv::Mat letterbox_img;
         uint64_t frame_id = 0;
+        std::chrono::steady_clock::time_point pipeline_start_tp;
         std::chrono::steady_clock::time_point capture_tp;
         std::chrono::steady_clock::time_point submit_tp;
         LetterBoxInfo lb;

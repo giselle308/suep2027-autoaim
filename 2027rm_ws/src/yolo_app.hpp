@@ -44,6 +44,7 @@ struct FrameMParam : public CGraph::GMessageParam
 {
     cv::Mat frame;
     uint64_t frame_id = 0;
+    std::chrono::steady_clock::time_point pipeline_start_tp;
     std::chrono::steady_clock::time_point capture_tp;
 };
 
@@ -53,6 +54,8 @@ struct ResultMParam : public CGraph::GMessageParam
     uint64_t frame_id = 0;
     int infer_id = 0;
     double latency_ms = 0.0;
+    double detect_latency_ms = 0.0;
+    std::chrono::steady_clock::time_point pipeline_start_tp;
     std::chrono::steady_clock::time_point capture_tp;
     int det_count = 0;
     bool has_corners = false;
@@ -68,6 +71,8 @@ struct PnpResultMParam : public CGraph::GMessageParam
     uint64_t frame_id = 0;
     int infer_id = 0;
     bool has_pose = false;
+    double latency_ms = 0.0;
+    double detect_latency_ms = 0.0;
     std::string status;
     std::string armor_type;
     cv::Point2f center_px = cv::Point2f(0.0f, 0.0f);

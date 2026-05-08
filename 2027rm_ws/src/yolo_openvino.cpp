@@ -122,6 +122,7 @@ bool YoloOpenvino::submit(const FrameMParam &frame_msg, std::string *error)
     AsyncSlot &slot = *slot_it;
     slot.frame = frame_msg.frame;
     slot.frame_id = frame_msg.frame_id;
+    slot.pipeline_start_tp = frame_msg.pipeline_start_tp;
     slot.capture_tp = frame_msg.capture_tp;
     {
         app::profiling::ScopedTimer preprocess_timer(app::profiling::Stage::Preprocess);
@@ -343,7 +344,9 @@ bool YoloOpenvino::finishSlot(AsyncSlot &slot, std::shared_ptr<ResultMParam> &re
         result->vis = std::move(vis);
         result->frame_id = slot.frame_id;
         result->infer_id = slot.infer_id;
-        result->latency_ms = ElapsedMsSince(slot.capture_tp);
+        result->detect_latency_ms = ElapsedMsSince(slot.capture_tp);
+        result->latency_ms = ElapsedMsSince(slot.pipeline_start_tp);
+        result->pipeline_start_tp = slot.pipeline_start_tp;
         result->capture_tp = slot.capture_tp;
         result->det_count = kept_count;
         result->has_corners = has_best_corners;
