@@ -100,18 +100,19 @@ const YoloPostprocessor::OutputLayoutCache &YoloPostprocessor::resolveOutputLayo
     return output_layout_;
 }
 
-std::vector<Detection> YoloPostprocessor::run(const cv::Mat &orig,
-                                              ov::Tensor &out,
-                                              const LetterBoxInfo &lb,
-                                              const AppConfig &cfg,
-                                              const std::function<bool(int)> &class_filter)
+std::vector<Detection> &YoloPostprocessor::run(const cv::Mat &orig,
+                                               ov::Tensor &out,
+                                               const LetterBoxInfo &lb,
+                                               const AppConfig &cfg,
+                                               const std::function<bool(int)> &class_filter)
 {
     const auto shape = out.get_shape();
     const float *data = out.data<float>();
     const OutputLayoutCache &layout = resolveOutputLayout(shape, data);
     if (!layout.valid)
     {
-        return {};
+        scratch_.detections.clear();
+        return scratch_.detections;
     }
 
     const bool channel_first = layout.channel_first;
@@ -128,6 +129,7 @@ std::vector<Detection> YoloPostprocessor::run(const cv::Mat &orig,
     scratch.nms_boxes.clear();
     scratch.nms_scores.clear();
     scratch.local_keep.clear();
+    scratch.keep.clear();
     scratch.detections.clear();
     scratch.boxes.reserve(static_cast<size_t>(N));
     scratch.class_ids.reserve(static_cast<size_t>(N));
@@ -180,7 +182,7 @@ std::vector<Detection> YoloPostprocessor::run(const cv::Mat &orig,
         scratch.boxes.emplace_back(left, top, right - left, bottom - top);
         scratch.class_ids.push_back(cls);
         scratch.scores.push_back(score);
-        scratch.has_keypoints.push_back(has_kpts);
+        scratch.has_keypoints.push_back(static_cast<uint8_t>(has_kpts));
         scratch.keypoints.push_back(OrderCorners(kpts));
     };
 
@@ -222,69 +224,33 @@ std::vector<Detection> YoloPostprocessor::run(const cv::Mat &orig,
         return {valid, kpts};
     };
 
-    if (layout.expected_anchor_points)
+    for (int i = 0; i < N; ++i)
     {
-        for (int i = 0; i < N; ++i)
+        float cx = at(0, i);
+        float cy = at(1, i);
+        float w = at(2, i);
+        float h = at(3, i);
+        int best_cls = -1;
+        float best_score = 0.0f;
+        for (int c = 0; c < use_cls; ++c)
         {
-            float cx = at(0, i);
-            float cy = at(1, i);
-            float w = at(2, i);
-            float h = at(3, i);
-
-            int best_cls = -1;
-            float best_score = 0.0f;
-            for (int c = 0; c < use_cls; ++c)
+            float s = ToProb(at(4 + c, i));
+            if (s > best_score)
             {
-                float s = ToProb(at(4 + c, i));
-                if (s > best_score)
-                {
-                    best_score = s;
-                    best_cls = c;
-                }
+                best_score = s;
+                best_cls = c;
             }
-
-            if (best_score < conf_thres_)
-            {
-                continue;
-            }
-            if (class_filter && !class_filter(best_cls))
-            {
-                continue;
-            }
-            const auto kpt_result = decode_keypoints(4 + use_cls, i);
-            decode_box(cx, cy, w, h, best_cls, best_score, kpt_result.first, kpt_result.second);
         }
-    }
-    else
-    {
-        for (int i = 0; i < N; ++i)
+        if (best_score < conf_thres_)
         {
-            float cx = at(0, i);
-            float cy = at(1, i);
-            float w = at(2, i);
-            float h = at(3, i);
-            int best_cls = -1;
-            float best_score = 0.0f;
-            for (int c = 0; c < use_cls; ++c)
-            {
-                float s = ToProb(at(4 + c, i));
-                if (s > best_score)
-                {
-                    best_score = s;
-                    best_cls = c;
-                }
-            }
-            if (best_score < conf_thres_)
-            {
-                continue;
-            }
-            if (class_filter && !class_filter(best_cls))
-            {
-                continue;
-            }
-            const auto kpt_result = decode_keypoints(4 + use_cls, i);
-            decode_box(cx, cy, w, h, best_cls, best_score, kpt_result.first, kpt_result.second);
+            continue;
         }
+        if (class_filter && !class_filter(best_cls))
+        {
+            continue;
+        }
+        const auto kpt_result = decode_keypoints(4 + use_cls, i);
+        decode_box(cx, cy, w, h, best_cls, best_score, kpt_result.first, kpt_result.second);
     }
 
     scratch.candidate_indices.reserve(scratch.scores.size());
@@ -297,7 +263,7 @@ std::vector<Detection> YoloPostprocessor::run(const cv::Mat &orig,
     if (fast_nms_topk > 0 && static_cast<int>(scratch.candidate_indices.size()) > fast_nms_topk)
     {
         const auto topk_end = scratch.candidate_indices.begin() + fast_nms_topk;
-        std::partial_sort(scratch.candidate_indices.begin(), topk_end, scratch.candidate_indices.end(), [&](int lhs, int rhs) {
+        std::nth_element(scratch.candidate_indices.begin(), topk_end, scratch.candidate_indices.end(), [&](int lhs, int rhs) {
             return scratch.scores[static_cast<std::size_t>(lhs)] > scratch.scores[static_cast<std::size_t>(rhs)];
         });
         scratch.candidate_indices.erase(topk_end, scratch.candidate_indices.end());
@@ -321,7 +287,7 @@ std::vector<Detection> YoloPostprocessor::run(const cv::Mat &orig,
         d.box = scratch.boxes[static_cast<std::size_t>(original_idx)];
         d.class_id = scratch.class_ids[static_cast<std::size_t>(original_idx)];
         d.confidence = scratch.scores[static_cast<std::size_t>(original_idx)];
-        d.has_keypoints = scratch.has_keypoints[static_cast<std::size_t>(original_idx)];
+        d.has_keypoints = scratch.has_keypoints[static_cast<std::size_t>(original_idx)] != 0;
         d.keypoints = scratch.keypoints[static_cast<std::size_t>(original_idx)];
         scratch.detections.push_back(d);
     }

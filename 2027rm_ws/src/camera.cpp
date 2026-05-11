@@ -1,5 +1,6 @@
 #include <chrono>
 #include <cctype>
+#include <cstdint>
 #include <cstring>
 #include <fstream>
 #include <sstream>
@@ -24,7 +25,6 @@ struct CameraConfig {
     int width = 1440;
     int height = 1080;
     std::string pixel_format = "BayerRG8";
-    int bayer_cvt_quality = 0;
     int frame_rate = 0;
     bool frame_rate_enable = false;
     std::string trigger_mode = "off";
@@ -81,6 +81,30 @@ static const char *PixelFormatName(unsigned int fmt)
         case PixelType_Gvsp_HB_BGR8_Packed: return "HB_BGR8_Packed";
         default: return "Unknown";
     }
+}
+
+static bool IsPlainBayer8(MvGvspPixelType fmt)
+{
+    return fmt == PixelType_Gvsp_BayerBG8 ||
+           fmt == PixelType_Gvsp_BayerGB8 ||
+           fmt == PixelType_Gvsp_BayerGR8 ||
+           fmt == PixelType_Gvsp_BayerRG8;
+}
+
+static int OpenCvBayerToBgrCode(MvGvspPixelType fmt)
+{
+    switch (fmt) {
+        case PixelType_Gvsp_BayerBG8: return cv::COLOR_BayerBG2BGR;
+        case PixelType_Gvsp_BayerGB8: return cv::COLOR_BayerGB2BGR;
+        case PixelType_Gvsp_BayerGR8: return cv::COLOR_BayerGR2BGR;
+        case PixelType_Gvsp_BayerRG8: return cv::COLOR_BayerRG2BGR;
+        default: return -1;
+    }
+}
+
+static bool IsAligned(const void *ptr, std::size_t alignment)
+{
+    return (reinterpret_cast<std::uintptr_t>(ptr) % alignment) == 0;
 }
 
 static std::string HexRet(int ret)
@@ -196,11 +220,6 @@ static bool LoadCameraConfig(CameraConfig &cfg, std::string &usedPath, std::stri
         if (camera["image"]["pixel_format"]) {
             cfg.pixel_format = camera["image"]["pixel_format"].as<std::string>();
         }
-        if (camera["image"]["bayer_cvt_quality"]) {
-            cfg.bayer_cvt_quality = camera["image"]["bayer_cvt_quality"].as<int>();
-            if (cfg.bayer_cvt_quality < 0) cfg.bayer_cvt_quality = 0;
-            if (cfg.bayer_cvt_quality > 3) cfg.bayer_cvt_quality = 3;
-        }
         cfg.frame_rate = camera["image"]["frame_rate"].as<int>();
         cfg.frame_rate_enable = camera["image"]["frame_rate_enable"].as<bool>();
         cfg.trigger_mode = camera["trigger"]["mode"].as<std::string>();
@@ -240,6 +259,8 @@ bool HikCameraNode::init(std::string *error) {
                  cfg.width,
                  cfg.height,
                  cfg.exposure_time);
+    alignment_logged_ = false;
+    spdlog::info("Pixel conversion backend=opencv");
 
     MV_CC_DEVICE_INFO_LIST deviceList{};
     int nRet = MV_CC_EnumDevices(MV_USB_DEVICE, &deviceList);
@@ -334,14 +355,6 @@ bool HikCameraNode::init(std::string *error) {
         return false;
     }
 
-    nRet = MV_CC_SetBayerCvtQuality(handle_, static_cast<unsigned int>(cfg.bayer_cvt_quality));
-    if (nRet != MV_OK) {
-        spdlog::warn("Set BayerCvtQuality={} failed ret={}.", cfg.bayer_cvt_quality, HexRet(nRet));
-    } else {
-        spdlog::info("BayerCvtQuality={} configured. 0=fast 1=balanced 2=optimal 3=optimal+",
-                     cfg.bayer_cvt_quality);
-    }
-
     nRet = MV_CC_StartGrabbing(handle_);
     if (nRet != MV_OK) {
         if (error) *error = "开始取流失败";
@@ -355,8 +368,17 @@ bool HikCameraNode::init(std::string *error) {
 
 bool HikCameraNode::grab(cv::Mat &bgr,
                          std::chrono::steady_clock::time_point *capture_tp,
+                         double *grab_ms,
+                         double *pixel_convert_ms,
                          std::string *error) {
     app::profiling::ScopedTimer grab_timer(app::profiling::Stage::CameraGrab);
+    const auto grab_start = std::chrono::steady_clock::now();
+    if (grab_ms) {
+        *grab_ms = 0.0;
+    }
+    if (pixel_convert_ms) {
+        *pixel_convert_ms = 0.0;
+    }
     if (handle_ == nullptr) {
         if (error) *error = "camera not initialized";
         return false;
@@ -371,32 +393,48 @@ bool HikCameraNode::grab(cv::Mat &bgr,
     if (capture_tp) {
         *capture_tp = std::chrono::steady_clock::now();
     }
+    if (grab_ms) {
+        const auto grab_end = capture_tp ? *capture_tp : std::chrono::steady_clock::now();
+        *grab_ms = std::chrono::duration<double, std::milli>(grab_end - grab_start).count();
+    }
 
     const int h = static_cast<int>(frame.stFrameInfo.nHeight);
     const int w = static_cast<int>(frame.stFrameInfo.nWidth);
     const auto src_pixel_type = static_cast<MvGvspPixelType>(frame.stFrameInfo.enPixelType);
 
     bgr.create(h, w, CV_8UC3);
+    const auto convert_start = std::chrono::steady_clock::now();
+    app::profiling::ScopedTimer convert_timer(app::profiling::Stage::PixelConvert);
     if (src_pixel_type == PixelType_Gvsp_BGR8_Packed || src_pixel_type == PixelType_Gvsp_HB_BGR8_Packed) {
         std::memcpy(bgr.data, frame.pBufAddr, static_cast<std::size_t>(h) * static_cast<std::size_t>(w) * 3U);
+    } else if (src_pixel_type == PixelType_Gvsp_RGB8_Packed) {
+        const cv::Mat rgb(h, w, CV_8UC3, frame.pBufAddr);
+        cv::cvtColor(rgb, bgr, cv::COLOR_RGB2BGR);
+    } else if (src_pixel_type == PixelType_Gvsp_Mono8) {
+        const cv::Mat mono(h, w, CV_8UC1, frame.pBufAddr);
+        cv::cvtColor(mono, bgr, cv::COLOR_GRAY2BGR);
+    } else if (IsPlainBayer8(src_pixel_type)) {
+        const cv::Mat raw(h, w, CV_8UC1, frame.pBufAddr);
+        cv::cvtColor(raw, bgr, OpenCvBayerToBgrCode(src_pixel_type));
     } else {
-        MV_CC_PIXEL_CONVERT_PARAM_EX convert_param{};
-        convert_param.nWidth = static_cast<unsigned int>(w);
-        convert_param.nHeight = static_cast<unsigned int>(h);
-        convert_param.enSrcPixelType = src_pixel_type;
-        convert_param.pSrcData = static_cast<unsigned char *>(frame.pBufAddr);
-        convert_param.nSrcDataLen = frame.stFrameInfo.nFrameLen;
-        convert_param.enDstPixelType = PixelType_Gvsp_BGR8_Packed;
-        convert_param.pDstBuffer = bgr.data;
-        convert_param.nDstBufferSize = static_cast<unsigned int>(bgr.total() * bgr.elemSize());
-
-        app::profiling::ScopedTimer convert_timer(app::profiling::Stage::PixelConvert);
-        const int convert_ret = MV_CC_ConvertPixelTypeEx(handle_, &convert_param);
-        if (convert_ret != MV_OK) {
-            MV_CC_FreeImageBuffer(handle_, &frame);
-            if (error) *error = "像素格式转换失败";
-            return false;
+        MV_CC_FreeImageBuffer(handle_, &frame);
+        if (error) {
+            *error = std::string("unsupported pixel format for OpenCV conversion: ") +
+                     PixelFormatName(static_cast<unsigned int>(src_pixel_type));
         }
+        return false;
+    }
+    if (!alignment_logged_) {
+        spdlog::info("Frame buffer alignment: raw_64B={} bgr_64B={} bgr_step={} continuous={}",
+                     IsAligned(frame.pBufAddr, 64),
+                     IsAligned(bgr.data, 64),
+                     bgr.step,
+                     bgr.isContinuous());
+        alignment_logged_ = true;
+    }
+    if (pixel_convert_ms) {
+        *pixel_convert_ms = std::chrono::duration<double, std::milli>(
+            std::chrono::steady_clock::now() - convert_start).count();
     }
     MV_CC_FreeImageBuffer(handle_, &frame);
     return true;
@@ -429,7 +467,7 @@ int main() {
     auto fpsStart = std::chrono::steady_clock::now();
 
     while (true) {
-        if (!camera.grab(img, nullptr, &error)) {
+        if (!camera.grab(img, nullptr, nullptr, nullptr, &error)) {
             spdlog::error("Grab failed: {}", error);
             continue;
         }

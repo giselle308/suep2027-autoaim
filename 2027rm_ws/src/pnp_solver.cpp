@@ -534,6 +534,7 @@ public:
         int solved_count = 0;
         int reject_count = 0;
         int fail_count = 0;
+        int timeout_count = 0;
         auto maybe_log_stats = [&]() {
             const auto now = std::chrono::steady_clock::now();
             const auto stat_dt_ms = std::chrono::duration_cast<std::chrono::milliseconds>(now - stat_start).count();
@@ -541,17 +542,19 @@ public:
             {
                 return;
             }
-            spdlog::info("[PNP] recv={} solved={} rejected={} failed={} no_corners={}",
+            spdlog::info("[PNP] recv={} solved={} rejected={} failed={} no_corners={} result_timeout={}",
                          recv_count,
                          solved_count,
                          reject_count,
                          fail_count,
-                         no_corner_count);
+                         no_corner_count,
+                         timeout_count);
             recv_count = 0;
             solved_count = 0;
             reject_count = 0;
             fail_count = 0;
             no_corner_count = 0;
+            timeout_count = 0;
             stat_start = now;
         };
 
@@ -561,6 +564,7 @@ public:
             const CStatus st = CGRAPH_SUB_MPARAM_WITH_TIMEOUT(ResultMParam, result_conn_id_, result, 1000);
             if (st.isErr())
             {
+                ++timeout_count;
                 maybe_log_stats();
                 continue;
             }
@@ -586,8 +590,12 @@ public:
             last_processed_frame_id_ = result->frame_id;
 
             const auto pnp_total_start = std::chrono::steady_clock::now();
+            double pnp_solve_ms = 0.0;
+            auto pnp_total_ms = [&]() {
+                return ElapsedMsSince(pnp_total_start);
+            };
             auto record_pnp_total = [&]() {
-                app::profiling::Record(app::profiling::Stage::PnpTotal, ElapsedMsSince(pnp_total_start));
+                app::profiling::Record(app::profiling::Stage::PnpTotal, pnp_total_ms());
             };
             image_corners_.assign(result->corners.begin(), result->corners.end());
             const ArmorType armor_type = InferArmorType(result->corners, geometry_);
@@ -606,6 +614,7 @@ public:
             bool ok = false;
 
             {
+                const auto pnp_solve_start = std::chrono::steady_clock::now();
                 app::profiling::ScopedTimer pnp_solve_timer(app::profiling::Stage::PnpSolve);
                 ok = SolveArmorPnpIppe(object_corners,
                                        object_corners_mat,
@@ -625,6 +634,7 @@ public:
                                       false,
                                       cv::SOLVEPNP_ITERATIVE);
                 }
+                pnp_solve_ms = ElapsedMsSince(pnp_solve_start);
             }
             ReprojectionStats reprojection_stats;
             bool valid_depth = false;
@@ -653,7 +663,10 @@ public:
                              constraint_.min_depth_m,
                              constraint_.max_depth_m);
                 ++reject_count;
-                PublishNoPose(*result, FormatReprojectionStatus("depth_rejected", reprojection_stats));
+                PublishNoPose(*result,
+                              FormatReprojectionStatus("depth_rejected", reprojection_stats),
+                              pnp_solve_ms,
+                              pnp_total_ms());
                 record_pnp_total();
                 maybe_log_stats();
                 continue;
@@ -662,7 +675,7 @@ public:
             {
                 spdlog::warn("[PNP] solve failed frame={} infer={}", result->frame_id, result->infer_id);
                 ++fail_count;
-                PublishNoPose(*result, "failed");
+                PublishNoPose(*result, "failed", pnp_solve_ms, pnp_total_ms());
                 record_pnp_total();
                 maybe_log_stats();
                 continue;
@@ -676,6 +689,15 @@ public:
             pnp_result->has_pose = true;
             pnp_result->latency_ms = ElapsedMsSince(result->pipeline_start_tp);
             pnp_result->detect_latency_ms = result->detect_latency_ms;
+            pnp_result->pipeline_start_tp = result->pipeline_start_tp;
+            pnp_result->capture_tp = result->capture_tp;
+            pnp_result->camera_grab_ms = result->camera_grab_ms;
+            pnp_result->pixel_convert_ms = result->pixel_convert_ms;
+            pnp_result->preprocess_ms = result->preprocess_ms;
+            pnp_result->infer_async_ms = result->infer_async_ms;
+            pnp_result->postprocess_ms = result->postprocess_ms;
+            pnp_result->pnp_solve_ms = pnp_solve_ms;
+            pnp_result->pnp_total_ms = pnp_total_ms();
             pnp_result->status = FormatReprojectionStatus(valid_reprojection ? "solved" : "loose", reprojection_stats);
             pnp_result->armor_type = ArmorTypeName(armor_type);
             pnp_result->center_px = center_pt;
@@ -713,7 +735,10 @@ public:
     }
 
 private:
-    void PublishNoPose(const ResultMParam &result, const std::string &status)
+    void PublishNoPose(const ResultMParam &result,
+                       const std::string &status,
+                       double pnp_solve_ms = 0.0,
+                       double pnp_total_ms = 0.0)
     {
         std::shared_ptr<PnpResultMParam> pnp_result = pnp_result_pool_.acquire();
         pnp_result->frame_id = result.frame_id;
@@ -721,6 +746,15 @@ private:
         pnp_result->has_pose = false;
         pnp_result->latency_ms = ElapsedMsSince(result.pipeline_start_tp);
         pnp_result->detect_latency_ms = result.detect_latency_ms;
+        pnp_result->pipeline_start_tp = result.pipeline_start_tp;
+        pnp_result->capture_tp = result.capture_tp;
+        pnp_result->camera_grab_ms = result.camera_grab_ms;
+        pnp_result->pixel_convert_ms = result.pixel_convert_ms;
+        pnp_result->preprocess_ms = result.preprocess_ms;
+        pnp_result->infer_async_ms = result.infer_async_ms;
+        pnp_result->postprocess_ms = result.postprocess_ms;
+        pnp_result->pnp_solve_ms = pnp_solve_ms;
+        pnp_result->pnp_total_ms = pnp_total_ms;
         pnp_result->status = status;
         const CStatus pub_st = CGRAPH_PUB_MPARAM(PnpResultMParam, PNP_TOPIC, pnp_result, GMessagePushStrategy::REPLACE);
         if (pub_st.isErr())

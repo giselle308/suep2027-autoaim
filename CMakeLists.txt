@@ -46,10 +46,23 @@ set(CAMERA_SDK_LIBS
     MvCamLVision
 )
 
-find_package(OpenCV REQUIRED)
+set(OPENCV_412_DIR "/usr/local/opencv4.12.0/lib/cmake/opencv4")
+if(EXISTS "${OPENCV_412_DIR}/OpenCVConfig.cmake" AND NOT OpenCV_DIR)
+    set(OpenCV_DIR "${OPENCV_412_DIR}" CACHE PATH "OpenCV 4.12.0 config directory" FORCE)
+endif()
+find_package(OpenCV 4.12.0 EXACT REQUIRED
+    COMPONENTS core imgproc dnn calib3d highgui videoio imgcodecs
+)
+message(STATUS "Using OpenCV ${OpenCV_VERSION}: ${OpenCV_DIR}")
 find_package(yaml-cpp REQUIRED)
 find_package(OpenVINO REQUIRED COMPONENTS Runtime)
 find_package(spdlog REQUIRED)
+
+get_target_property(OPENCV_CORE_LOCATION opencv_core IMPORTED_LOCATION_RELEASE)
+if(NOT OPENCV_CORE_LOCATION)
+    get_target_property(OPENCV_CORE_LOCATION opencv_core IMPORTED_LOCATION)
+endif()
+get_filename_component(OPENCV_LIBRARY_DIR "${OPENCV_CORE_LOCATION}" DIRECTORY)
 
 file(GLOB_RECURSE CGRAPH_SOURCES CONFIGURE_DEPENDS
     ${PROJECT_ROOT}/include/CGraph/src/*.cpp
@@ -99,6 +112,7 @@ endif()
 
 add_executable(cgraph_camera_detector
     $<TARGET_OBJECTS:cgraph_runtime>
+    ${PROJECT_ROOT}/src/CKF.cpp
     ${PROJECT_ROOT}/src/camera.cpp
     ${PROJECT_ROOT}/src/display_node.cpp
     ${PROJECT_ROOT}/src/pnp_solver.cpp
@@ -173,6 +187,6 @@ add_custom_target(run_cgraph_camera_detector
 )
 
 set_target_properties(camera_app cgraph_camera_detector PROPERTIES
-    BUILD_RPATH "${CAMERA_SDK_LIB_DIR}"
-    INSTALL_RPATH "${CAMERA_SDK_LIB_DIR}"
+    BUILD_RPATH "${CAMERA_SDK_LIB_DIR};${OPENCV_LIBRARY_DIR}"
+    INSTALL_RPATH "${CAMERA_SDK_LIB_DIR};${OPENCV_LIBRARY_DIR}"
 )

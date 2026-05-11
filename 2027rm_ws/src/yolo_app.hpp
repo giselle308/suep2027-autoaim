@@ -39,6 +39,7 @@ struct AppConfig {
 inline constexpr const char *FRAME_TOPIC = "rm/frame/topic";
 inline constexpr const char *RESULT_TOPIC = "rm/result/topic";
 inline constexpr const char *PNP_TOPIC = "rm/pnp/topic";
+inline constexpr const char *CKF_INPUT_TOPIC = "rm/ckf/input";
 
 struct FrameMParam : public CGraph::GMessageParam
 {
@@ -46,6 +47,8 @@ struct FrameMParam : public CGraph::GMessageParam
     uint64_t frame_id = 0;
     std::chrono::steady_clock::time_point pipeline_start_tp;
     std::chrono::steady_clock::time_point capture_tp;
+    double camera_grab_ms = 0.0;
+    double pixel_convert_ms = 0.0;
 };
 
 struct ResultMParam : public CGraph::GMessageParam
@@ -57,6 +60,11 @@ struct ResultMParam : public CGraph::GMessageParam
     double detect_latency_ms = 0.0;
     std::chrono::steady_clock::time_point pipeline_start_tp;
     std::chrono::steady_clock::time_point capture_tp;
+    double camera_grab_ms = 0.0;
+    double pixel_convert_ms = 0.0;
+    double preprocess_ms = 0.0;
+    double infer_async_ms = 0.0;
+    double postprocess_ms = 0.0;
     int det_count = 0;
     bool has_corners = false;
     std::array<cv::Point2f, 4> corners = {
@@ -73,6 +81,15 @@ struct PnpResultMParam : public CGraph::GMessageParam
     bool has_pose = false;
     double latency_ms = 0.0;
     double detect_latency_ms = 0.0;
+    std::chrono::steady_clock::time_point pipeline_start_tp;
+    std::chrono::steady_clock::time_point capture_tp;
+    double camera_grab_ms = 0.0;
+    double pixel_convert_ms = 0.0;
+    double preprocess_ms = 0.0;
+    double infer_async_ms = 0.0;
+    double postprocess_ms = 0.0;
+    double pnp_solve_ms = 0.0;
+    double pnp_total_ms = 0.0;
     std::string status;
     std::string armor_type;
     cv::Point2f center_px = cv::Point2f(0.0f, 0.0f);
@@ -83,9 +100,34 @@ struct PnpResultMParam : public CGraph::GMessageParam
     cv::Vec2d armor_size_m = cv::Vec2d(0.0, 0.0);
 };
 
+struct CkfInputMParam : public CGraph::GMessageParam
+{
+    uint64_t frame_id = 0;
+    int infer_id = 0;
+    bool has_target = false;
+    double latency_ms = 0.0;
+    double detect_latency_ms = 0.0;
+    double camera_grab_ms = 0.0;
+    double pixel_convert_ms = 0.0;
+    double preprocess_ms = 0.0;
+    double infer_async_ms = 0.0;
+    double postprocess_ms = 0.0;
+    double pnp_solve_ms = 0.0;
+    double pnp_total_ms = 0.0;
+    double ckf_ms = 0.0;
+    std::string status;
+    std::string armor_type;
+    cv::Vec3d xyz_m = cv::Vec3d(0.0, 0.0, 0.0);
+    double yaw_deg = 0.0;
+    double bearing_yaw_deg = 0.0;
+};
+
 const AppConfig& GetAppConfig();
 void RegisterPnpPipelineElements(CGraph::GPipeline* const &pipeline,
                                  CGraph::GElementPtr *pnp_ref = nullptr,
+                                 const CGraph::GElementPtrSet &depends = {});
+void RegisterCkfPipelineElements(CGraph::GPipeline* const &pipeline,
+                                 CGraph::GElementPtr *ckf_ref = nullptr,
                                  const CGraph::GElementPtrSet &depends = {});
 CStatus RegisterYoloPipelineElements(CGraph::GPipeline* const &pipeline);
 void InitYoloMessageTopics();

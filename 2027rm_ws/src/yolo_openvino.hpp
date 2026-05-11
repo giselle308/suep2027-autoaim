@@ -31,6 +31,9 @@ private:
         std::chrono::steady_clock::time_point pipeline_start_tp;
         std::chrono::steady_clock::time_point capture_tp;
         std::chrono::steady_clock::time_point submit_tp;
+        double camera_grab_ms = 0.0;
+        double pixel_convert_ms = 0.0;
+        double preprocess_ms = 0.0;
         LetterBoxInfo lb;
         cv::Size cached_src_size;
         int cached_resize_w = 0;

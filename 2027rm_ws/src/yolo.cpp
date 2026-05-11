@@ -55,8 +55,10 @@ public:
             cv::Mat &frame = acquireFrameBuffer();
             const auto pipeline_start_tp = std::chrono::steady_clock::now();
             std::chrono::steady_clock::time_point capture_tp;
+            double camera_grab_ms = 0.0;
+            double pixel_convert_ms = 0.0;
             std::string err;
-            if (!camera_.grab(frame, &capture_tp, &err))
+            if (!camera_.grab(frame, &capture_tp, &camera_grab_ms, &pixel_convert_ms, &err))
             {
                 return CStatus(err);
             }
@@ -65,6 +67,8 @@ public:
             msg->frame_id = ++frame_id_;
             msg->pipeline_start_tp = pipeline_start_tp;
             msg->capture_tp = capture_tp;
+            msg->camera_grab_ms = camera_grab_ms;
+            msg->pixel_convert_ms = pixel_convert_ms;
             CStatus st = CGRAPH_SEND_MPARAM(FrameMParam, FRAME_TOPIC, msg, GMessagePushStrategy::REPLACE);
             if (st.isErr())
             {
@@ -205,6 +209,7 @@ CStatus RegisterYoloPipelineElements(CGraph::GPipeline* const &pipeline)
     GElementPtr cam = nullptr;
     GElementPtr infer = nullptr;
     GElementPtr pnp = nullptr;
+    GElementPtr ckf = nullptr;
     GElementPtr display = nullptr;
     CStatus st;
     const bool dump_only = std::getenv("CGRAPH_DUMP_ONLY") != nullptr;
@@ -220,6 +225,11 @@ CStatus RegisterYoloPipelineElements(CGraph::GPipeline* const &pipeline)
     if (dump_only && pnp)
     {
         result_depends.insert(pnp);
+    }
+    RegisterCkfPipelineElements(pipeline, &ckf, dump_only && pnp ? GElementPtrSet{pnp} : GElementPtrSet{});
+    if (dump_only && ckf)
+    {
+        result_depends.insert(ckf);
     }
     st += pipeline->registerGElement<DisplayNode>(&display, dump_only ? result_depends : GElementPtrSet{}, display_name);
     return st;

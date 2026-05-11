@@ -1,6 +1,7 @@
 #pragma once
 
 #include <array>
+#include <cstdint>
 #include <functional>
 #include <vector>
 
@@ -13,11 +14,11 @@ class YoloPostprocessor
 public:
     YoloPostprocessor(int input_w, int input_h, int num_classes, float conf_thres, float nms_thres);
 
-    std::vector<Detection> run(const cv::Mat &orig,
-                               ov::Tensor &out,
-                               const LetterBoxInfo &lb,
-                               const AppConfig &cfg,
-                               const std::function<bool(int)> &class_filter = {});
+    std::vector<Detection> &run(const cv::Mat &orig,
+                                ov::Tensor &out,
+                                const LetterBoxInfo &lb,
+                                const AppConfig &cfg,
+                                const std::function<bool(int)> &class_filter = {});
 
 private:
     struct OutputLayoutCache
@@ -36,12 +37,13 @@ private:
         std::vector<cv::Rect> boxes;
         std::vector<int> class_ids;
         std::vector<float> scores;
-        std::vector<bool> has_keypoints;
+        std::vector<uint8_t> has_keypoints;
         std::vector<std::array<cv::Point2f, 4>> keypoints;
         std::vector<int> candidate_indices;
         std::vector<cv::Rect> nms_boxes;
         std::vector<float> nms_scores;
         std::vector<int> local_keep;
+        std::vector<int> keep;
         std::vector<Detection> detections;
     };
 

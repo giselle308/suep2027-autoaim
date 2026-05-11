@@ -14,7 +14,7 @@ yolo:
   thread_num: 4
   # Number of OpenVINO async InferRequest slots inside the single async_infer node.
   # Values above 2 may improve throughput but can increase latency/resource use.
-  infer_workers: 3
+  infer_workers: 2
   # Only evaluate color on the top-K post-NMS boxes to bound target-hit latency.
   max_color_candidates: 8
   # EMA filter for detected armor corner points before display and PnP.

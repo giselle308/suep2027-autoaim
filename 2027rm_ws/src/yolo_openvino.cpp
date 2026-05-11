@@ -124,9 +124,14 @@ bool YoloOpenvino::submit(const FrameMParam &frame_msg, std::string *error)
     slot.frame_id = frame_msg.frame_id;
     slot.pipeline_start_tp = frame_msg.pipeline_start_tp;
     slot.capture_tp = frame_msg.capture_tp;
+    slot.camera_grab_ms = frame_msg.camera_grab_ms;
+    slot.pixel_convert_ms = frame_msg.pixel_convert_ms;
     {
+        const auto preprocess_start = std::chrono::steady_clock::now();
         app::profiling::ScopedTimer preprocess_timer(app::profiling::Stage::Preprocess);
         preprocess(slot);
+        slot.preprocess_ms = std::chrono::duration<double, std::milli>(
+            std::chrono::steady_clock::now() - preprocess_start).count();
     }
     ov::Tensor in_tensor(ov::element::u8,
                          ov::Shape{1, static_cast<size_t>(input_h_), static_cast<size_t>(input_w_), 3},
@@ -274,19 +279,34 @@ bool YoloOpenvino::finishSlot(AsyncSlot &slot, std::shared_ptr<ResultMParam> &re
 {
     try
     {
-        app::profiling::Record(app::profiling::Stage::InferAsync, ElapsedMsSince(slot.submit_tp));
+        const double infer_async_ms = ElapsedMsSince(slot.submit_tp);
+        app::profiling::Record(app::profiling::Stage::InferAsync, infer_async_ms);
+        const auto postprocess_start = std::chrono::steady_clock::now();
         app::profiling::ScopedTimer post_timer(app::profiling::Stage::Postprocess);
         ov::Tensor out = slot.request.get_output_tensor();
         const AppConfig &cfg = GetAppConfig();
-        std::vector<Detection> dets = postprocessor_->run(slot.frame, out, slot.lb, cfg, [&](int class_id) {
+        std::vector<Detection> &dets = postprocessor_->run(slot.frame, out, slot.lb, cfg, [&](int class_id) {
             return MatchTargetColorByClass(class_id, target_color_);
         });
         const bool enable_vis = IsFoxgloveDebugEnabled();
+        const int candidate_limit = enable_vis ? std::min(static_cast<int>(dets.size()), max_color_candidates_)
+                                               : static_cast<int>(dets.size());
         if (enable_vis)
         {
-            std::sort(dets.begin(), dets.end(), [](const Detection &a, const Detection &b) {
+            const auto by_confidence_desc = [](const Detection &a, const Detection &b) {
                 return a.confidence > b.confidence;
-            });
+            };
+            if (candidate_limit > 0 && candidate_limit < static_cast<int>(dets.size()))
+            {
+                std::partial_sort(dets.begin(),
+                                  dets.begin() + candidate_limit,
+                                  dets.end(),
+                                  by_confidence_desc);
+            }
+            else
+            {
+                std::sort(dets.begin(), dets.end(), by_confidence_desc);
+            }
         }
         cv::Mat vis;
         if (enable_vis)
@@ -309,8 +329,6 @@ bool YoloOpenvino::finishSlot(AsyncSlot &slot, std::shared_ptr<ResultMParam> &re
         const cv::Scalar box_color = (target_color_ == TargetColor::Red)
                                          ? cv::Scalar(0, 0, 255)
                                          : (target_color_ == TargetColor::Blue ? cv::Scalar(255, 0, 0) : cv::Scalar(0, 255, 0));
-        const int candidate_limit = enable_vis ? std::min(static_cast<int>(dets.size()), max_color_candidates_)
-                                               : static_cast<int>(dets.size());
         for (int i = 0; i < candidate_limit; ++i)
         {
             const auto &d = dets[static_cast<std::size_t>(i)];
@@ -348,6 +366,12 @@ bool YoloOpenvino::finishSlot(AsyncSlot &slot, std::shared_ptr<ResultMParam> &re
         result->latency_ms = ElapsedMsSince(slot.pipeline_start_tp);
         result->pipeline_start_tp = slot.pipeline_start_tp;
         result->capture_tp = slot.capture_tp;
+        result->camera_grab_ms = slot.camera_grab_ms;
+        result->pixel_convert_ms = slot.pixel_convert_ms;
+        result->preprocess_ms = slot.preprocess_ms;
+        result->infer_async_ms = infer_async_ms;
+        result->postprocess_ms = std::chrono::duration<double, std::milli>(
+            std::chrono::steady_clock::now() - postprocess_start).count();
         result->det_count = kept_count;
         result->has_corners = has_best_corners;
         result->corners = best_corners;

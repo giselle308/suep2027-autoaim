@@ -25,6 +25,7 @@ CStatus DisplayNode::init()
     detect_latency_sum_ms_ = 0.0;
     detect_latency_max_ms_ = 0.0;
     dropped_result_count_ = 0;
+    result_timeout_count_ = 0;
     return CStatus();
 }
 
@@ -40,6 +41,24 @@ CStatus DisplayNode::run()
             if (IsYoloStopRequested())
             {
                 break;
+            }
+            ++result_timeout_count_;
+            const auto now = std::chrono::steady_clock::now();
+            const auto log_dt_ms = std::chrono::duration_cast<std::chrono::milliseconds>(now - log_start_).count();
+            if (IsE2eLogEnabled() && log_dt_ms >= 1000)
+            {
+                spdlog::info("[E2E] fps=0 latency_ms_avg=0 latency_ms_max=0 detect_latency_ms_avg=0 detect_latency_ms_max=0 det=0 dropped_stale={} result_timeout={}",
+                             dropped_result_count_,
+                             result_timeout_count_);
+                log_count_ = 0;
+                det_sum_ = 0;
+                latency_sum_ms_ = 0.0;
+                latency_max_ms_ = 0.0;
+                detect_latency_sum_ms_ = 0.0;
+                detect_latency_max_ms_ = 0.0;
+                dropped_result_count_ = 0;
+                result_timeout_count_ = 0;
+                log_start_ = now;
             }
             continue;
         }
@@ -97,6 +116,7 @@ CStatus DisplayNode::run()
             detect_latency_sum_ms_ = 0.0;
             detect_latency_max_ms_ = 0.0;
             dropped_result_count_ = 0;
+            result_timeout_count_ = 0;
             log_start_ = now;
         }
 

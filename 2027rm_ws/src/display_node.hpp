@@ -27,6 +27,7 @@ private:
     int log_count_ = 0;
     int det_sum_ = 0;
     int dropped_result_count_ = 0;
+    int result_timeout_count_ = 0;
     double fps_ = 0.0;
     double latency_sum_ms_ = 0.0;
     double latency_max_ms_ = 0.0;
