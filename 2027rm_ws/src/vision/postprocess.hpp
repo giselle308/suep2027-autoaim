@@ -2,7 +2,7 @@
 
 #include <array>
 #include <cstdint>
-#include <functional>
+#include <span>
 #include <vector>
 
 #include <openvino/openvino.hpp>
@@ -18,7 +18,7 @@ public:
                                 ov::Tensor &out,
                                 const LetterBoxInfo &lb,
                                 const AppConfig &cfg,
-                                const std::function<bool(int)> &class_filter = {});
+                                std::span<const uint8_t> class_allowed = {});
 
 private:
     struct OutputLayoutCache
@@ -48,6 +48,7 @@ private:
     };
 
     const OutputLayoutCache &resolveOutputLayout(const ov::Shape &shape, const float *data);
+    void reserveScratch(std::size_t points);
 
     int input_w_ = 640;
     int input_h_ = 640;

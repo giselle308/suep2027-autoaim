@@ -22,7 +22,6 @@ camera:
     # 如果相机当前模式不开放 BGR8，会回退到相机当前格式并打印 supported 列表。
     # 常见可选: BGR8/RGB8/BayerRG8/Mono8/YUV422_Packed
     pixel_format: BayerRG8
-    # Bayer/RGB/Mono -> BGR conversion uses OpenCV in-process.
     # frame_rate: 目标帧率（MV-CS016-10UC最大249fps）
     frame_rate: 249
     # frame_rate_enable: 是否启用帧率限制（false=最大速度）

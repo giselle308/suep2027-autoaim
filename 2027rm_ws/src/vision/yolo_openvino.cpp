@@ -6,6 +6,7 @@
 #include <openvino/core/preprocess/pre_post_process.hpp>
 #include <spdlog/spdlog.h>
 
+#include "aligned_mat.hpp"
 #include "yolo_common.hpp"
 #include "profiling.hpp"
 
@@ -20,6 +21,7 @@ bool YoloOpenvino::init(const AppConfig &cfg, std::string *error)
         max_color_candidates_ = std::max(1, cfg.max_color_candidates);
         const std::string resolved_model_path = ResolveModelPath(cfg.model_path);
         class_labels_ = LoadModelLabels(resolved_model_path);
+        rebuildAllowedClassTable();
         auto model = core_.read_model(resolved_model_path);
         const auto model_input_shape = model->input().get_shape();
         if (model_input_shape.size() != 4 || model_input_shape[1] != 3)
@@ -66,6 +68,10 @@ bool YoloOpenvino::init(const AppConfig &cfg, std::string *error)
         }
         postprocessor_.emplace(input_w_, input_h_, num_classes_, conf_thres_, nms_thres_);
         async_request_count_ = std::max(1, cfg.infer_workers);
+        const int result_pool_size = cfg.result_message_pool_size > 0
+                                         ? cfg.result_message_pool_size
+                                         : async_request_count_ + 3;
+        result_pool_.preallocate(static_cast<std::size_t>(result_pool_size));
         slots_.clear();
         slots_.reserve(static_cast<std::size_t>(async_request_count_));
         for (int i = 0; i < async_request_count_; ++i)
@@ -76,6 +82,9 @@ bool YoloOpenvino::init(const AppConfig &cfg, std::string *error)
                 notifyRequestCompleted(exception);
             });
             slot.infer_id = i + 1;
+            app::memory::CreateAlignedMat(slot.letterbox_img, input_h_, input_w_, CV_8UC3);
+            slot.letterbox_img.setTo(cv::Scalar(114, 114, 114));
+            slot.letterbox_padding_valid = true;
             slots_.push_back(std::move(slot));
         }
         spdlog::info("OpenVINO policy: device={} performance_mode=LATENCY num_streams=1 async_requests={} preprocess=u8_nhwc_bgr",
@@ -124,14 +133,9 @@ bool YoloOpenvino::submit(const FrameMParam &frame_msg, std::string *error)
     slot.frame_id = frame_msg.frame_id;
     slot.pipeline_start_tp = frame_msg.pipeline_start_tp;
     slot.capture_tp = frame_msg.capture_tp;
-    slot.camera_grab_ms = frame_msg.camera_grab_ms;
-    slot.pixel_convert_ms = frame_msg.pixel_convert_ms;
     {
-        const auto preprocess_start = std::chrono::steady_clock::now();
         app::profiling::ScopedTimer preprocess_timer(app::profiling::Stage::Preprocess);
         preprocess(slot);
-        slot.preprocess_ms = std::chrono::duration<double, std::milli>(
-            std::chrono::steady_clock::now() - preprocess_start).count();
     }
     ov::Tensor in_tensor(ov::element::u8,
                          ov::Shape{1, static_cast<size_t>(input_h_), static_cast<size_t>(input_w_), 3},
@@ -218,36 +222,36 @@ bool YoloOpenvino::waitAll(std::vector<std::shared_ptr<ResultMParam>> &results, 
 
 void YoloOpenvino::waitForCompletionSignal(std::chrono::milliseconds timeout)
 {
-    std::unique_lock<std::mutex> lock(completion_mutex_);
-    if (!completion_notified_)
+    std::unique_lock<std::mutex> lock(completion_.mutex);
+    if (!completion_.notified)
     {
-        completion_cv_.wait_for(lock, timeout, [this]() {
-            return completion_notified_ || IsYoloStopRequested();
+        completion_.cv.wait_for(lock, timeout, [this]() {
+            return completion_.notified || IsYoloStopRequested();
         });
     }
-    completion_notified_ = false;
+    completion_.notified = false;
 }
 
 void YoloOpenvino::notifyRequestCompleted(std::exception_ptr exception)
 {
     {
-        std::lock_guard<std::mutex> lock(completion_mutex_);
-        if (exception && !callback_exception_)
+        std::lock_guard<std::mutex> lock(completion_.mutex);
+        if (exception && !completion_.exception)
         {
-            callback_exception_ = exception;
+            completion_.exception = exception;
         }
-        completion_notified_ = true;
+        completion_.notified = true;
     }
-    completion_cv_.notify_one();
+    completion_.cv.notify_one();
 }
 
 bool YoloOpenvino::consumeCallbackException(std::string *error)
 {
     std::exception_ptr exception;
     {
-        std::lock_guard<std::mutex> lock(completion_mutex_);
-        exception = callback_exception_;
-        callback_exception_ = nullptr;
+        std::lock_guard<std::mutex> lock(completion_.mutex);
+        exception = completion_.exception;
+        completion_.exception = nullptr;
     }
     if (!exception)
     {
@@ -281,13 +285,10 @@ bool YoloOpenvino::finishSlot(AsyncSlot &slot, std::shared_ptr<ResultMParam> &re
     {
         const double infer_async_ms = ElapsedMsSince(slot.submit_tp);
         app::profiling::Record(app::profiling::Stage::InferAsync, infer_async_ms);
-        const auto postprocess_start = std::chrono::steady_clock::now();
         app::profiling::ScopedTimer post_timer(app::profiling::Stage::Postprocess);
         ov::Tensor out = slot.request.get_output_tensor();
         const AppConfig &cfg = GetAppConfig();
-        std::vector<Detection> &dets = postprocessor_->run(slot.frame, out, slot.lb, cfg, [&](int class_id) {
-            return MatchTargetColorByClass(class_id, target_color_);
-        });
+        std::vector<Detection> &dets = postprocessor_->run(slot.frame, out, slot.lb, cfg, class_allowed_);
         const bool enable_vis = IsFoxgloveDebugEnabled();
         const int candidate_limit = enable_vis ? std::min(static_cast<int>(dets.size()), max_color_candidates_)
                                                : static_cast<int>(dets.size());
@@ -311,7 +312,8 @@ bool YoloOpenvino::finishSlot(AsyncSlot &slot, std::shared_ptr<ResultMParam> &re
         cv::Mat vis;
         if (enable_vis)
         {
-            vis = slot.frame.clone();
+            app::memory::CreateAlignedMat(vis, slot.frame.rows, slot.frame.cols, slot.frame.type());
+            slot.frame.copyTo(vis);
         }
         else
         {
@@ -338,7 +340,7 @@ bool YoloOpenvino::finishSlot(AsyncSlot &slot, std::shared_ptr<ResultMParam> &re
             }
             ++kept_count;
 
-            const std::array<cv::Point2f, 4> corner_pts = OrderCorners(d.keypoints);
+            const std::array<cv::Point2f, 4> &corner_pts = d.keypoints;
             if (d.confidence > best_conf)
             {
                 best_conf = d.confidence;
@@ -366,12 +368,6 @@ bool YoloOpenvino::finishSlot(AsyncSlot &slot, std::shared_ptr<ResultMParam> &re
         result->latency_ms = ElapsedMsSince(slot.pipeline_start_tp);
         result->pipeline_start_tp = slot.pipeline_start_tp;
         result->capture_tp = slot.capture_tp;
-        result->camera_grab_ms = slot.camera_grab_ms;
-        result->pixel_convert_ms = slot.pixel_convert_ms;
-        result->preprocess_ms = slot.preprocess_ms;
-        result->infer_async_ms = infer_async_ms;
-        result->postprocess_ms = std::chrono::duration<double, std::milli>(
-            std::chrono::steady_clock::now() - postprocess_start).count();
         result->det_count = kept_count;
         result->has_corners = has_best_corners;
         result->corners = best_corners;
@@ -390,29 +386,29 @@ bool YoloOpenvino::finishSlot(AsyncSlot &slot, std::shared_ptr<ResultMParam> &re
     return true;
 }
 
-bool YoloOpenvino::MatchTargetColorByClass(int class_id, TargetColor target) const
+void YoloOpenvino::rebuildAllowedClassTable()
 {
-    if (target == TargetColor::Any)
+    class_allowed_.clear();
+    if (target_color_ == TargetColor::Any)
     {
-        return true;
+        return;
     }
-    if (class_id < 0 || static_cast<std::size_t>(class_id) >= class_labels_.size())
+    if (class_labels_.empty())
     {
-        return false;
+        class_allowed_.resize(static_cast<std::size_t>(std::max(0, num_classes_)), 0U);
+        return;
     }
 
-    const std::string &label = class_labels_[static_cast<std::size_t>(class_id)];
-    const bool is_red = (label == "r" || label == "red");
-    const bool is_blue = (label == "b" || label == "blue");
-    if (target == TargetColor::Red)
+    class_allowed_.resize(class_labels_.size(), 0U);
+    for (std::size_t i = 0; i < class_labels_.size(); ++i)
     {
-        return is_red;
+        const std::string &label = class_labels_[i];
+        const bool is_red = (label == "r" || label == "red");
+        const bool is_blue = (label == "b" || label == "blue");
+        class_allowed_[i] = static_cast<uint8_t>(
+            (target_color_ == TargetColor::Red && is_red) ||
+            (target_color_ == TargetColor::Blue && is_blue));
     }
-    if (target == TargetColor::Blue)
-    {
-        return is_blue;
-    }
-    return true;
 }
 
 void YoloOpenvino::preprocess(AsyncSlot &slot) const
@@ -431,22 +427,36 @@ void YoloOpenvino::preprocess(AsyncSlot &slot) const
         slot.lb.pad_h = (input_h_ - slot.cached_resize_h) / 2;
         slot.cached_src_size = src_size;
         slot.letterbox_cache_valid = true;
+        slot.letterbox_padding_valid = false;
     }
 
     const int nw = slot.cached_resize_w;
     const int nh = slot.cached_resize_h;
     const int pad_w = slot.lb.pad_w;
     const int pad_h = slot.lb.pad_h;
-    slot.letterbox_img.create(input_h_, input_w_, CV_8UC3);
-    if (pad_h > 0)
+    const bool needs_allocation = slot.letterbox_img.empty() ||
+                                  slot.letterbox_img.rows != input_h_ ||
+                                  slot.letterbox_img.cols != input_w_ ||
+                                  slot.letterbox_img.type() != CV_8UC3 ||
+                                  !app::memory::IsAligned(slot.letterbox_img.data);
+    app::memory::CreateAlignedMat(slot.letterbox_img, input_h_, input_w_, CV_8UC3);
+    if (needs_allocation)
     {
-        slot.letterbox_img(cv::Rect(0, 0, input_w_, pad_h)).setTo(cv::Scalar(114, 114, 114));
-        slot.letterbox_img(cv::Rect(0, pad_h + nh, input_w_, input_h_ - pad_h - nh)).setTo(cv::Scalar(114, 114, 114));
+        slot.letterbox_padding_valid = false;
     }
-    if (pad_w > 0)
+    if (!slot.letterbox_padding_valid)
     {
-        slot.letterbox_img(cv::Rect(0, pad_h, pad_w, nh)).setTo(cv::Scalar(114, 114, 114));
-        slot.letterbox_img(cv::Rect(pad_w + nw, pad_h, input_w_ - pad_w - nw, nh)).setTo(cv::Scalar(114, 114, 114));
+        if (pad_h > 0)
+        {
+            slot.letterbox_img(cv::Rect(0, 0, input_w_, pad_h)).setTo(cv::Scalar(114, 114, 114));
+            slot.letterbox_img(cv::Rect(0, pad_h + nh, input_w_, input_h_ - pad_h - nh)).setTo(cv::Scalar(114, 114, 114));
+        }
+        if (pad_w > 0)
+        {
+            slot.letterbox_img(cv::Rect(0, pad_h, pad_w, nh)).setTo(cv::Scalar(114, 114, 114));
+            slot.letterbox_img(cv::Rect(pad_w + nw, pad_h, input_w_ - pad_w - nw, nh)).setTo(cv::Scalar(114, 114, 114));
+        }
+        slot.letterbox_padding_valid = true;
     }
 
     cv::Mat roi = slot.letterbox_img(cv::Rect(pad_w, pad_h, nw, nh));

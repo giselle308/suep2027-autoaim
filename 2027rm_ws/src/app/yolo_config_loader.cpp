@@ -144,6 +144,9 @@ void LoadYoloConfig(AppConfig &cfg)
             if (pnp["max_corner_reprojection_error_px"]) cfg.pnp_max_corner_reprojection_error_px = std::max(0.0, pnp["max_corner_reprojection_error_px"].as<double>());
             if (pnp["min_depth_m"]) cfg.pnp_min_depth_m = std::max(0.0, pnp["min_depth_m"].as<double>());
             if (pnp["max_depth_m"]) cfg.pnp_max_depth_m = std::max(cfg.pnp_min_depth_m, pnp["max_depth_m"].as<double>());
+            if (pnp["yaw_refine_enable"]) cfg.pnp_yaw_refine_enable = pnp["yaw_refine_enable"].as<bool>();
+            if (pnp["yaw_search_range_deg"]) cfg.pnp_yaw_search_range_deg = std::clamp(pnp["yaw_search_range_deg"].as<double>(), 0.0, 180.0);
+            if (pnp["yaw_search_step_deg"]) cfg.pnp_yaw_search_step_deg = std::clamp(pnp["yaw_search_step_deg"].as<double>(), 0.1, 10.0);
         }
 
         const YAML::Node debug = root["debug"];
@@ -159,18 +162,49 @@ void LoadYoloConfig(AppConfig &cfg)
             if (profiling["interval_ms"]) cfg.profiling_interval_ms = std::max(100, profiling["interval_ms"].as<int>());
         }
 
-        if (cfg.target_color != "red" && cfg.target_color != "blue")
+        const YAML::Node memory = root["memory"];
+        if (memory)
+        {
+            if (memory["frame_buffer_pool_size"]) cfg.frame_buffer_pool_size = std::max(0, memory["frame_buffer_pool_size"].as<int>());
+            if (memory["frame_message_pool_size"]) cfg.frame_message_pool_size = std::max(0, memory["frame_message_pool_size"].as<int>());
+            if (memory["result_message_pool_size"]) cfg.result_message_pool_size = std::max(0, memory["result_message_pool_size"].as<int>());
+            if (memory["pnp_message_pool_size"]) cfg.pnp_message_pool_size = std::max(0, memory["pnp_message_pool_size"].as<int>());
+            if (memory["rgo_message_pool_size"]) cfg.rgo_message_pool_size = std::max(0, memory["rgo_message_pool_size"].as<int>());
+            if (memory["imu_message_pool_size"]) cfg.imu_message_pool_size = std::max(0, memory["imu_message_pool_size"].as<int>());
+        }
+
+        const YAML::Node runtime = root["runtime"];
+        if (runtime)
+        {
+            if (runtime["affinity_enable"]) cfg.affinity_enable = runtime["affinity_enable"].as<bool>();
+            if (runtime["camera_cpu"]) cfg.camera_cpu = runtime["camera_cpu"].as<int>();
+            if (runtime["infer_cpu"]) cfg.infer_cpu = runtime["infer_cpu"].as<int>();
+            if (runtime["pnp_cpu"]) cfg.pnp_cpu = runtime["pnp_cpu"].as<int>();
+            if (runtime["rgo_cpu"]) cfg.rgo_cpu = runtime["rgo_cpu"].as<int>();
+            if (runtime["display_cpu"]) cfg.display_cpu = runtime["display_cpu"].as<int>();
+            if (runtime["serial_cpu"]) cfg.serial_cpu = runtime["serial_cpu"].as<int>();
+        }
+
+        const YAML::Node serial = root["serial"];
+        if (serial)
+        {
+            if (serial["enable"]) cfg.serial_enable = serial["enable"].as<bool>();
+            if (serial["device"]) cfg.serial_device = serial["device"].as<std::string>();
+            if (serial["baud_rate"]) cfg.serial_baud_rate = serial["baud_rate"].as<int>();
+        }
+
+        if (cfg.target_color != "red" && cfg.target_color != "blue" && cfg.target_color != "any")
         {
             cfg.target_color = ResolveTargetColorFromEnv();
         }
-        const int min_pipeline_threads = cfg.pnp_enable ? 4 : 3;
+        const int min_pipeline_threads = (cfg.pnp_enable ? 5 : 3) + (cfg.serial_enable ? 1 : 0);
         cfg.thread_num = std::max(cfg.thread_num, min_pipeline_threads);
         spdlog::info("Loaded yolo config: {}", used_path);
     }
     catch (const std::exception &e)
     {
         cfg.target_color = ResolveTargetColorFromEnv();
-        const int min_pipeline_threads = cfg.pnp_enable ? 4 : 3;
+        const int min_pipeline_threads = (cfg.pnp_enable ? 5 : 3) + (cfg.serial_enable ? 1 : 0);
         cfg.thread_num = std::max(cfg.thread_num, min_pipeline_threads);
         spdlog::warn("Load yolo config failed, using defaults: {}", e.what());
     }

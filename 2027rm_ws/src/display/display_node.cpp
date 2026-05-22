@@ -7,6 +7,7 @@
 #include <opencv2/opencv.hpp>
 #include <spdlog/spdlog.h>
 
+#include "thread_affinity.hpp"
 #include "yolo_common.hpp"
 
 CStatus DisplayNode::init()
@@ -31,6 +32,8 @@ CStatus DisplayNode::init()
 
 CStatus DisplayNode::run()
 {
+    const AppConfig &cfg = GetAppConfig();
+    app::runtime::ApplyThreadAffinity("display", cfg.affinity_enable ? cfg.display_cpu : -1);
     const bool enable_vis = IsFoxgloveDebugEnabled();
     while (!IsYoloStopRequested())
     {

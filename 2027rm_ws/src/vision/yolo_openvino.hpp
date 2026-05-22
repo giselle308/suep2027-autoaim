@@ -13,13 +13,14 @@
 #include <openvino/openvino.hpp>
 
 #include "message_pool.hpp"
+#include "memory_layout.hpp"
 #include "postprocess.hpp"
 #include "yolo_app.hpp"
 
 class YoloOpenvino
 {
 private:
-    struct AsyncSlot
+    struct alignas(app::memory::kCacheLineSize) AsyncSlot
     {
         ov::InferRequest request;
         bool busy = false;
@@ -31,14 +32,20 @@ private:
         std::chrono::steady_clock::time_point pipeline_start_tp;
         std::chrono::steady_clock::time_point capture_tp;
         std::chrono::steady_clock::time_point submit_tp;
-        double camera_grab_ms = 0.0;
-        double pixel_convert_ms = 0.0;
-        double preprocess_ms = 0.0;
         LetterBoxInfo lb;
         cv::Size cached_src_size;
         int cached_resize_w = 0;
         int cached_resize_h = 0;
         bool letterbox_cache_valid = false;
+        bool letterbox_padding_valid = false;
+    };
+
+    struct alignas(app::memory::kCacheLineSize) CompletionState
+    {
+        std::mutex mutex;
+        std::condition_variable cv;
+        bool notified = false;
+        std::exception_ptr exception;
     };
 
 public:
@@ -51,7 +58,7 @@ public:
 
 private:
     bool finishSlot(AsyncSlot &slot, std::shared_ptr<ResultMParam> &result, std::string *error);
-    bool MatchTargetColorByClass(int class_id, TargetColor target) const;
+    void rebuildAllowedClassTable();
     void preprocess(AsyncSlot &slot) const;
     void notifyRequestCompleted(std::exception_ptr exception);
     bool consumeCallbackException(std::string *error);
@@ -70,12 +77,10 @@ private:
     TargetColor target_color_ = TargetColor::Any;
     int max_color_candidates_ = 1;
     std::vector<std::string> class_labels_;
+    std::vector<uint8_t> class_allowed_;
     std::optional<YoloPostprocessor> postprocessor_;
     SharedParamPool<ResultMParam> result_pool_;
-    std::mutex completion_mutex_;
-    std::condition_variable completion_cv_;
-    bool completion_notified_ = false;
-    std::exception_ptr callback_exception_;
+    CompletionState completion_;
 };
 
 class YoloResultFilter

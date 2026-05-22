@@ -31,6 +31,27 @@ YoloPostprocessor::YoloPostprocessor(int input_w, int input_h, int num_classes, 
       conf_thres_(conf_thres),
       nms_thres_(nms_thres)
 {
+    output_layout_.shape.reserve(3);
+    const int expected_points = (input_h_ / 8) * (input_w_ / 8) +
+                                (input_h_ / 16) * (input_w_ / 16) +
+                                (input_h_ / 32) * (input_w_ / 32);
+    reserveScratch(static_cast<std::size_t>(std::max(0, expected_points)));
+}
+
+void YoloPostprocessor::reserveScratch(std::size_t points)
+{
+    Scratch &scratch = scratch_;
+    scratch.boxes.reserve(points);
+    scratch.class_ids.reserve(points);
+    scratch.scores.reserve(points);
+    scratch.has_keypoints.reserve(points);
+    scratch.keypoints.reserve(points);
+    scratch.candidate_indices.reserve(points);
+    scratch.nms_boxes.reserve(points);
+    scratch.nms_scores.reserve(points);
+    scratch.local_keep.reserve(points);
+    scratch.keep.reserve(points);
+    scratch.detections.reserve(points);
 }
 
 const YoloPostprocessor::OutputLayoutCache &YoloPostprocessor::resolveOutputLayout(const ov::Shape &shape, const float *data)
@@ -104,7 +125,7 @@ std::vector<Detection> &YoloPostprocessor::run(const cv::Mat &orig,
                                                ov::Tensor &out,
                                                const LetterBoxInfo &lb,
                                                const AppConfig &cfg,
-                                               const std::function<bool(int)> &class_filter)
+                                               std::span<const uint8_t> class_allowed)
 {
     const auto shape = out.get_shape();
     const float *data = out.data<float>();
@@ -119,6 +140,7 @@ std::vector<Detection> &YoloPostprocessor::run(const cv::Mat &orig,
     const int C = layout.channels;
     const int N = layout.points;
     const int use_cls = layout.use_classes;
+    const bool filter_classes = !class_allowed.empty();
     Scratch &scratch = scratch_;
     scratch.boxes.clear();
     scratch.class_ids.clear();
@@ -245,7 +267,10 @@ std::vector<Detection> &YoloPostprocessor::run(const cv::Mat &orig,
         {
             continue;
         }
-        if (class_filter && !class_filter(best_cls))
+        if (filter_classes &&
+            (best_cls < 0 ||
+             static_cast<std::size_t>(best_cls) >= class_allowed.size() ||
+             class_allowed[static_cast<std::size_t>(best_cls)] == 0U))
         {
             continue;
         }

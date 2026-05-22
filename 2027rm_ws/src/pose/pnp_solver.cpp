@@ -15,6 +15,7 @@
 
 #include "message_pool.hpp"
 #include "profiling.hpp"
+#include "thread_affinity.hpp"
 #include "yolo_app.hpp"
 #include "yolo_common.hpp"
 
@@ -55,6 +56,13 @@ struct RigidPnpConstraint
     double max_depth_m = 20.0;
 };
 
+struct PnpSolveOptions
+{
+    bool yaw_refine_enable = true;
+    double yaw_search_range_deg = 45.0;
+    double yaw_search_step_deg = 1.0;
+};
+
 ArmorGeometry LoadArmorGeometry()
 {
     const AppConfig &cfg = GetAppConfig();
@@ -76,6 +84,16 @@ RigidPnpConstraint LoadRigidPnpConstraint()
     constraint.min_depth_m = std::max(0.0, cfg.pnp_min_depth_m);
     constraint.max_depth_m = std::max(constraint.min_depth_m, cfg.pnp_max_depth_m);
     return constraint;
+}
+
+PnpSolveOptions LoadPnpSolveOptions()
+{
+    const AppConfig &cfg = GetAppConfig();
+    PnpSolveOptions options;
+    options.yaw_refine_enable = cfg.pnp_yaw_refine_enable;
+    options.yaw_search_range_deg = std::clamp(cfg.pnp_yaw_search_range_deg, 0.0, 180.0);
+    options.yaw_search_step_deg = std::clamp(cfg.pnp_yaw_search_step_deg, 0.1, 10.0);
+    return options;
 }
 
 std::vector<cv::Point3f> BuildArmorPoints(double width_m, double lightbar_length_m)
@@ -279,6 +297,10 @@ void DumpPnpForFoxglove(const PnpResultMParam &result)
     fout << "  \"detect_latency_ms\": " << result.detect_latency_ms << ",\n";
     fout << "  \"status\": \"" << result.status << "\",\n";
     fout << "  \"armor_type\": \"" << result.armor_type << "\",\n";
+    fout << "  \"mean_reprojection_error_px\": " << result.mean_reprojection_error_px << ",\n";
+    fout << "  \"max_reprojection_error_px\": " << result.max_reprojection_error_px << ",\n";
+    fout << "  \"reprojection_ok\": " << (result.reprojection_ok ? "true" : "false") << ",\n";
+    fout << "  \"depth_ok\": " << (result.depth_ok ? "true" : "false") << ",\n";
     fout << "  \"center_px\": [" << result.center_px.x << ", " << result.center_px.y << "],\n";
     fout << "  \"tvec_m\": [" << result.tvec_m[0] << ", " << result.tvec_m[1] << ", " << result.tvec_m[2] << "],\n";
     fout << "  \"rvec\": [" << result.rvec[0] << ", " << result.rvec[1] << ", " << result.rvec[2] << "],\n";
@@ -311,6 +333,25 @@ double ArmorNormalForwardScore(const cv::Mat &rotation_matrix)
     const double normal_x = rotation_matrix.at<double>(0, 0);
     const double normal_z = rotation_matrix.at<double>(2, 0);
     return std::abs(std::atan2(normal_x, normal_z));
+}
+
+double ArmorYawFromRotation(const cv::Mat &rotation_matrix)
+{
+    const double normal_x = rotation_matrix.at<double>(0, 0);
+    const double normal_z = rotation_matrix.at<double>(2, 0);
+    return std::atan2(normal_x, normal_z);
+}
+
+cv::Mat CameraYawRotation(double yaw_rad)
+{
+    cv::Mat rotation = cv::Mat::eye(3, 3, CV_64F);
+    const double c = std::cos(yaw_rad);
+    const double s = std::sin(yaw_rad);
+    rotation.at<double>(0, 0) = c;
+    rotation.at<double>(0, 2) = s;
+    rotation.at<double>(2, 0) = -s;
+    rotation.at<double>(2, 2) = c;
+    return rotation;
 }
 
 struct ReprojectionStats
@@ -347,6 +388,76 @@ ReprojectionStats ComputeReprojectionStats(const cv::InputArray &object_corners,
         stats.mean_error_px /= static_cast<double>(image_corners.size());
     }
     return stats;
+}
+
+cv::Rect2f BoundingRectOf(const std::vector<cv::Point2f> &points)
+{
+    if (points.empty())
+    {
+        return cv::Rect2f();
+    }
+    float min_x = points.front().x;
+    float min_y = points.front().y;
+    float max_x = points.front().x;
+    float max_y = points.front().y;
+    for (const auto &pt : points)
+    {
+        min_x = std::min(min_x, pt.x);
+        min_y = std::min(min_y, pt.y);
+        max_x = std::max(max_x, pt.x);
+        max_y = std::max(max_y, pt.y);
+    }
+    return cv::Rect2f(min_x, min_y, std::max(0.0f, max_x - min_x), std::max(0.0f, max_y - min_y));
+}
+
+double RectIou(const cv::Rect2f &a, const cv::Rect2f &b)
+{
+    const float x1 = std::max(a.x, b.x);
+    const float y1 = std::max(a.y, b.y);
+    const float x2 = std::min(a.x + a.width, b.x + b.width);
+    const float y2 = std::min(a.y + a.height, b.y + b.height);
+    const double inter = std::max(0.0f, x2 - x1) * std::max(0.0f, y2 - y1);
+    const double union_area = static_cast<double>(a.area()) + static_cast<double>(b.area()) - inter;
+    return union_area > 1e-6 ? inter / union_area : 0.0;
+}
+
+double ProjectionMatchScore(const cv::InputArray &object_corners,
+                            const std::vector<cv::Point2f> &image_corners,
+                            const CameraCalibration &calibration,
+                            const cv::Mat &rvec,
+                            const cv::Mat &tvec,
+                            ReprojectionStats *stats_out = nullptr)
+{
+    std::vector<cv::Point2f> projected_corners;
+    cv::projectPoints(object_corners,
+                      rvec,
+                      tvec,
+                      calibration.camera_matrix,
+                      calibration.distortion_coeffs,
+                      projected_corners);
+
+    ReprojectionStats stats;
+    stats.mean_error_px = 0.0;
+    stats.max_error_px = 0.0;
+    for (std::size_t i = 0; i < image_corners.size() && i < projected_corners.size(); ++i)
+    {
+        const double error = Distance(image_corners[i], projected_corners[i]);
+        stats.mean_error_px += error;
+        stats.max_error_px = std::max(stats.max_error_px, error);
+    }
+    if (!image_corners.empty())
+    {
+        stats.mean_error_px /= static_cast<double>(image_corners.size());
+    }
+    if (stats_out)
+    {
+        *stats_out = stats;
+    }
+
+    const cv::Rect2f detected_box = BoundingRectOf(image_corners);
+    const cv::Rect2f projected_box = BoundingRectOf(projected_corners);
+    const double box_penalty = (1.0 - RectIou(detected_box, projected_box)) * 20.0;
+    return stats.mean_error_px + stats.max_error_px * 0.25 + box_penalty;
 }
 
 bool HasValidRigidDepth(const std::vector<cv::Point3f> &object_corners,
@@ -408,6 +519,72 @@ bool SatisfiesRigidConstraint(const std::vector<cv::Point3f> &object_corners,
     }
     return stats.mean_error_px <= constraint.max_mean_reprojection_error_px &&
            stats.max_error_px <= constraint.max_corner_reprojection_error_px;
+}
+
+bool RefineYawByFixedTranslation(const std::vector<cv::Point3f> &object_corners,
+                                 const cv::InputArray &object_corners_input,
+                                 const std::vector<cv::Point2f> &image_corners,
+                                 const CameraCalibration &calibration,
+                                 const RigidPnpConstraint &constraint,
+                                 const PnpSolveOptions &options,
+                                 cv::Mat &rvec,
+                                 const cv::Mat &tvec)
+{
+    if (!options.yaw_refine_enable || image_corners.size() < 4)
+    {
+        return false;
+    }
+
+    cv::Mat initial_rotation;
+    cv::Rodrigues(rvec, initial_rotation);
+    const double initial_yaw = ArmorYawFromRotation(initial_rotation);
+    const double range_rad = options.yaw_search_range_deg * CV_PI / 180.0;
+    const double step_rad = options.yaw_search_step_deg * CV_PI / 180.0;
+
+    cv::Mat best_rvec = rvec.clone();
+    double best_score = ProjectionMatchScore(object_corners_input,
+                                             image_corners,
+                                             calibration,
+                                             rvec,
+                                             tvec);
+
+    const int steps = static_cast<int>(std::ceil(range_rad / step_rad));
+    for (int idx = -steps; idx <= steps; ++idx)
+    {
+        const double candidate_yaw = initial_yaw + static_cast<double>(idx) * step_rad;
+        const double delta_yaw = candidate_yaw - initial_yaw;
+        const cv::Mat candidate_rotation = CameraYawRotation(delta_yaw) * initial_rotation;
+        if (constraint.enable && !HasValidRigidDepth(object_corners, candidate_rotation, tvec, constraint))
+        {
+            continue;
+        }
+
+        cv::Mat candidate_rvec;
+        cv::Rodrigues(candidate_rotation, candidate_rvec);
+        const double score = ProjectionMatchScore(object_corners_input,
+                                                  image_corners,
+                                                  calibration,
+                                                  candidate_rvec,
+                                                  tvec);
+        if (score < best_score)
+        {
+            best_score = score;
+            best_rvec = std::move(candidate_rvec);
+        }
+    }
+
+    const double before_score = ProjectionMatchScore(object_corners_input,
+                                                    image_corners,
+                                                    calibration,
+                                                    rvec,
+                                                    tvec);
+    constexpr double kAcceptEpsilon = 1e-6;
+    if (best_score + kAcceptEpsilon < before_score)
+    {
+        rvec = std::move(best_rvec);
+        return true;
+    }
+    return false;
 }
 
 bool SolveArmorPnpIppe(const std::vector<cv::Point3f> &object_corners,
@@ -479,6 +656,10 @@ public:
     CStatus init() override
     {
         result_conn_id_ = CGRAPH_BIND_MESSAGE_TOPIC(ResultMParam, RESULT_TOPIC, 2);
+        const int pool_size = GetAppConfig().pnp_message_pool_size > 0
+                                  ? GetAppConfig().pnp_message_pool_size
+                                  : std::max(4, GetAppConfig().infer_workers + 2);
+        pnp_result_pool_.preallocate(static_cast<std::size_t>(pool_size));
         e2e_fps_start_ = std::chrono::steady_clock::now();
         e2e_output_count_ = 0;
         e2e_latency_sum_ms_ = 0.0;
@@ -495,13 +676,14 @@ public:
             calibration_ = LoadCameraCalibration();
             geometry_ = LoadArmorGeometry();
             constraint_ = LoadRigidPnpConstraint();
+            solve_options_ = LoadPnpSolveOptions();
             big_armor_points_ = BuildArmorPoints(geometry_.big_width_m, geometry_.lightbar_length_m);
             small_armor_points_ = BuildArmorPoints(geometry_.small_width_m, geometry_.lightbar_length_m);
             big_armor_points_mat_ = cv::Mat(big_armor_points_).clone();
             small_armor_points_mat_ = cv::Mat(small_armor_points_).clone();
             image_corners_.reserve(4);
             enabled_ = true;
-            spdlog::info("PnP armor size loaded: small={:.1f}x{:.1f}mm big={:.1f}x{:.1f}mm lightbar={:.1f}mm rigid_constraint={} reproj_mean<={:.1f}px reproj_corner<={:.1f}px depth=[{:.2f},{:.2f}]m",
+            spdlog::info("PnP armor size loaded: small={:.1f}x{:.1f}mm big={:.1f}x{:.1f}mm lightbar={:.1f}mm rigid_constraint={} reproj_mean<={:.1f}px reproj_corner<={:.1f}px depth=[{:.2f},{:.2f}]m yaw_refine={} yaw_range={}deg yaw_step={}deg",
                          geometry_.small_width_m * 1000.0,
                          geometry_.armor_length_m * 1000.0,
                          geometry_.big_width_m * 1000.0,
@@ -511,7 +693,10 @@ public:
                          constraint_.max_mean_reprojection_error_px,
                          constraint_.max_corner_reprojection_error_px,
                          constraint_.min_depth_m,
-                         constraint_.max_depth_m);
+                         constraint_.max_depth_m,
+                         solve_options_.yaw_refine_enable,
+                         solve_options_.yaw_search_range_deg,
+                         solve_options_.yaw_search_step_deg);
             return CStatus();
         }
         catch (const std::exception &e)
@@ -523,6 +708,8 @@ public:
 
     CStatus run() override
     {
+        const AppConfig &cfg = GetAppConfig();
+        app::runtime::ApplyThreadAffinity("pnp", cfg.affinity_enable ? cfg.pnp_cpu : -1);
         if (!enabled_)
         {
             return CStatus();
@@ -590,12 +777,8 @@ public:
             last_processed_frame_id_ = result->frame_id;
 
             const auto pnp_total_start = std::chrono::steady_clock::now();
-            double pnp_solve_ms = 0.0;
-            auto pnp_total_ms = [&]() {
-                return ElapsedMsSince(pnp_total_start);
-            };
             auto record_pnp_total = [&]() {
-                app::profiling::Record(app::profiling::Stage::PnpTotal, pnp_total_ms());
+                app::profiling::Record(app::profiling::Stage::PnpTotal, ElapsedMsSince(pnp_total_start));
             };
             image_corners_.assign(result->corners.begin(), result->corners.end());
             const ArmorType armor_type = InferArmorType(result->corners, geometry_);
@@ -614,7 +797,6 @@ public:
             bool ok = false;
 
             {
-                const auto pnp_solve_start = std::chrono::steady_clock::now();
                 app::profiling::ScopedTimer pnp_solve_timer(app::profiling::Stage::PnpSolve);
                 ok = SolveArmorPnpIppe(object_corners,
                                        object_corners_mat,
@@ -623,18 +805,17 @@ public:
                                        constraint_,
                                        rvec,
                                        tvec);
-                if (!ok)
+                if (ok)
                 {
-                    ok = cv::solvePnP(object_corners_mat,
-                                      image_corners_,
-                                      calibration_.camera_matrix,
-                                      calibration_.distortion_coeffs,
-                                      rvec,
-                                      tvec,
-                                      false,
-                                      cv::SOLVEPNP_ITERATIVE);
+                    RefineYawByFixedTranslation(object_corners,
+                                                object_corners_mat,
+                                                image_corners_,
+                                                calibration_,
+                                                constraint_,
+                                                solve_options_,
+                                                rvec,
+                                                tvec);
                 }
-                pnp_solve_ms = ElapsedMsSince(pnp_solve_start);
             }
             ReprojectionStats reprojection_stats;
             bool valid_depth = false;
@@ -665,8 +846,9 @@ public:
                 ++reject_count;
                 PublishNoPose(*result,
                               FormatReprojectionStatus("depth_rejected", reprojection_stats),
-                              pnp_solve_ms,
-                              pnp_total_ms());
+                              &reprojection_stats,
+                              valid_reprojection,
+                              false);
                 record_pnp_total();
                 maybe_log_stats();
                 continue;
@@ -675,7 +857,7 @@ public:
             {
                 spdlog::warn("[PNP] solve failed frame={} infer={}", result->frame_id, result->infer_id);
                 ++fail_count;
-                PublishNoPose(*result, "failed", pnp_solve_ms, pnp_total_ms());
+                PublishNoPose(*result, "failed");
                 record_pnp_total();
                 maybe_log_stats();
                 continue;
@@ -689,17 +871,12 @@ public:
             pnp_result->has_pose = true;
             pnp_result->latency_ms = ElapsedMsSince(result->pipeline_start_tp);
             pnp_result->detect_latency_ms = result->detect_latency_ms;
-            pnp_result->pipeline_start_tp = result->pipeline_start_tp;
-            pnp_result->capture_tp = result->capture_tp;
-            pnp_result->camera_grab_ms = result->camera_grab_ms;
-            pnp_result->pixel_convert_ms = result->pixel_convert_ms;
-            pnp_result->preprocess_ms = result->preprocess_ms;
-            pnp_result->infer_async_ms = result->infer_async_ms;
-            pnp_result->postprocess_ms = result->postprocess_ms;
-            pnp_result->pnp_solve_ms = pnp_solve_ms;
-            pnp_result->pnp_total_ms = pnp_total_ms();
             pnp_result->status = FormatReprojectionStatus(valid_reprojection ? "solved" : "loose", reprojection_stats);
             pnp_result->armor_type = ArmorTypeName(armor_type);
+            pnp_result->mean_reprojection_error_px = reprojection_stats.mean_error_px;
+            pnp_result->max_reprojection_error_px = reprojection_stats.max_error_px;
+            pnp_result->reprojection_ok = valid_reprojection;
+            pnp_result->depth_ok = valid_depth;
             pnp_result->center_px = center_pt;
             pnp_result->tvec_m = cv::Vec3d(
                 tvec.at<double>(0, 0),
@@ -737,8 +914,9 @@ public:
 private:
     void PublishNoPose(const ResultMParam &result,
                        const std::string &status,
-                       double pnp_solve_ms = 0.0,
-                       double pnp_total_ms = 0.0)
+                       const ReprojectionStats *stats = nullptr,
+                       bool reprojection_ok = false,
+                       bool depth_ok = false)
     {
         std::shared_ptr<PnpResultMParam> pnp_result = pnp_result_pool_.acquire();
         pnp_result->frame_id = result.frame_id;
@@ -746,16 +924,14 @@ private:
         pnp_result->has_pose = false;
         pnp_result->latency_ms = ElapsedMsSince(result.pipeline_start_tp);
         pnp_result->detect_latency_ms = result.detect_latency_ms;
-        pnp_result->pipeline_start_tp = result.pipeline_start_tp;
-        pnp_result->capture_tp = result.capture_tp;
-        pnp_result->camera_grab_ms = result.camera_grab_ms;
-        pnp_result->pixel_convert_ms = result.pixel_convert_ms;
-        pnp_result->preprocess_ms = result.preprocess_ms;
-        pnp_result->infer_async_ms = result.infer_async_ms;
-        pnp_result->postprocess_ms = result.postprocess_ms;
-        pnp_result->pnp_solve_ms = pnp_solve_ms;
-        pnp_result->pnp_total_ms = pnp_total_ms;
         pnp_result->status = status;
+        if (stats)
+        {
+            pnp_result->mean_reprojection_error_px = stats->mean_error_px;
+            pnp_result->max_reprojection_error_px = stats->max_error_px;
+        }
+        pnp_result->reprojection_ok = reprojection_ok;
+        pnp_result->depth_ok = depth_ok;
         const CStatus pub_st = CGRAPH_PUB_MPARAM(PnpResultMParam, PNP_TOPIC, pnp_result, GMessagePushStrategy::REPLACE);
         if (pub_st.isErr())
         {
@@ -803,6 +979,7 @@ private:
     CameraCalibration calibration_{};
     ArmorGeometry geometry_{};
     RigidPnpConstraint constraint_{};
+    PnpSolveOptions solve_options_{};
     std::vector<cv::Point3f> big_armor_points_;
     std::vector<cv::Point3f> small_armor_points_;
     cv::Mat big_armor_points_mat_;

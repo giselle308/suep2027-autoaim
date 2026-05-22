@@ -127,9 +127,12 @@ void LogIfDue()
 
 ScopedTimer::ScopedTimer(Stage stage)
     : stage_(stage),
-      enabled_(Enabled()),
-      start_(std::chrono::steady_clock::now())
+      enabled_(Enabled())
 {
+    if (enabled_)
+    {
+        start_ = std::chrono::steady_clock::now();
+    }
 }
 
 ScopedTimer::~ScopedTimer()

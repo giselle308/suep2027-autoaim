@@ -1,6 +1,5 @@
 #include <chrono>
 #include <cctype>
-#include <cstdint>
 #include <cstring>
 #include <fstream>
 #include <sstream>
@@ -13,6 +12,7 @@
 #include <yaml-cpp/yaml.h>
 
 #include "camera_node.hpp"
+#include "memory_layout.hpp"
 #include "logging.hpp"
 #include "profiling.hpp"
 
@@ -93,18 +93,16 @@ static bool IsPlainBayer8(MvGvspPixelType fmt)
 
 static int OpenCvBayerToBgrCode(MvGvspPixelType fmt)
 {
+    // OpenCV's Bayer conversion constants are named by the equivalent RGB order,
+    // so the code that yields BGR output for a camera-reported BayerRG pattern is
+    // COLOR_BayerBG2BGR, and vice versa.
     switch (fmt) {
-        case PixelType_Gvsp_BayerBG8: return cv::COLOR_BayerBG2BGR;
-        case PixelType_Gvsp_BayerGB8: return cv::COLOR_BayerGB2BGR;
-        case PixelType_Gvsp_BayerGR8: return cv::COLOR_BayerGR2BGR;
-        case PixelType_Gvsp_BayerRG8: return cv::COLOR_BayerRG2BGR;
+        case PixelType_Gvsp_BayerBG8: return cv::COLOR_BayerRG2BGR;
+        case PixelType_Gvsp_BayerGB8: return cv::COLOR_BayerGR2BGR;
+        case PixelType_Gvsp_BayerGR8: return cv::COLOR_BayerGB2BGR;
+        case PixelType_Gvsp_BayerRG8: return cv::COLOR_BayerBG2BGR;
         default: return -1;
     }
-}
-
-static bool IsAligned(const void *ptr, std::size_t alignment)
-{
-    return (reinterpret_cast<std::uintptr_t>(ptr) % alignment) == 0;
 }
 
 static std::string HexRet(int ret)
@@ -252,6 +250,9 @@ bool HikCameraNode::init(std::string *error) {
     if (!LoadCameraConfig(cfg, configPath, error)) {
         return false;
     }
+    output_width_ = cfg.width;
+    output_height_ = cfg.height;
+    alignment_logged_ = false;
 
     spdlog::info("Loaded camera config: {} | pixel_format={} | size={}x{} | exposure={}us",
                  configPath,
@@ -259,7 +260,6 @@ bool HikCameraNode::init(std::string *error) {
                  cfg.width,
                  cfg.height,
                  cfg.exposure_time);
-    alignment_logged_ = false;
     spdlog::info("Pixel conversion backend=opencv");
 
     MV_CC_DEVICE_INFO_LIST deviceList{};
@@ -368,17 +368,8 @@ bool HikCameraNode::init(std::string *error) {
 
 bool HikCameraNode::grab(cv::Mat &bgr,
                          std::chrono::steady_clock::time_point *capture_tp,
-                         double *grab_ms,
-                         double *pixel_convert_ms,
                          std::string *error) {
     app::profiling::ScopedTimer grab_timer(app::profiling::Stage::CameraGrab);
-    const auto grab_start = std::chrono::steady_clock::now();
-    if (grab_ms) {
-        *grab_ms = 0.0;
-    }
-    if (pixel_convert_ms) {
-        *pixel_convert_ms = 0.0;
-    }
     if (handle_ == nullptr) {
         if (error) *error = "camera not initialized";
         return false;
@@ -393,17 +384,12 @@ bool HikCameraNode::grab(cv::Mat &bgr,
     if (capture_tp) {
         *capture_tp = std::chrono::steady_clock::now();
     }
-    if (grab_ms) {
-        const auto grab_end = capture_tp ? *capture_tp : std::chrono::steady_clock::now();
-        *grab_ms = std::chrono::duration<double, std::milli>(grab_end - grab_start).count();
-    }
 
     const int h = static_cast<int>(frame.stFrameInfo.nHeight);
     const int w = static_cast<int>(frame.stFrameInfo.nWidth);
     const auto src_pixel_type = static_cast<MvGvspPixelType>(frame.stFrameInfo.enPixelType);
 
     bgr.create(h, w, CV_8UC3);
-    const auto convert_start = std::chrono::steady_clock::now();
     app::profiling::ScopedTimer convert_timer(app::profiling::Stage::PixelConvert);
     if (src_pixel_type == PixelType_Gvsp_BGR8_Packed || src_pixel_type == PixelType_Gvsp_HB_BGR8_Packed) {
         std::memcpy(bgr.data, frame.pBufAddr, static_cast<std::size_t>(h) * static_cast<std::size_t>(w) * 3U);
@@ -425,16 +411,16 @@ bool HikCameraNode::grab(cv::Mat &bgr,
         return false;
     }
     if (!alignment_logged_) {
-        spdlog::info("Frame buffer alignment: raw_64B={} bgr_64B={} bgr_step={} continuous={}",
-                     IsAligned(frame.pBufAddr, 64),
-                     IsAligned(bgr.data, 64),
+        spdlog::info("Frame buffer alignment: sdk_raw_64B={} output_64B={} output_step={} continuous={} pixel_format={}",
+                     app::memory::IsAligned(frame.pBufAddr),
+                     app::memory::IsAligned(bgr.data),
                      bgr.step,
-                     bgr.isContinuous());
+                     bgr.isContinuous(),
+                     PixelFormatName(static_cast<unsigned int>(src_pixel_type)));
+        if (IsPlainBayer8(src_pixel_type)) {
+            spdlog::info("Bayer path writes cvtColor output directly into the preallocated frame pool buffer.");
+        }
         alignment_logged_ = true;
-    }
-    if (pixel_convert_ms) {
-        *pixel_convert_ms = std::chrono::duration<double, std::milli>(
-            std::chrono::steady_clock::now() - convert_start).count();
     }
     MV_CC_FreeImageBuffer(handle_, &frame);
     return true;
@@ -447,6 +433,9 @@ void HikCameraNode::shutdown() {
         MV_CC_DestroyHandle(handle_);
         handle_ = nullptr;
     }
+    output_width_ = 0;
+    output_height_ = 0;
+    alignment_logged_ = false;
 }
 
 #ifndef CAMERA_NODE_LIBRARY
@@ -467,7 +456,7 @@ int main() {
     auto fpsStart = std::chrono::steady_clock::now();
 
     while (true) {
-        if (!camera.grab(img, nullptr, nullptr, nullptr, &error)) {
+        if (!camera.grab(img, nullptr, &error)) {
             spdlog::error("Grab failed: {}", error);
             continue;
         }
