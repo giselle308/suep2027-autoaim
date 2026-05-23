@@ -1,0 +1,293 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <title>AAT-GAF Tracker 抗反自瞄几何感知融合跟踪方案</title>
+  <style>
+    @page {
+      size: A4;
+      margin: 18mm 16mm;
+    }
+    body {
+      font-family: "Noto Sans CJK SC", "WenQuanYi Micro Hei", "Microsoft YaHei", sans-serif;
+      color: #1f2933;
+      line-height: 1.55;
+      font-size: 11.2pt;
+    }
+    h1 {
+      font-size: 23pt;
+      margin: 0 0 8mm;
+      color: #111827;
+    }
+    h2 {
+      font-size: 15pt;
+      margin: 8mm 0 3mm;
+      padding-bottom: 1mm;
+      border-bottom: 1px solid #d0d7de;
+      color: #0f172a;
+    }
+    h3 {
+      font-size: 12.5pt;
+      margin: 5mm 0 2mm;
+      color: #1e3a5f;
+    }
+    p {
+      margin: 2.5mm 0;
+    }
+    ul, ol {
+      margin: 2mm 0 3mm 7mm;
+      padding: 0;
+    }
+    li {
+      margin: 1mm 0;
+    }
+    code, pre {
+      font-family: "Noto Sans Mono CJK SC", "DejaVu Sans Mono", monospace;
+    }
+    pre {
+      background: #f6f8fa;
+      border: 1px solid #d0d7de;
+      border-radius: 6px;
+      padding: 3mm;
+      white-space: pre-wrap;
+      line-height: 1.35;
+      font-size: 9.5pt;
+    }
+    .subtitle {
+      color: #536471;
+      margin-bottom: 8mm;
+      font-size: 11pt;
+    }
+    .summary {
+      background: #eef6ff;
+      border-left: 4px solid #2563eb;
+      padding: 3mm 4mm;
+      margin: 4mm 0 6mm;
+    }
+    .note {
+      background: #fff7ed;
+      border-left: 4px solid #f97316;
+      padding: 3mm 4mm;
+      margin: 4mm 0;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 4mm 0;
+      font-size: 10.2pt;
+    }
+    th, td {
+      border: 1px solid #d0d7de;
+      padding: 2mm;
+      vertical-align: top;
+    }
+    th {
+      background: #f3f4f6;
+      color: #111827;
+    }
+  </style>
+</head>
+<body>
+  <h1>AAT-GAF Tracker 抗反自瞄几何感知融合跟踪方案</h1>
+  <p class="subtitle">面向 RoboMaster：软悬挂整车晃动、不对称装甲板、高低装甲板、装甲板切换与 PnP 跳点</p>
+
+  <div class="summary">
+    <strong>核心结论：</strong>不要把问题当成“滤波一个装甲板”，而应当当成“在反自瞄干扰下估计机器人本体和可命中区域”。离散问题用假设选择解决，连续问题用本体跟踪解决，反自瞄问题用晃动检测和瞄准策略解决。
+  </div>
+
+  <h2>1. 问题定义</h2>
+  <p>RoboMaster 实战中，视觉观测并不总是稳定的刚体测量。软悬挂、车体晃动、高低装甲板、不对称装甲板和识别跳变会让单帧 PnP 位姿出现非平稳、非高斯扰动。</p>
+  <pre>视觉观测 = 底盘运动 + 车体姿态晃动 + 装甲板几何偏移 + PnP 误差</pre>
+  <p>如果直接滤波装甲板中心或装甲板 yaw，滤波器会被反自瞄晃动带偏。算法目标应从“追当前装甲板”改为“估计机器人本体低频运动，并输出稳定可命中的瞄准点”。</p>
+
+  <h2>2. 总体架构</h2>
+  <pre>Detection / PnP
+      ↓
+Geometry Hypothesis Generator  几何假设生成器
+      ↓
+Evidence Scorer                证据评分器
+      ↓
+Anti-Aim Detector              反自瞄/晃动检测器
+      ↓
+Body Tracker                   机器人本体跟踪器
+      ↓
+Aim Policy                     瞄准策略</pre>
+
+  <h2>3. 状态设计</h2>
+  <p>连续状态应描述机器人本体，而不是某一块装甲板。</p>
+  <pre>body_center_x, body_center_y, body_center_z
+vx, vy, vz
+yaw, yaw_rate</pre>
+  <p>高低装甲板、前后左右装甲板、不对称半径等作为离散假设处理，不建议直接塞进连续滤波状态。</p>
+
+  <h2>4. 几何假设生成器</h2>
+  <p>每帧 PnP 得到装甲板位姿后，不直接相信当前装甲板身份，而是生成多个候选：</p>
+  <pre>front_low,  front_high
+back_low,   back_high
+left_low,   left_high
+right_low,  right_high</pre>
+  <p>不对称装甲板使用不同几何偏移：</p>
+  <pre>front_radius, back_radius, left_radius, right_radius
+z_low, z_high</pre>
+  <p>每个候选反推机器人中心：</p>
+  <pre>body_center_candidate = armor_pos - R(yaw) * armor_offset</pre>
+  <p>这样高低切换、前后左右切换和不对称装甲板不会直接表现为机器人中心跳变。</p>
+
+  <h2>5. 证据评分器</h2>
+  <p>对每个候选计算可信度分数，分数越低越可信：</p>
+  <pre>score =
+  center_prediction_error
++ yaw_consistency_error
++ velocity_continuity_error
++ reprojection_error_penalty
++ armor_size_penalty
++ height_switch_penalty
++ impossible_motion_penalty</pre>
+  <table>
+    <tr>
+      <th>评分项</th>
+      <th>作用</th>
+    </tr>
+    <tr>
+      <td>center_prediction_error</td>
+      <td>候选中心与上一帧预测中心的距离，抑制物理不可能的中心跳变。</td>
+    </tr>
+    <tr>
+      <td>yaw_consistency_error</td>
+      <td>判断候选 yaw 是否与历史 yaw 连续。</td>
+    </tr>
+    <tr>
+      <td>velocity_continuity_error</td>
+      <td>避免由错误假设导致速度方向突然翻转。</td>
+    </tr>
+    <tr>
+      <td>reprojection_error_penalty</td>
+      <td>利用 PnP 重投影误差降低坏观测权重。</td>
+    </tr>
+    <tr>
+      <td>height_switch_penalty</td>
+      <td>防止 high/low 状态在相邻帧之间来回跳。</td>
+    </tr>
+  </table>
+
+  <h2>6. 高低装甲板处理</h2>
+  <p>高低装甲板不能靠连续滤波“滤平”，应当作为离散假设选择。关键原则：</p>
+  <pre>机器人中心连续
+装甲板高度离散
+高度切换需要滞回</pre>
+  <p>滞回逻辑：</p>
+  <pre>如果当前是 LOW：
+    只有 high_score + margin < low_score，才切 HIGH
+
+如果当前是 HIGH：
+    只有 low_score + margin < high_score，才切 LOW
+
+如果高低分数接近：
+    保持上一帧高度</pre>
+
+  <h2>7. 软悬挂与反自瞄晃动检测</h2>
+  <p>软悬挂整车晃动本质上是反自瞄观测干扰。算法不应快速追随高频晃动，而应分离低频底盘运动和高频扰动。</p>
+  <p>维护短窗口残差：</p>
+  <pre>residual = selected_candidate_center - predicted_body_center</pre>
+  <p>进入 SHAKING 状态的典型信号：</p>
+  <ul>
+    <li>残差在短窗口内频繁反向。</li>
+    <li>z 或 yaw 大幅抖动，但平移速度不连续。</li>
+    <li>装甲板中心剧烈摆动，但预测底盘中心变化较小。</li>
+    <li>PnP 姿态变化大，装甲板尺寸与重投影质量不稳定。</li>
+  </ul>
+  <p>推荐目标状态：</p>
+  <pre>NORMAL   正常跟踪
+SHAKING  软悬挂/反自瞄晃动
+SPINNING 小陀螺或周期装甲板切换
+LOST     目标丢失</pre>
+
+  <h2>8. 本体跟踪器</h2>
+  <p>第一版建议使用 Evidence-Gated Alpha-Beta Tracker，原因是实现快、可解释、方便实车调试。后续可以保留 GAF 前端，将后端替换为 Robust CKF/UKF。</p>
+  <pre>预测：
+center_pred = center + velocity * dt
+velocity_pred = velocity
+yaw_pred = yaw + yaw_rate * dt
+
+融合：
+residual = center_candidate - center_pred
+trust = score_to_trust(score) * anti_aim_trust
+
+更新：
+center = center_pred + alpha * trust * residual
+velocity = velocity_pred + beta * trust * residual / dt</pre>
+  <p>不同状态下的更新策略：</p>
+  <table>
+    <tr>
+      <th>状态</th>
+      <th>策略</th>
+    </tr>
+    <tr>
+      <td>NORMAL</td>
+      <td>可信观测快速收敛，允许较高 trust。</td>
+    </tr>
+    <tr>
+      <td>SHAKING</td>
+      <td>降低高频观测影响，主要相信低频预测和窗口均值。</td>
+    </tr>
+    <tr>
+      <td>SPINNING</td>
+      <td>切换周期模型或小陀螺模型。</td>
+    </tr>
+    <tr>
+      <td>LOST</td>
+      <td>只预测，短时间保留状态，超时后重新初始化。</td>
+    </tr>
+  </table>
+
+  <h2>9. 瞄准策略</h2>
+  <p>输出不应永远追瞬时装甲板中心，而应根据状态选择瞄准策略。</p>
+  <table>
+    <tr>
+      <th>场景</th>
+      <th>瞄准策略</th>
+    </tr>
+    <tr>
+      <td>NORMAL</td>
+      <td>瞄准当前可信装甲板预测位置。</td>
+    </tr>
+    <tr>
+      <td>SHAKING</td>
+      <td>瞄准低频本体中心推导出的装甲板均值位置，减少跟随高频晃动。</td>
+    </tr>
+    <tr>
+      <td>HIGH/LOW 不确定</td>
+      <td>保持上一帧高度，或输出两个候选给 AimPolicy，避免上下跳枪。</td>
+    </tr>
+    <tr>
+      <td>SPINNING</td>
+      <td>使用周期装甲板模型，预测下一块可见/可打击装甲。</td>
+    </tr>
+  </table>
+
+  <h2>10. 推荐落地顺序</h2>
+  <ol>
+    <li>给 <code>PnpResultMParam</code> 增加质量字段：重投影均值、最大误差、装甲板尺寸、中心点、装甲类型。</li>
+    <li>实现几何假设生成器：前后左右 × 高低候选。</li>
+    <li>实现证据评分器：根据预测中心、yaw、重投影误差、运动连续性评分。</li>
+    <li>实现 high/low 滞回选择，防止高度状态来回跳。</li>
+    <li>实现 Anti-Aim Detector，用短窗口残差判断 SHAKING。</li>
+    <li>实现 Evidence-Gated Alpha-Beta Tracker，快速上车验证。</li>
+    <li>验证有效后，再将后端替换或扩展为 Robust CKF/UKF。</li>
+  </ol>
+
+  <h2>11. 与 KF 变种的关系</h2>
+  <p>AAT-GAF 不一定在所有干净数据场景下比 KF/CKF/UKF 更优，但它更适合 RoboMaster 中的脏观测问题。最佳实践不是二选一，而是组合：</p>
+  <pre>PnP 装甲板观测
+    ↓
+GAF 前端：假设生成、评分、抗反自瞄、输出可信机器人中心观测
+    ↓
+KF/CKF/UKF 后端：连续状态估计和预测
+    ↓
+AimPolicy：根据目标状态选择瞄准点</pre>
+
+  <div class="note">
+    <strong>一句话总结：</strong>离散问题用假设选择解决：前后左右、高低、不对称装甲板；连续问题用本体跟踪解决：机器人中心、速度、yaw、yaw_rate；反自瞄问题用晃动检测解决：不要追高频装甲板晃动，追低频机器人本体和可命中区域。
+  </div>
+</body>
+</html>

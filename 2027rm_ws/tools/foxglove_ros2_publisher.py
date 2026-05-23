@@ -82,26 +82,52 @@ def cv_camera_pose_to_visual_pose(tvec, quat):
     return position, matrix_to_quat(rotation)
 
 
+def cv_camera_point_to_visual(tvec):
+    return (
+        float(tvec[2]),
+        -float(tvec[0]),
+        -float(tvec[1]),
+    )
+
+
+def cv_yaw_to_visual_quat(yaw_rad):
+    c = math.cos(float(yaw_rad))
+    s = math.sin(float(yaw_rad))
+    # Marker local axes: X=armor normal/thickness, Y=armor width, Z=armor height.
+    # Keep width in the ground plane and height on visual Z; yaw only spins around visual Z.
+    visual_rot = (
+        (c, s, 0.0),
+        (-s, c, 0.0),
+        (0.0, 0.0, 1.0),
+    )
+    return matrix_to_quat(visual_rot)
+
+
 class DebugImagePublisher(Node):
     def __init__(self) -> None:
         super().__init__('rm_debug_image_publisher')
         self.frame_path = Path(os.getenv('RM_DEBUG_FRAME_PATH', '/tmp/rm_rerun/latest.jpg'))
         self.pnp_path = Path(os.getenv('RM_DEBUG_PNP_PATH', '/tmp/rm_rerun/pnp_latest.json'))
+        self.rgo_path = Path(os.getenv('RM_DEBUG_RGO_PATH', '/tmp/rm_rerun/rgo_latest.json'))
         self.topic = os.getenv('RM_DEBUG_TOPIC', '/debug/image/compressed')
         self.pub = self.create_publisher(CompressedImage, self.topic, 10)
         self.pose_pub = self.create_publisher(PoseStamped, '/debug/pnp/pose', 10)
         self.marker_pub = self.create_publisher(Marker, '/debug/pnp/armor', 10)
+        self.rgo_center_pub = self.create_publisher(Marker, '/debug/rgo/center', 10)
+        self.rgo_armor_pub = self.create_publisher(Marker, '/debug/rgo/armor', 10)
         self.last_mtime_ns = -1
         self.last_pnp_mtime_ns = -1
+        self.last_rgo_mtime_ns = -1
         self.sent = 0
         self.create_timer(0.02, self._tick)
         self.get_logger().info(
-            f'Publishing {self.frame_path} -> {self.topic}, {self.pnp_path} -> /debug/pnp/pose + /debug/pnp/armor'
+            f'Publishing {self.frame_path} -> {self.topic}, {self.pnp_path} -> /debug/pnp/*, {self.rgo_path} -> /debug/rgo/*'
         )
 
     def _tick(self) -> None:
         self._publish_image()
         self._publish_pnp()
+        self._publish_rgo()
 
     def _publish_image(self) -> None:
         if not self.frame_path.exists():
@@ -189,6 +215,103 @@ class DebugImagePublisher(Node):
         self.marker_pub.publish(marker)
 
         self.last_pnp_mtime_ns = mtime_ns
+
+    def _delete_rgo_markers(self, stamp) -> None:
+        center = Marker()
+        center.header.stamp = stamp
+        center.header.frame_id = 'camera_link'
+        center.ns = 'rgo_center'
+        center.id = 1
+        center.action = Marker.DELETE
+        self.rgo_center_pub.publish(center)
+
+        for idx in range(4):
+            armor = Marker()
+            armor.header.stamp = stamp
+            armor.header.frame_id = 'camera_link'
+            armor.ns = 'rgo_armor'
+            armor.id = idx
+            armor.action = Marker.DELETE
+            self.rgo_armor_pub.publish(armor)
+
+    def _publish_rgo(self) -> None:
+        if not self.rgo_path.exists():
+            return
+
+        stat = self.rgo_path.stat()
+        mtime_ns = stat.st_mtime_ns
+        if mtime_ns == self.last_rgo_mtime_ns:
+            return
+
+        try:
+            data = json.loads(self.rgo_path.read_text())
+        except Exception as exc:
+            self.get_logger().warning(f'failed to read rgo json: {exc}')
+            return
+
+        stamp = self.get_clock().now().to_msg()
+        if not data.get('has_state', False):
+            self._delete_rgo_markers(stamp)
+            self.last_rgo_mtime_ns = mtime_ns
+            return
+
+        center_pos = cv_camera_point_to_visual(data['body_center_m'])
+        center = Marker()
+        center.header.stamp = stamp
+        center.header.frame_id = 'camera_link'
+        center.ns = 'rgo_center'
+        center.id = 1
+        center.type = Marker.SPHERE
+        center.action = Marker.ADD
+        center.pose.position.x = center_pos[0]
+        center.pose.position.y = center_pos[1]
+        center.pose.position.z = center_pos[2]
+        center.pose.orientation.w = 1.0
+        center.scale.x = 0.08
+        center.scale.y = 0.08
+        center.scale.z = 0.08
+        center.color.r = 1.0
+        center.color.g = 0.35
+        center.color.b = 0.1
+        center.color.a = 0.95
+        self.rgo_center_pub.publish(center)
+
+        slot_colors = {
+            'FRONT': (0.1, 1.0, 0.2),
+            'LEFT': (0.2, 0.5, 1.0),
+            'BACK': (1.0, 0.85, 0.1),
+            'RIGHT': (1.0, 0.1, 0.8),
+        }
+        for idx, armor_data in enumerate(data.get('armors', [])):
+            pos = cv_camera_point_to_visual(armor_data['center_m'])
+            quat = cv_yaw_to_visual_quat(armor_data.get('yaw_rad', 0.0))
+            slot = armor_data.get('slot', 'UNKNOWN')
+            color = slot_colors.get(slot, (0.8, 0.8, 0.8))
+
+            armor = Marker()
+            armor.header.stamp = stamp
+            armor.header.frame_id = 'camera_link'
+            armor.ns = 'rgo_armor'
+            armor.id = idx
+            armor.type = Marker.CUBE
+            armor.action = Marker.ADD
+            armor.pose.position.x = pos[0]
+            armor.pose.position.y = pos[1]
+            armor.pose.position.z = pos[2]
+            armor.pose.orientation.x = quat[0]
+            armor.pose.orientation.y = quat[1]
+            armor.pose.orientation.z = quat[2]
+            armor.pose.orientation.w = quat[3]
+            armor.scale.x = 0.02
+            armor.scale.y = 0.14
+            armor.scale.z = 0.06
+            armor.color.r = color[0]
+            armor.color.g = color[1]
+            armor.color.b = color[2]
+            armor.color.a = 0.75
+            self.rgo_armor_pub.publish(armor)
+
+        self.last_rgo_mtime_ns = mtime_ns
 
 
 def main() -> None:

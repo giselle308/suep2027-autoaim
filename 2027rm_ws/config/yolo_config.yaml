@@ -10,10 +10,10 @@ yolo:
   nms_thres: 0.25
   # FastNMS: keep only the top-K scoring boxes before NMS. <=0 disables the cap.
   fast_nms_topk: 200
-  # thread_num covers long-running CGraph nodes: camera + async_infer + pnp + display.
-  thread_num: 4
+  # thread_num covers long-running CGraph nodes: camera + async_infer + pnp + rgo + display.
+  thread_num: 5
   # Number of OpenVINO async InferRequest slots inside the single async_infer node.
-  # Clamped to [1, 2] in code for low-latency real-time use.
+  # Values above 2 may improve throughput but can increase latency/resource use.
   infer_workers: 2
   # Only evaluate color on the top-K post-NMS boxes to bound target-hit latency.
   max_color_candidates: 8
@@ -22,7 +22,8 @@ yolo:
   ema_enable: true
   ema_alpha: 0.45
   ema_reset_frame_gap: 10
-  # supported: red | blue
+  # supported: red | blue | any
+  # Use any while debugging to verify whether the model is detecting the opposite color.
   target_color: red
 
 pnp:
@@ -41,12 +42,49 @@ pnp:
   max_corner_reprojection_error_px: 8.0
   min_depth_m: 0.05
   max_depth_m: 20.0
+  # Fix the PnP translation, enumerate armor yaw, and pick the projection that best matches detected corners.
+  yaw_refine_enable: true
+  yaw_search_range_deg: 45.0
+  yaw_search_step_deg: 1.0
 
 debug:
   # true: generate and send visualization frames for foxglove
   # false: normal run without visualization rendering
-  foxglove_enable: false
-  
+  foxglove_enable: true
+serial:
+  # true: read StandardRobot++ IMU frames directly in the CGraph pipeline.
+  # Keep false while the ROS2 communication node owns the serial port.
+  enable: false
+  device: /dev/ttyACM0
+  # Must match the lower controller baud rate.
+  baud_rate: 921600
+
+profiling:
+  # true: print per-stage timing logs for performance tuning
+  enable: true
+  # profiling summary interval in milliseconds
+  interval_ms: 1000
+
+memory:
+  # 0 means auto: infer_workers + pipeline slack.
+  frame_buffer_pool_size: 0
+  frame_message_pool_size: 0
+  result_message_pool_size: 0
+  pnp_message_pool_size: 0
+  rgo_message_pool_size: 0
+  imu_message_pool_size: 0
+
+runtime:
+  # true pins long-running CGraph nodes to the CPU ids below.
+  affinity_enable: false
+  # -1 leaves that node unpinned.
+  camera_cpu: -1
+  infer_cpu: -1
+  pnp_cpu: -1
+  rgo_cpu: -1
+  display_cpu: -1
+  serial_cpu: -1
+
 logging:
   # trace | debug | info | warn | error | critical | off
   level: info

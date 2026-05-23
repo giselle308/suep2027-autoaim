@@ -20,12 +20,35 @@ else()
     message(STATUS "IPO/LTO not enabled: ${ipo_error}")
 endif()
 
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
+option(CAMERAAPP_PERF_SYMBOLS "Build with debug symbols and frame pointers for perf" OFF)
+if(CAMERAAPP_PERF_SYMBOLS AND CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
+    set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -g -fno-omit-frame-pointer")
+    set(CMAKE_INTERPROCEDURAL_OPTIMIZATION_RELEASE OFF)
+endif()
+
 set(WORKSPACE_ROOT ${CMAKE_CURRENT_SOURCE_DIR})
 set(PROJECT_ROOT ${WORKSPACE_ROOT}/2027rm_ws)
+set(APP_SRC_DIR ${PROJECT_ROOT}/src/app)
+set(CAMERA_SRC_DIR ${PROJECT_ROOT}/src/camera)
+set(COMMON_SRC_DIR ${PROJECT_ROOT}/src/common)
+set(DISPLAY_SRC_DIR ${PROJECT_ROOT}/src/display)
+set(POSE_SRC_DIR ${PROJECT_ROOT}/src/pose)
+set(SERIAL_SRC_DIR ${PROJECT_ROOT}/src/serial)
+set(VISION_SRC_DIR ${PROJECT_ROOT}/src/vision)
+set(APP_INCLUDE_DIRS
+    ${PROJECT_ROOT}/src
+    ${APP_SRC_DIR}
+    ${CAMERA_SRC_DIR}
+    ${COMMON_SRC_DIR}
+    ${DISPLAY_SRC_DIR}
+    ${POSE_SRC_DIR}
+    ${SERIAL_SRC_DIR}
+    ${VISION_SRC_DIR}
+)
 
 if(CMAKE_SIZEOF_VOID_P EQUAL 8)
     set(ARCH_DIR "64")
@@ -40,26 +63,41 @@ set(CAMERA_SDK_LIBS
     MvCamLVision
 )
 
-find_package(OpenCV REQUIRED)
+set(OPENCV_412_DIR "/usr/local/opencv4.12.0/lib/cmake/opencv4")
+if(EXISTS "${OPENCV_412_DIR}/OpenCVConfig.cmake" AND NOT OpenCV_DIR)
+    set(OpenCV_DIR "${OPENCV_412_DIR}" CACHE PATH "OpenCV 4.12.0 config directory" FORCE)
+endif()
+find_package(OpenCV 4.12.0 EXACT REQUIRED
+    COMPONENTS core imgproc dnn calib3d highgui videoio imgcodecs
+)
+message(STATUS "Using OpenCV ${OpenCV_VERSION}: ${OpenCV_DIR}")
 find_package(yaml-cpp REQUIRED)
 find_package(OpenVINO REQUIRED COMPONENTS Runtime)
 find_package(spdlog REQUIRED)
+
+get_target_property(OPENCV_CORE_LOCATION opencv_core IMPORTED_LOCATION_RELEASE)
+if(NOT OPENCV_CORE_LOCATION)
+    get_target_property(OPENCV_CORE_LOCATION opencv_core IMPORTED_LOCATION)
+endif()
+get_filename_component(OPENCV_LIBRARY_DIR "${OPENCV_CORE_LOCATION}" DIRECTORY)
 
 file(GLOB_RECURSE CGRAPH_SOURCES CONFIGURE_DEPENDS
     ${PROJECT_ROOT}/include/CGraph/src/*.cpp
 )
 add_library(cgraph_runtime OBJECT ${CGRAPH_SOURCES})
+target_compile_features(cgraph_runtime PUBLIC cxx_std_20)
 target_include_directories(cgraph_runtime PUBLIC
     ${PROJECT_ROOT}/include
     ${PROJECT_ROOT}/include/CGraph/src
-    ${PROJECT_ROOT}/src
+    ${APP_INCLUDE_DIRS}
 )
 
 function(configure_common_target target_name)
+    target_compile_features(${target_name} PRIVATE cxx_std_20)
     target_include_directories(${target_name} PRIVATE
         ${PROJECT_ROOT}/include
         ${PROJECT_ROOT}/include/CGraph/src
-        ${PROJECT_ROOT}/src
+        ${APP_INCLUDE_DIRS}
         ${OpenCV_INCLUDE_DIRS}
     )
     target_link_directories(${target_name} PRIVATE
@@ -74,7 +112,8 @@ function(configure_common_target target_name)
 endfunction()
 
 add_executable(camera_app
-    ${PROJECT_ROOT}/src/camera.cpp
+    ${CAMERA_SRC_DIR}/camera.cpp
+    ${COMMON_SRC_DIR}/profiling.cpp
 )
 configure_common_target(camera_app)
 target_link_libraries(camera_app PRIVATE ${CAMERA_SDK_LIBS})
@@ -82,7 +121,7 @@ target_compile_definitions(camera_app PRIVATE
     CAMERA_CONFIG_PATH="${PROJECT_ROOT}/config/config.yaml"
 )
 
-set(DETECTOR_SRC ${PROJECT_ROOT}/src/detector.cpp)
+set(DETECTOR_SRC ${APP_SRC_DIR}/detector.cpp)
 if(EXISTS ${DETECTOR_SRC})
     add_executable(detector_app
         ${DETECTOR_SRC}
@@ -92,14 +131,19 @@ endif()
 
 add_executable(cgraph_camera_detector
     $<TARGET_OBJECTS:cgraph_runtime>
-    ${PROJECT_ROOT}/src/camera.cpp
-    ${PROJECT_ROOT}/src/display_node.cpp
-    ${PROJECT_ROOT}/src/pnp_solver.cpp
-    ${PROJECT_ROOT}/src/postprocess.cpp
-    ${PROJECT_ROOT}/src/yolo.cpp
-    ${PROJECT_ROOT}/src/yolo_config_loader.cpp
-    ${PROJECT_ROOT}/src/yolo_openvino.cpp
-    ${PROJECT_ROOT}/src/startup_main.cpp
+    ${APP_SRC_DIR}/startup_main.cpp
+    ${APP_SRC_DIR}/yolo_config_loader.cpp
+    ${CAMERA_SRC_DIR}/camera.cpp
+    ${COMMON_SRC_DIR}/profiling.cpp
+    ${COMMON_SRC_DIR}/thread_affinity.cpp
+    ${DISPLAY_SRC_DIR}/display_node.cpp
+    ${POSE_SRC_DIR}/RGO_Tracker.cpp
+    ${POSE_SRC_DIR}/pnp_solver.cpp
+    ${SERIAL_SRC_DIR}/serial_imu_node.cpp
+    ${SERIAL_SRC_DIR}/serial_protocol.cpp
+    ${VISION_SRC_DIR}/postprocess.cpp
+    ${VISION_SRC_DIR}/yolo.cpp
+    ${VISION_SRC_DIR}/yolo_openvino.cpp
 )
 configure_common_target(cgraph_camera_detector)
 target_link_libraries(cgraph_camera_detector PRIVATE
@@ -165,6 +209,6 @@ add_custom_target(run_cgraph_camera_detector
 )
 
 set_target_properties(camera_app cgraph_camera_detector PROPERTIES
-    BUILD_RPATH "${CAMERA_SDK_LIB_DIR}"
-    INSTALL_RPATH "${CAMERA_SDK_LIB_DIR}"
+    BUILD_RPATH "${CAMERA_SDK_LIB_DIR};${OPENCV_LIBRARY_DIR}"
+    INSTALL_RPATH "${CAMERA_SDK_LIB_DIR};${OPENCV_LIBRARY_DIR}"
 )
