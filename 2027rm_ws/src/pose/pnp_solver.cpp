@@ -297,6 +297,10 @@ void DumpPnpForFoxglove(const PnpResultMParam &result)
     fout << "  \"detect_latency_ms\": " << result.detect_latency_ms << ",\n";
     fout << "  \"status\": \"" << result.status << "\",\n";
     fout << "  \"armor_type\": \"" << result.armor_type << "\",\n";
+    fout << "  \"class_id\": " << result.class_id << ",\n";
+    fout << "  \"armor_name_id\": " << result.armor_name_id << ",\n";
+    fout << "  \"armor_name\": \"" << result.armor_name << "\",\n";
+    fout << "  \"armor_name_confidence\": " << result.armor_name_confidence << ",\n";
     fout << "  \"mean_reprojection_error_px\": " << result.mean_reprojection_error_px << ",\n";
     fout << "  \"max_reprojection_error_px\": " << result.max_reprojection_error_px << ",\n";
     fout << "  \"reprojection_ok\": " << (result.reprojection_ok ? "true" : "false") << ",\n";
@@ -780,61 +784,68 @@ public:
             auto record_pnp_total = [&]() {
                 app::profiling::Record(app::profiling::Stage::PnpTotal, ElapsedMsSince(pnp_total_start));
             };
-            image_corners_.assign(result->corners.begin(), result->corners.end());
-            const ArmorType armor_type = InferArmorType(result->corners, geometry_);
-            const std::vector<cv::Point3f> &object_corners =
-                (armor_type == ArmorType::Large)
-                    ? big_armor_points_
-                    : small_armor_points_;
-            const cv::Mat &object_corners_mat =
-                (armor_type == ArmorType::Large)
-                    ? big_armor_points_mat_
-                    : small_armor_points_mat_;
-            const cv::Point2f center_pt = ComputeCenterPoint(result->corners);
-            const cv::Vec2d armor_size_m = ArmorSizeMeters(armor_type, geometry_);
-            cv::Mat rvec;
-            cv::Mat tvec;
-            bool ok = false;
-
-            {
-                app::profiling::ScopedTimer pnp_solve_timer(app::profiling::Stage::PnpSolve);
-                ok = SolveArmorPnpIppe(object_corners,
-                                       object_corners_mat,
-                                       image_corners_,
-                                       calibration_,
-                                       constraint_,
-                                       rvec,
-                                       tvec);
-                if (ok)
-                {
-                    RefineYawByFixedTranslation(object_corners,
-                                                object_corners_mat,
-                                                image_corners_,
-                                                calibration_,
-                                                constraint_,
-                                                solve_options_,
-                                                rvec,
-                                                tvec);
-                }
-            }
             ReprojectionStats reprojection_stats;
             bool valid_depth = false;
             bool valid_reprojection = false;
-            cv::Mat rotation_matrix;
-            if (ok)
+            std::vector<PnpResultMParam::ArmorPose> solved_armors;
             {
-                cv::Rodrigues(rvec, rotation_matrix);
-                reprojection_stats = ComputeReprojectionStats(object_corners_mat,
-                                                              image_corners_,
-                                                              calibration_,
-                                                              rvec,
-                                                              tvec);
-                valid_depth = HasValidRigidDepth(object_corners, rotation_matrix, tvec, constraint_);
-                valid_reprojection =
-                    reprojection_stats.mean_error_px <= constraint_.max_mean_reprojection_error_px &&
-                    reprojection_stats.max_error_px <= constraint_.max_corner_reprojection_error_px;
+                app::profiling::ScopedTimer pnp_solve_timer(app::profiling::Stage::PnpSolve);
+                if (!result->armors.empty())
+                {
+                    solved_armors.reserve(result->armors.size());
+                    for (const ResultMParam::ArmorDetection &det : result->armors)
+                    {
+                        PnpResultMParam::ArmorPose pose;
+                        ReprojectionStats stats;
+                        bool depth_ok = false;
+                        bool reproj_ok = false;
+                        if (SolveDetection(det.corners,
+                                           det.class_id,
+                                           det.armor_name_id,
+                                           det.armor_name_confidence,
+                                           det.armor_name,
+                                           pose,
+                                           &stats,
+                                           &depth_ok,
+                                           &reproj_ok))
+                        {
+                            solved_armors.push_back(std::move(pose));
+                        }
+                        if (solved_armors.empty())
+                        {
+                            reprojection_stats = stats;
+                            valid_depth = depth_ok;
+                            valid_reprojection = reproj_ok;
+                        }
+                    }
+                }
+                else
+                {
+                    PnpResultMParam::ArmorPose pose;
+                    if (SolveDetection(result->corners,
+                                       result->class_id,
+                                       result->armor_name_id,
+                                       result->armor_name_confidence,
+                                       result->armor_name,
+                                       pose,
+                                       &reprojection_stats,
+                                       &valid_depth,
+                                       &valid_reprojection))
+                    {
+                        solved_armors.push_back(std::move(pose));
+                    }
+                }
             }
-            if (ok && constraint_.enable && !valid_depth)
+
+            if (!solved_armors.empty())
+            {
+                const PnpResultMParam::ArmorPose &best = solved_armors.front();
+                reprojection_stats.mean_error_px = best.mean_reprojection_error_px;
+                reprojection_stats.max_error_px = best.max_reprojection_error_px;
+                valid_depth = best.depth_ok;
+                valid_reprojection = best.reprojection_ok;
+            }
+            if (solved_armors.empty() && constraint_.enable && !valid_depth)
             {
                 spdlog::warn("[PNP] depth rejected frame={} infer={} mean_reproj={:.2f}px max_reproj={:.2f}px depth_range=[{:.2f},{:.2f}]m",
                              result->frame_id,
@@ -853,7 +864,7 @@ public:
                 maybe_log_stats();
                 continue;
             }
-            if (!ok)
+            if (solved_armors.empty())
             {
                 spdlog::warn("[PNP] solve failed frame={} infer={}", result->frame_id, result->infer_id);
                 ++fail_count;
@@ -863,7 +874,7 @@ public:
                 continue;
             }
 
-            const cv::Vec3d euler_deg = RotationMatrixToEulerZyxDeg(rotation_matrix);
+            const PnpResultMParam::ArmorPose &best = solved_armors.front();
 
             std::shared_ptr<PnpResultMParam> pnp_result = pnp_result_pool_.acquire();
             pnp_result->frame_id = result->frame_id;
@@ -872,23 +883,22 @@ public:
             pnp_result->latency_ms = ElapsedMsSince(result->pipeline_start_tp);
             pnp_result->detect_latency_ms = result->detect_latency_ms;
             pnp_result->status = FormatReprojectionStatus(valid_reprojection ? "solved" : "loose", reprojection_stats);
-            pnp_result->armor_type = ArmorTypeName(armor_type);
-            pnp_result->mean_reprojection_error_px = reprojection_stats.mean_error_px;
-            pnp_result->max_reprojection_error_px = reprojection_stats.max_error_px;
-            pnp_result->reprojection_ok = valid_reprojection;
-            pnp_result->depth_ok = valid_depth;
-            pnp_result->center_px = center_pt;
-            pnp_result->tvec_m = cv::Vec3d(
-                tvec.at<double>(0, 0),
-                tvec.at<double>(1, 0),
-                tvec.at<double>(2, 0));
-            pnp_result->rvec = cv::Vec3d(
-                rvec.at<double>(0, 0),
-                rvec.at<double>(1, 0),
-                rvec.at<double>(2, 0));
-            pnp_result->ypr_deg = euler_deg;
-            pnp_result->quat_xyzw = RotationMatrixToQuaternion(rotation_matrix);
-            pnp_result->armor_size_m = armor_size_m;
+            pnp_result->armor_type = best.armor_type;
+            pnp_result->class_id = best.class_id;
+            pnp_result->armor_name_id = best.armor_name_id;
+            pnp_result->armor_name_confidence = best.armor_name_confidence;
+            pnp_result->armor_name = best.armor_name;
+            pnp_result->mean_reprojection_error_px = best.mean_reprojection_error_px;
+            pnp_result->max_reprojection_error_px = best.max_reprojection_error_px;
+            pnp_result->reprojection_ok = best.reprojection_ok;
+            pnp_result->depth_ok = best.depth_ok;
+            pnp_result->center_px = best.center_px;
+            pnp_result->tvec_m = best.tvec_m;
+            pnp_result->rvec = best.rvec;
+            pnp_result->ypr_deg = best.ypr_deg;
+            pnp_result->quat_xyzw = best.quat_xyzw;
+            pnp_result->armor_size_m = best.armor_size_m;
+            pnp_result->armors = std::move(solved_armors);
             const CStatus pub_st = CGRAPH_PUB_MPARAM(PnpResultMParam, PNP_TOPIC, pnp_result, GMessagePushStrategy::REPLACE);
             if (pub_st.isErr())
             {
@@ -912,6 +922,116 @@ public:
     }
 
 private:
+    bool SolveDetection(const std::array<cv::Point2f, 4> &corners,
+                        int class_id,
+                        int armor_name_id,
+                        float armor_name_confidence,
+                        const std::string &armor_name,
+                        PnpResultMParam::ArmorPose &pose,
+                        ReprojectionStats *stats_out = nullptr,
+                        bool *valid_depth_out = nullptr,
+                        bool *valid_reprojection_out = nullptr)
+    {
+        image_corners_.assign(corners.begin(), corners.end());
+        const ArmorType armor_type = InferArmorType(corners, geometry_);
+        const std::vector<cv::Point3f> &object_corners =
+            (armor_type == ArmorType::Large)
+                ? big_armor_points_
+                : small_armor_points_;
+        const cv::Mat &object_corners_mat =
+            (armor_type == ArmorType::Large)
+                ? big_armor_points_mat_
+                : small_armor_points_mat_;
+
+        cv::Mat rvec;
+        cv::Mat tvec;
+        bool ok = SolveArmorPnpIppe(object_corners,
+                                    object_corners_mat,
+                                    image_corners_,
+                                    calibration_,
+                                    constraint_,
+                                    rvec,
+                                    tvec);
+        if (ok)
+        {
+            RefineYawByFixedTranslation(object_corners,
+                                        object_corners_mat,
+                                        image_corners_,
+                                        calibration_,
+                                        constraint_,
+                                        solve_options_,
+                                        rvec,
+                                        tvec);
+        }
+        if (!ok)
+        {
+            return false;
+        }
+
+        cv::Mat rotation_matrix;
+        cv::Rodrigues(rvec, rotation_matrix);
+        const ReprojectionStats stats = ComputeReprojectionStats(object_corners_mat,
+                                                                 image_corners_,
+                                                                 calibration_,
+                                                                 rvec,
+                                                                 tvec);
+        const bool valid_depth = HasValidRigidDepth(object_corners, rotation_matrix, tvec, constraint_);
+        const bool valid_reprojection =
+            stats.mean_error_px <= constraint_.max_mean_reprojection_error_px &&
+            stats.max_error_px <= constraint_.max_corner_reprojection_error_px;
+        if (constraint_.enable && !valid_depth)
+        {
+            if (stats_out)
+            {
+                *stats_out = stats;
+            }
+            if (valid_depth_out)
+            {
+                *valid_depth_out = valid_depth;
+            }
+            if (valid_reprojection_out)
+            {
+                *valid_reprojection_out = valid_reprojection;
+            }
+            return false;
+        }
+
+        pose.has_pose = true;
+        pose.armor_type = ArmorTypeName(armor_type);
+        pose.class_id = class_id;
+        pose.armor_name_id = armor_name_id;
+        pose.armor_name_confidence = armor_name_confidence;
+        pose.armor_name = armor_name;
+        pose.mean_reprojection_error_px = stats.mean_error_px;
+        pose.max_reprojection_error_px = stats.max_error_px;
+        pose.reprojection_ok = valid_reprojection;
+        pose.depth_ok = valid_depth;
+        pose.center_px = ComputeCenterPoint(corners);
+        pose.tvec_m = cv::Vec3d(tvec.at<double>(0, 0),
+                                tvec.at<double>(1, 0),
+                                tvec.at<double>(2, 0));
+        pose.rvec = cv::Vec3d(rvec.at<double>(0, 0),
+                              rvec.at<double>(1, 0),
+                              rvec.at<double>(2, 0));
+        pose.ypr_deg = RotationMatrixToEulerZyxDeg(rotation_matrix);
+        pose.quat_xyzw = RotationMatrixToQuaternion(rotation_matrix);
+        pose.armor_size_m = ArmorSizeMeters(armor_type, geometry_);
+
+        if (stats_out)
+        {
+            *stats_out = stats;
+        }
+        if (valid_depth_out)
+        {
+            *valid_depth_out = valid_depth;
+        }
+        if (valid_reprojection_out)
+        {
+            *valid_reprojection_out = valid_reprojection;
+        }
+        return true;
+    }
+
     void PublishNoPose(const ResultMParam &result,
                        const std::string &status,
                        const ReprojectionStats *stats = nullptr,
@@ -925,6 +1045,10 @@ private:
         pnp_result->latency_ms = ElapsedMsSince(result.pipeline_start_tp);
         pnp_result->detect_latency_ms = result.detect_latency_ms;
         pnp_result->status = status;
+        pnp_result->class_id = result.class_id;
+        pnp_result->armor_name_id = result.armor_name_id;
+        pnp_result->armor_name_confidence = result.armor_name_confidence;
+        pnp_result->armor_name = result.armor_name;
         if (stats)
         {
             pnp_result->mean_reprojection_error_px = stats->mean_error_px;

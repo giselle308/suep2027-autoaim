@@ -90,16 +90,24 @@ def cv_camera_point_to_visual(tvec):
     )
 
 
-def cv_yaw_to_visual_quat(yaw_rad):
+def cv_yaw_pitch_to_visual_quat(yaw_rad, pitch_rad=0.0):
     c = math.cos(float(yaw_rad))
     s = math.sin(float(yaw_rad))
+    cp = math.cos(float(pitch_rad))
+    sp = math.sin(float(pitch_rad))
     # Marker local axes: X=armor normal/thickness, Y=armor width, Z=armor height.
-    # Keep width in the ground plane and height on visual Z; yaw only spins around visual Z.
-    visual_rot = (
+    # Keep width in the ground plane and height on visual Z, then tilt around local Y.
+    yaw_rot = (
         (c, s, 0.0),
         (-s, c, 0.0),
         (0.0, 0.0, 1.0),
     )
+    pitch_rot = (
+        (cp, 0.0, sp),
+        (0.0, 1.0, 0.0),
+        (-sp, 0.0, cp),
+    )
+    visual_rot = matmul3(yaw_rot, pitch_rot)
     return matrix_to_quat(visual_rot)
 
 
@@ -255,7 +263,15 @@ class DebugImagePublisher(Node):
             self.last_rgo_mtime_ns = mtime_ns
             return
 
-        center_pos = cv_camera_point_to_visual(data['body_center_m'])
+        body_center = data.get('body_center_m')
+        if body_center is None and 'state' in data and len(data['state']) >= 5:
+            body_center = [data['state'][0], data['state'][2], data['state'][4]]
+        if body_center is None:
+            self.get_logger().warning('rgo json missing body_center_m/state')
+            self.last_rgo_mtime_ns = mtime_ns
+            return
+
+        center_pos = cv_camera_point_to_visual(body_center)
         center = Marker()
         center.header.stamp = stamp
         center.header.frame_id = 'camera_link'
@@ -284,7 +300,10 @@ class DebugImagePublisher(Node):
         }
         for idx, armor_data in enumerate(data.get('armors', [])):
             pos = cv_camera_point_to_visual(armor_data['center_m'])
-            quat = cv_yaw_to_visual_quat(armor_data.get('yaw_rad', 0.0))
+            quat = cv_yaw_pitch_to_visual_quat(
+                armor_data.get('yaw_rad', 0.0),
+                armor_data.get('pitch_rad', 0.0),
+            )
             slot = armor_data.get('slot', 'UNKNOWN')
             color = slot_colors.get(slot, (0.8, 0.8, 0.8))
 

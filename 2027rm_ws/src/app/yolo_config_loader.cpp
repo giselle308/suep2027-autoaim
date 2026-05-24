@@ -125,6 +125,9 @@ void LoadYoloConfig(AppConfig &cfg)
             if (yolo["thread_num"]) cfg.thread_num = std::max(2, yolo["thread_num"].as<int>());
             if (yolo["infer_workers"]) cfg.infer_workers = std::max(1, yolo["infer_workers"].as<int>());
             if (yolo["max_color_candidates"]) cfg.max_color_candidates = std::max(1, yolo["max_color_candidates"].as<int>());
+            if (yolo["armor_classifier_enable"]) cfg.armor_classifier_enable = yolo["armor_classifier_enable"].as<bool>();
+            if (yolo["armor_classifier_model_path"]) cfg.armor_classifier_model_path = yolo["armor_classifier_model_path"].as<std::string>();
+            if (yolo["armor_classifier_confidence"]) cfg.armor_classifier_confidence = std::clamp(yolo["armor_classifier_confidence"].as<double>(), 0.0, 1.0);
             if (yolo["ema_enable"]) cfg.ema_enable = yolo["ema_enable"].as<bool>();
             if (yolo["ema_alpha"]) cfg.ema_alpha = std::clamp(yolo["ema_alpha"].as<double>(), 0.0, 1.0);
             if (yolo["ema_reset_frame_gap"]) cfg.ema_reset_frame_gap = std::max<uint64_t>(1, yolo["ema_reset_frame_gap"].as<uint64_t>());
@@ -214,24 +217,28 @@ void LoadYoloConfig(AppConfig &cfg)
 
 AppConfig MakeDefaultAppConfig()
 {
-    return AppConfig{
-        "model/last.xml",
-        "CPU",
-        0,
-        0.25f,
-        0.25f,
-        200,
-        4,
-        2,
-        8,
-        true,
-        0.45,
-        10,
-        "blue",
-        true,
-        0.135,
-        0.230,
-        0.056};
+    AppConfig cfg;
+    cfg.model_path = "model/last.xml";
+    cfg.device = "CPU";
+    cfg.num_classes = 0;
+    cfg.conf_thres = 0.25f;
+    cfg.nms_thres = 0.25f;
+    cfg.fast_nms_topk = 200;
+    cfg.thread_num = 4;
+    cfg.infer_workers = 2;
+    cfg.max_color_candidates = 8;
+    cfg.armor_classifier_enable = true;
+    cfg.armor_classifier_model_path = "model/tiny_resnet.onnx";
+    cfg.armor_classifier_confidence = 0.70;
+    cfg.ema_enable = true;
+    cfg.ema_alpha = 0.45;
+    cfg.ema_reset_frame_gap = 10;
+    cfg.target_color = "blue";
+    cfg.pnp_enable = true;
+    cfg.pnp_small_armor_width_m = 0.135;
+    cfg.pnp_big_armor_width_m = 0.230;
+    cfg.pnp_lightbar_length_m = 0.056;
+    return cfg;
 }
 
 void InitYoloRuntimeConfig()

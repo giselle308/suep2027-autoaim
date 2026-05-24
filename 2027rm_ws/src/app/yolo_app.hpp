@@ -4,6 +4,7 @@
 #include <chrono>
 #include <cstdint>
 #include <string>
+#include <vector>
 
 #include <CGraph.h>
 #include <opencv2/opencv.hpp>
@@ -20,6 +21,9 @@ struct AppConfig {
     int thread_num;
     int infer_workers;
     int max_color_candidates;
+    bool armor_classifier_enable = true;
+    std::string armor_classifier_model_path = "model/tiny_resnet.onnx";
+    double armor_classifier_confidence = 0.70;
     bool ema_enable = true;
     double ema_alpha = 0.45;
     uint64_t ema_reset_frame_gap = 10;
@@ -73,6 +77,21 @@ struct alignas(app::memory::kCacheLineSize) FrameMParam : public CGraph::GMessag
 
 struct alignas(app::memory::kCacheLineSize) ResultMParam : public CGraph::GMessageParam
 {
+    struct ArmorDetection
+    {
+        cv::Rect box;
+        int class_id = -1;
+        float confidence = 0.0f;
+        int armor_name_id = -1;
+        float armor_name_confidence = 0.0f;
+        std::string armor_name;
+        std::array<cv::Point2f, 4> corners = {
+            cv::Point2f(0.0f, 0.0f),
+            cv::Point2f(0.0f, 0.0f),
+            cv::Point2f(0.0f, 0.0f),
+            cv::Point2f(0.0f, 0.0f)};
+    };
+
     cv::Mat vis;
     uint64_t frame_id = 0;
     int infer_id = 0;
@@ -81,16 +100,41 @@ struct alignas(app::memory::kCacheLineSize) ResultMParam : public CGraph::GMessa
     std::chrono::steady_clock::time_point pipeline_start_tp;
     std::chrono::steady_clock::time_point capture_tp;
     int det_count = 0;
+    int class_id = -1;
+    int armor_name_id = -1;
+    float armor_name_confidence = 0.0f;
+    std::string armor_name;
     bool has_corners = false;
     std::array<cv::Point2f, 4> corners = {
         cv::Point2f(0.0f, 0.0f),
         cv::Point2f(0.0f, 0.0f),
         cv::Point2f(0.0f, 0.0f),
         cv::Point2f(0.0f, 0.0f)};
+    std::vector<ArmorDetection> armors;
 };
 
 struct alignas(app::memory::kCacheLineSize) PnpResultMParam : public CGraph::GMessageParam
 {
+    struct ArmorPose
+    {
+        bool has_pose = false;
+        std::string armor_type;
+        int class_id = -1;
+        int armor_name_id = -1;
+        float armor_name_confidence = 0.0f;
+        std::string armor_name;
+        double mean_reprojection_error_px = 0.0;
+        double max_reprojection_error_px = 0.0;
+        bool reprojection_ok = false;
+        bool depth_ok = false;
+        cv::Point2f center_px = cv::Point2f(0.0f, 0.0f);
+        cv::Vec3d tvec_m = cv::Vec3d(0.0, 0.0, 0.0);
+        cv::Vec3d rvec = cv::Vec3d(0.0, 0.0, 0.0);
+        cv::Vec3d ypr_deg = cv::Vec3d(0.0, 0.0, 0.0);
+        cv::Vec4d quat_xyzw = cv::Vec4d(0.0, 0.0, 0.0, 1.0);
+        cv::Vec2d armor_size_m = cv::Vec2d(0.0, 0.0);
+    };
+
     uint64_t frame_id = 0;
     int infer_id = 0;
     bool has_pose = false;
@@ -98,6 +142,10 @@ struct alignas(app::memory::kCacheLineSize) PnpResultMParam : public CGraph::GMe
     double detect_latency_ms = 0.0;
     std::string status;
     std::string armor_type;
+    int class_id = -1;
+    int armor_name_id = -1;
+    float armor_name_confidence = 0.0f;
+    std::string armor_name;
     double mean_reprojection_error_px = 0.0;
     double max_reprojection_error_px = 0.0;
     bool reprojection_ok = false;
@@ -108,6 +156,7 @@ struct alignas(app::memory::kCacheLineSize) PnpResultMParam : public CGraph::GMe
     cv::Vec3d ypr_deg = cv::Vec3d(0.0, 0.0, 0.0);
     cv::Vec4d quat_xyzw = cv::Vec4d(0.0, 0.0, 0.0, 1.0);
     cv::Vec2d armor_size_m = cv::Vec2d(0.0, 0.0);
+    std::vector<ArmorPose> armors;
 };
 
 struct alignas(app::memory::kCacheLineSize) RgoOutputMParam : public CGraph::GMessageParam
@@ -119,6 +168,10 @@ struct alignas(app::memory::kCacheLineSize) RgoOutputMParam : public CGraph::GMe
     double detect_latency_ms = 0.0;
     std::string status;
     std::string armor_type;
+    int class_id = -1;
+    int armor_name_id = -1;
+    float armor_name_confidence = 0.0f;
+    std::string armor_name;
     double mean_reprojection_error_px = 0.0;
     double max_reprojection_error_px = 0.0;
     bool reprojection_ok = false;

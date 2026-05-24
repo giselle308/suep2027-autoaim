@@ -17,6 +17,10 @@ yolo:
   infer_workers: 2
   # Only evaluate color on the top-K post-NMS boxes to bound target-hit latency.
   max_color_candidates: 8
+  # Secondary 32x32 grayscale classifier for armor number/name.
+  armor_classifier_enable: true
+  armor_classifier_model_path: model/tiny_resnet.onnx
+  armor_classifier_confidence: 0.70
   # EMA filter for detected armor corner points before display and PnP.
   # alpha closer to 1.0 is more responsive; closer to 0.0 is smoother.
   ema_enable: true

@@ -167,6 +167,11 @@ CStatus DisplayNode::run()
                  " lag=" + std::to_string(pnp_lag);
             if (p->has_pose)
             {
+                if (!p->armor_name.empty())
+                {
+                    t5 += " name=" + p->armor_name +
+                          "(" + cv::format("%.2f", p->armor_name_confidence) + ")";
+                }
                 if (!p->status.empty())
                 {
                     t5 += " " + p->status;

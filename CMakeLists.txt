@@ -121,6 +121,18 @@ target_compile_definitions(camera_app PRIVATE
     CAMERA_CONFIG_PATH="${PROJECT_ROOT}/config/config.yaml"
 )
 
+add_executable(hik_camera_calibrate
+    ${PROJECT_ROOT}/tools/hik_camera_calibrate.cpp
+    ${CAMERA_SRC_DIR}/camera.cpp
+    ${COMMON_SRC_DIR}/profiling.cpp
+)
+configure_common_target(hik_camera_calibrate)
+target_link_libraries(hik_camera_calibrate PRIVATE ${CAMERA_SDK_LIBS})
+target_compile_definitions(hik_camera_calibrate PRIVATE
+    CAMERA_CONFIG_PATH="${PROJECT_ROOT}/config/config.yaml"
+    CAMERA_NODE_LIBRARY
+)
+
 set(DETECTOR_SRC ${APP_SRC_DIR}/detector.cpp)
 if(EXISTS ${DETECTOR_SRC})
     add_executable(detector_app
@@ -137,7 +149,7 @@ add_executable(cgraph_camera_detector
     ${COMMON_SRC_DIR}/profiling.cpp
     ${COMMON_SRC_DIR}/thread_affinity.cpp
     ${DISPLAY_SRC_DIR}/display_node.cpp
-    ${POSE_SRC_DIR}/RGO_Tracker.cpp
+    ${POSE_SRC_DIR}/Tracker.cpp
     ${POSE_SRC_DIR}/pnp_solver.cpp
     ${SERIAL_SRC_DIR}/serial_imu_node.cpp
     ${SERIAL_SRC_DIR}/serial_protocol.cpp
@@ -157,7 +169,7 @@ target_compile_definitions(cgraph_camera_detector PRIVATE
     CAMERA_NODE_LIBRARY
 )
 
-set(ALL_APP_TARGETS camera_app cgraph_camera_detector)
+set(ALL_APP_TARGETS camera_app cgraph_camera_detector hik_camera_calibrate)
 if(TARGET detector_app)
     list(APPEND ALL_APP_TARGETS detector_app)
 endif()

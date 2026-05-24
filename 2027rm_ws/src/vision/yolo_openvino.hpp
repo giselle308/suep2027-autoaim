@@ -10,6 +10,7 @@
 #include <vector>
 
 #include <opencv2/opencv.hpp>
+#include <opencv2/dnn.hpp>
 #include <openvino/openvino.hpp>
 
 #include "message_pool.hpp"
@@ -59,6 +60,12 @@ public:
 private:
     bool finishSlot(AsyncSlot &slot, std::shared_ptr<ResultMParam> &result, std::string *error);
     void rebuildAllowedClassTable();
+    bool initArmorClassifier(const AppConfig &cfg, std::string *error);
+    bool classifyArmorNumber(const cv::Mat &frame,
+                             const std::array<cv::Point2f, 4> &corners,
+                             int &name_id,
+                             float &confidence,
+                             std::string &name) const;
     void preprocess(AsyncSlot &slot) const;
     void notifyRequestCompleted(std::exception_ptr exception);
     bool consumeCallbackException(std::string *error);
@@ -78,6 +85,11 @@ private:
     int max_color_candidates_ = 1;
     std::vector<std::string> class_labels_;
     std::vector<uint8_t> class_allowed_;
+    bool armor_classifier_enable_ = false;
+    double armor_classifier_confidence_ = 0.70;
+    cv::dnn::Net armor_classifier_;
+    std::vector<std::string> armor_name_labels_ = {
+        "one", "two", "three", "four", "five", "sentry", "outpost", "base", "not_armor"};
     std::optional<YoloPostprocessor> postprocessor_;
     SharedParamPool<ResultMParam> result_pool_;
     CompletionState completion_;

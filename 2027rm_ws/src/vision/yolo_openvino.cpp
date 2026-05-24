@@ -2,6 +2,7 @@
 
 #include <algorithm>
 #include <cmath>
+#include <filesystem>
 
 #include <openvino/core/preprocess/pre_post_process.hpp>
 #include <spdlog/spdlog.h>
@@ -22,6 +23,10 @@ bool YoloOpenvino::init(const AppConfig &cfg, std::string *error)
         const std::string resolved_model_path = ResolveModelPath(cfg.model_path);
         class_labels_ = LoadModelLabels(resolved_model_path);
         rebuildAllowedClassTable();
+        if (!initArmorClassifier(cfg, error))
+        {
+            return false;
+        }
         auto model = core_.read_model(resolved_model_path);
         const auto model_input_shape = model->input().get_shape();
         if (model_input_shape.size() != 4 || model_input_shape[1] != 3)
@@ -322,12 +327,17 @@ bool YoloOpenvino::finishSlot(AsyncSlot &slot, std::shared_ptr<ResultMParam> &re
 
         int kept_count = 0;
         bool has_best_corners = false;
+        std::vector<ResultMParam::ArmorDetection> detected_armors;
         std::array<cv::Point2f, 4> best_corners = {
             cv::Point2f(0.0f, 0.0f),
             cv::Point2f(0.0f, 0.0f),
             cv::Point2f(0.0f, 0.0f),
             cv::Point2f(0.0f, 0.0f)};
         float best_conf = -1.0f;
+        int best_class_id = -1;
+        int best_armor_name_id = -1;
+        float best_armor_name_confidence = 0.0f;
+        std::string best_armor_name;
         const cv::Scalar box_color = (target_color_ == TargetColor::Red)
                                          ? cv::Scalar(0, 0, 255)
                                          : (target_color_ == TargetColor::Blue ? cv::Scalar(255, 0, 0) : cv::Scalar(0, 255, 0));
@@ -341,9 +351,28 @@ bool YoloOpenvino::finishSlot(AsyncSlot &slot, std::shared_ptr<ResultMParam> &re
             ++kept_count;
 
             const std::array<cv::Point2f, 4> &corner_pts = d.keypoints;
+            int armor_name_id = -1;
+            float armor_name_confidence = 0.0f;
+            std::string armor_name;
+            classifyArmorNumber(slot.frame, corner_pts, armor_name_id, armor_name_confidence, armor_name);
+
+            ResultMParam::ArmorDetection armor_det;
+            armor_det.box = d.box;
+            armor_det.class_id = d.class_id;
+            armor_det.confidence = d.confidence;
+            armor_det.armor_name_id = armor_name_id;
+            armor_det.armor_name_confidence = armor_name_confidence;
+            armor_det.armor_name = armor_name;
+            armor_det.corners = corner_pts;
+            detected_armors.push_back(std::move(armor_det));
+
             if (d.confidence > best_conf)
             {
                 best_conf = d.confidence;
+                best_class_id = d.class_id;
+                best_armor_name_id = armor_name_id;
+                best_armor_name_confidence = armor_name_confidence;
+                best_armor_name = armor_name;
                 best_corners = corner_pts;
                 has_best_corners = true;
             }
@@ -356,6 +385,13 @@ bool YoloOpenvino::finishSlot(AsyncSlot &slot, std::shared_ptr<ResultMParam> &re
             std::string text = "id=" + std::to_string(d.class_id) +
                                " conf=" + cv::format("%.2f", d.confidence) +
                                " kpt";
+            int vis_name_id = -1;
+            float vis_name_conf = 0.0f;
+            std::string vis_name;
+            if (classifyArmorNumber(slot.frame, corner_pts, vis_name_id, vis_name_conf, vis_name))
+            {
+                text += " num=" + vis_name + "(" + cv::format("%.2f", vis_name_conf) + ")";
+            }
             int ty = std::max(0, d.box.y - 5);
             cv::putText(vis, text, cv::Point(d.box.x, ty), cv::FONT_HERSHEY_SIMPLEX, 0.5, box_color, 2, cv::LINE_AA);
             DrawArmorFrame(vis, corner_pts, box_color);
@@ -369,8 +405,13 @@ bool YoloOpenvino::finishSlot(AsyncSlot &slot, std::shared_ptr<ResultMParam> &re
         result->pipeline_start_tp = slot.pipeline_start_tp;
         result->capture_tp = slot.capture_tp;
         result->det_count = kept_count;
+        result->class_id = best_class_id;
+        result->armor_name_id = best_armor_name_id;
+        result->armor_name_confidence = best_armor_name_confidence;
+        result->armor_name = best_armor_name;
         result->has_corners = has_best_corners;
         result->corners = best_corners;
+        result->armors = std::move(detected_armors);
         slot.busy = false;
         slot.frame.release();
     }
@@ -381,6 +422,117 @@ bool YoloOpenvino::finishSlot(AsyncSlot &slot, std::shared_ptr<ResultMParam> &re
         {
             *error = e.what();
         }
+        return false;
+    }
+    return true;
+}
+
+bool YoloOpenvino::initArmorClassifier(const AppConfig &cfg, std::string *error)
+{
+    armor_classifier_enable_ = false;
+    armor_classifier_confidence_ = cfg.armor_classifier_confidence;
+    if (!cfg.armor_classifier_enable)
+    {
+        return true;
+    }
+
+    const std::string model_path = ResolveModelPath(cfg.armor_classifier_model_path);
+    if (!std::filesystem::exists(model_path))
+    {
+        spdlog::warn("Armor number classifier disabled, model not found: {}", model_path);
+        return true;
+    }
+
+    try
+    {
+        armor_classifier_ = cv::dnn::readNetFromONNX(model_path);
+        armor_classifier_enable_ = !armor_classifier_.empty();
+        spdlog::info("Armor number classifier loaded: {} threshold={:.2f}",
+                     model_path,
+                     armor_classifier_confidence_);
+    }
+    catch (const std::exception &e)
+    {
+        if (error)
+        {
+            *error = std::string("load armor number classifier failed: ") + e.what();
+        }
+        return false;
+    }
+    return true;
+}
+
+bool YoloOpenvino::classifyArmorNumber(const cv::Mat &frame,
+                                       const std::array<cv::Point2f, 4> &corners,
+                                       int &name_id,
+                                       float &confidence,
+                                       std::string &name) const
+{
+    name_id = -1;
+    confidence = 0.0f;
+    name.clear();
+    if (!armor_classifier_enable_ || frame.empty())
+    {
+        return false;
+    }
+
+    cv::Rect rect = cv::boundingRect(std::vector<cv::Point2f>(corners.begin(), corners.end()));
+    const int pad_x = std::max(2, rect.width / 8);
+    const int pad_y = std::max(2, rect.height / 4);
+    rect.x = std::max(0, rect.x - pad_x);
+    rect.y = std::max(0, rect.y - pad_y);
+    rect.width = std::min(frame.cols - rect.x, rect.width + 2 * pad_x);
+    rect.height = std::min(frame.rows - rect.y, rect.height + 2 * pad_y);
+    if (rect.width <= 2 || rect.height <= 2)
+    {
+        return false;
+    }
+
+    cv::Mat gray;
+    cv::cvtColor(frame(rect), gray, cv::COLOR_BGR2GRAY);
+    cv::Mat input(32, 32, CV_8UC1, cv::Scalar(0));
+    const double scale = std::min(32.0 / static_cast<double>(gray.cols),
+                                  32.0 / static_cast<double>(gray.rows));
+    const int w = std::max(1, static_cast<int>(std::round(gray.cols * scale)));
+    const int h = std::max(1, static_cast<int>(std::round(gray.rows * scale)));
+    cv::Mat resized;
+    cv::resize(gray, resized, cv::Size(w, h));
+    const cv::Rect dst_roi(0, 0, std::min(32, w), std::min(32, h));
+    resized(dst_roi).copyTo(input(dst_roi));
+
+    cv::Mat blob = cv::dnn::blobFromImage(input, 1.0 / 255.0, cv::Size(), cv::Scalar());
+    cv::dnn::Net net = armor_classifier_;
+    net.setInput(blob);
+    cv::Mat outputs = net.forward();
+    if (outputs.empty())
+    {
+        return false;
+    }
+    outputs = outputs.reshape(1, 1);
+    float max_logit = *std::max_element(outputs.begin<float>(), outputs.end<float>());
+    cv::exp(outputs - max_logit, outputs);
+    const float sum = static_cast<float>(cv::sum(outputs)[0]);
+    if (sum <= 1e-6f)
+    {
+        return false;
+    }
+    outputs /= sum;
+
+    double conf = 0.0;
+    cv::Point label_point;
+    cv::minMaxLoc(outputs, nullptr, &conf, nullptr, &label_point);
+    const int id = label_point.x;
+    if (id < 0 || id >= static_cast<int>(armor_name_labels_.size()))
+    {
+        return false;
+    }
+    name_id = id;
+    confidence = static_cast<float>(conf);
+    name = armor_name_labels_[static_cast<std::size_t>(id)];
+    if (confidence < armor_classifier_confidence_ || name == "not_armor")
+    {
+        name_id = -1;
+        name.clear();
         return false;
     }
     return true;
